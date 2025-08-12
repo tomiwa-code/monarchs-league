@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monarch League Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a1929, #1a3a5f);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 25px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .logo {
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffcc00, #ff6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo::after {
+            content: "⚽";
+            position: absolute;
+            top: -15px;
+            right: -35px;
+            font-size: 3.5rem;
+            opacity: 0.2;
+            transform: rotate(25deg);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            padding: 12px 28px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.08);
+            display: inline-block;
+            font-size: 1.05rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        nav a:hover, nav a.active {
+            background: linear-gradient(to right, #ffcc00, #ff6600);
+            color: #1a2a6c;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            margin: 40px auto;
+            max-width: 800px;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(to right, #fff, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 260px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            z-index: -1;
+            transform: scale(0, 1);
+            transform-origin: top right;
+            transition: transform 0.4s ease;
+        }
+
+        .btn:hover::after {
+            transform: scale(1, 1);
+            transform-origin: top left;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #ffcc00, #ff6600);
+            color: #1a2a6c;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #ffd84d, #ff8533);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            padding: 30px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            color: #ffcc00;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #ffcc00, #ff6600);
+            border-radius: 2px;
+        }
+
+        .section-title i {
+            color: #ffcc00;
+        }
+
+        /* Create League Form */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #ffcc00;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #ffcc00;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.2);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .info-text {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* Distribution Radio Buttons */
+        .distribution-options {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .distribution-option {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .distribution-option:hover {
+            border-color: rgba(255, 204, 0, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .distribution-option.selected {
+            border-color: #ffcc00;
+            background: rgba(255, 204, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.2);
+        }
+
+        .distribution-option i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #ffcc00;
+        }
+
+        .distribution-option h3 {
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+
+        .distribution-option p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* My Leagues */
+        .leagues-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .league-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .league-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #ffcc00, #ff6600);
+        }
+
+        .league-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .league-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffcc00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .league-card h3 .status {
+            font-size: 0.9rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-ongoing {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .status-upcoming {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+            border: 1px solid #2196F3;
+        }
+
+        .status-completed {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+            border: 1px solid #F44336;
+        }
+
+        .league-details {
+            margin: 15px 0;
+            color: #ccc;
+        }
+
+        .league-details p {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .league-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 204, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .edit-btn {
+            background: rgba(255, 204, 0, 0.3);
+        }
+
+        .delete-btn {
+            background: rgba(244, 67, 54, 0.3);
+        }
+
+        /* League Table */
+        .table-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 30px auto;
+            max-width: 800px;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th {
+            background: rgba(255, 204, 0, 0.2);
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #ffcc00;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        tr:hover {
+            background: rgba(255, 204, 0, 0.1);
+        }
+
+        td {
+            padding: 14px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Movement Indicators */
+        .movement {
+            display: inline-block;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 1.2em;
+            width: 20px;
+            text-align: center;
+        }
+
+        .movement-up {
+            color: #4CAF50;
+        }
+
+        .movement-down {
+            color: #F44336;
+        }
+
+        .movement-same {
+            color: #aaa;
+        }
+
+        /* Fixtures Styles */
+        .fixtures-container {
+            max-width: 800px;
+            margin: 30px auto;
+        }
+
+        .fixture-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .fixture-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .fixture-teams {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .team {
+            flex: 1;
+            text-align: center;
+        }
+
+        .team-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .vs-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 0 20px;
+        }
+
+        .score-input {
+            width: 60px;
+            padding: 10px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .score-input:focus {
+            border-color: #ffcc00;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.2);
+        }
+
+        .vs {
+            font-weight: bold;
+            color: #ffcc00;
+            min-width: 40px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* Form indicators */
+        .form-indicator {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin: 0 2px;
+            background-color: #777; /* Default gray color */
+        }
+
+        .form-win {
+            background-color: #4CAF50;
+        }
+
+        .form-draw {
+            background-color: #FFC107;
+            color: #333;
+        }
+
+        .form-loss {
+            background-color: #F44336;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: #ffcc00;
+            color: #1a2a6c;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Edit Teams */
+        .teams-edit-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .teams-list {
+            margin-top: 20px;
+        }
+
+        .team-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .team-item input {
+            flex: 1;
+            padding: 12px 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 30px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 204, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Team Names Box */
+        .team-names-box {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .team-names-box h3 {
+            color: #ffcc00;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .team-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .team-list div {
+            padding: 8px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .team-list div:last-child {
+            border-bottom: none;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1a3a5f;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            color: #ffcc00;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ff6600;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: #F44336;
+        }
+        
+        /* Fixture Week Selector */
+        .week-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .week-btn {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .week-btn.active, .week-btn:hover {
+            background: #ffcc00;
+            color: #1a2a6c;
+        }
+        
+        .fixture-counter {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .action-buttons .btn {
+            min-width: auto;
+            padding: 12px 25px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #aaa;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #ffcc00;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #ffcc00;
+        }
+
+        .empty-state p {
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 10px;
+            }
+            
+            nav a {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .btn {
+                min-width: 100%;
+                padding: 16px;
+            }
+            
+            .fixture-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .fixture-teams {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .vs-container {
+                margin: 10px 0;
+                flex-direction: column;
+            }
+            
+            .team {
+                width: 100%;
+            }
+            
+            .distribution-options {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            table {
+                min-width: 100%;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .logo h1 {
+                font-size: 2.2rem;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="notification" id="notification">
+            <i class="fas fa-check-circle"></i> League created successfully!
+        </div>
+        
+        <header>
+            <div class="logo">
+                <h1>Monarch League Manager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active" onclick="showSection('home')">Home</a></li>
+                    <li><a href="#" onclick="showSection('create')">Create League</a></li>
+                    <li><a href="#" onclick="showSection('leagues')">My Leagues</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Home Section -->
+        <section id="home" class="content-section">
+            <div class="hero">
+                <h2>Manage Your Football Leagues Like Royalty</h2>
+                <div class="btn-container">
+                    <a class="btn btn-primary" onclick="showSection('create')">
+                        <i class="fas fa-plus-circle"></i> Create New League
+                    </a>
+                    <a class="btn btn-secondary" onclick="showSection('leagues')">
+                        <i class="fas fa-list"></i> View Leagues
+                    </a>
+                </div>
+            </div>
+
+            <div style="max-width: 800px; margin: 50px auto; text-align: center;">
+                <h3 style="color: #ffcc00; margin-bottom: 20px; font-family: 'Montserrat', sans-serif;">Why Monarch League Manager?</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px;">
+                        <i class="fas fa-trophy" style="font-size: 2.5rem; color: #ffcc00; margin-bottom: 15px;"></i>
+                        <h4 style="margin-bottom: 10px;">Professional Management</h4>
+                        <p style="color: #aaa;">Manage leagues with real-time updates and comprehensive statistics</p>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px;">
+                        <i class="fas fa-cogs" style="font-size: 2.5rem; color: #ffcc00; margin-bottom: 15px;"></i>
+                        <h4 style="margin-bottom: 10px;">Easy Customization</h4>
+                        <p style="color: #aaa;">Create leagues with custom team names, sizes, and distribution</p>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px;">
+                        <i class="fas fa-mobile-alt" style="font-size: 2.5rem; color: #ffcc00; margin-bottom: 15px;"></i>
+                        <h4 style="margin-bottom: 10px;">Mobile Friendly</h4>
+                        <p style="color: #aaa;">Access your leagues from any device with a responsive design</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Create League Section -->
+        <section id="create" class="content-section" style="display:none;">
+            <h2 class="section-title"><i class="fas fa-plus-circle"></i> Create New League</h2>
+            
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="leagueName">League Name</label>
+                    <input type="text" id="leagueName" placeholder="Enter league name" value="Premier League">
+                </div>
+                
+                <div class="form-group">
+                    <label for="teams">Number of Teams</label>
+                    <input type="number" id="teams" min="4" max="24" value="20" onchange="updateTeamNamesPreview()">
+                </div>
+                
+                <div class="form-group">
+                    <label>Team Distribution</label>
+                    <div class="distribution-options">
+                        <div class="distribution-option selected" onclick="selectDistribution('custom')" id="custom-distribution">
+                            <i class="fas fa-edit"></i>
+                            <h3>Custom</h3>
+                            <p>Enter your own team names</p>
+                        </div>
+                        <div class="distribution-option" onclick="selectDistribution('random')" id="random-distribution">
+                            <i class="fas fa-random"></i>
+                            <h3>Randomize</h3>
+                            <p>Shuffle the team names</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="custom-team-section">
+                    <div class="form-group">
+                        <label for="teamNames">Team Names (one per line)</label>
+                        <textarea id="teamNames" placeholder="Enter team names, one per line">Arsenal
+Aston Villa
+Bournemouth
+Brentford
+Brighton
+Burnley
+Chelsea
+Crystal Palace
+Everton
+Fulham
+Liverpool
+Luton Town
+Manchester City
+Manchester United
+Newcastle United
+Nottingham Forest
+Sheffield United
+Tottenham Hotspur
+West Ham United
+Wolverhampton Wanderers</textarea>
+                        <p class="info-text">Enter one team name per line. The number of teams must match the number above.</p>
+                    </div>
+                </div>
+                
+                <div id="random-team-section" class="hidden">
+                    <div class="form-group">
+                        <label>Shuffled Teams</label>
+                        <div class="team-names-box">
+                            <div class="team-list" id="randomTeamsPreview">
+                                <!-- Teams will be populated here -->
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" style="width:100%; margin-top: 15px;" onclick="shuffleTeamNames()">
+                            <i class="fas fa-sync-alt"></i> Shuffle Again
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" style="width:100%; margin-top: 20px;" onclick="createLeague()">
+                    <i class="fas fa-check-circle"></i> Create League
+                </button>
+            </div>
+        </section>
+
+        <!-- My Leagues Section -->
+        <section id="leagues" class="content-section" style="display:none;">
+            <h2 class="section-title"><i class="fas fa-list"></i> My Leagues</h2>
+            
+            <div class="leagues-container" id="leaguesContainer">
+                <!-- Leagues will be dynamically added here -->
+            </div>
+        </section>
+
+        <!-- League Details Section -->
+        <section id="league-details" class="content-section" style="display:none;">
+            <a href="#" class="back-btn" onclick="showSection('leagues')">
+                <i class="fas fa-arrow-left"></i> Back to My Leagues
+            </a>
+            
+            <h2 class="section-title"><i class="fas fa-trophy"></i> <span id="leagueTitle">Premier League</span></h2>
+            
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="showEditTeamsModal()">
+                    <i class="fas fa-edit"></i> Edit Teams
+                </button>
+                <button class="btn btn-secondary" onclick="showBackupModal()">
+                    <i class="fas fa-database"></i> Backup Data
+                </button>
+                <button class="btn btn-secondary" onclick="deleteCurrentLeague()" style="background: rgba(244, 67, 54, 0.3);">
+                    <i class="fas fa-trash"></i> Delete League
+                </button>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="table">Table</button>
+                <button class="tab-btn" data-tab="fixtures">Fixtures</button>
+            </div>
+            
+            <div class="tab-content active" id="table-tab">
+                <div class="table-container">
+                    <table id="leagueTable">
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Team</th>
+                                <th>P</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>GF</th>
+                                <th>GA</th>
+                                <th>GD</th>
+                                <th>Pts</th>
+                                <th>Form</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table will be dynamically generated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="fixtures-tab">
+                <div class="fixture-counter">
+                    Matchweek <span id="currentWeek">1</span> of 38
+                </div>
+                <div class="week-selector" id="weekSelector">
+                    <!-- Week buttons will be generated here -->
+                </div>
+                <div class="fixtures-container" id="fixturesContainer">
+                    <!-- Fixtures will be dynamically generated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal for Editing Teams -->
+        <div class="modal" id="editTeamsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-edit"></i> Edit Teams</h3>
+                    <button class="close-modal" onclick="closeModal('editTeamsModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label for="editTeamNames">Team Names (one per line)</label>
+                    <textarea id="editTeamNames" placeholder="Enter team names, one per line" style="min-height: 300px;"></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%; margin-top: 15px;" onclick="saveTeamEdits()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+        
+        <!-- Modal for Backup/Restore -->
+        <div class="modal" id="backupModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-database"></i> Backup & Restore</h3>
+                    <button class="close-modal" onclick="closeModal('backupModal')">&times;</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Backup Data</label>
+                    <textarea id="backupData" readonly style="min-height: 100px; background: rgba(0, 0, 0, 0.4);"></textarea>
+                    <button class="btn btn-secondary" style="width:100%; margin-top: 10px;" onclick="copyBackupData()">
+                        <i class="fas fa-copy"></i> Copy to Clipboard
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Restore Data</label>
+                    <textarea id="restoreData" placeholder="Paste your backup data here" style="min-height: 100px;"></textarea>
+                    <button class="btn btn-secondary" style="width:100%; margin-top: 10px;" onclick="restoreData()">
+                        <i class="fas fa-history"></i> Restore Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Monarch League Manager &copy; 2023 | A Football League Management System</p>
+            <p><i class="fas fa-code"></i> Created with HTML, CSS, and JavaScript</p>
+        </footer>
+    </div>
+
+    <script>
+        // Data storage for leagues
+        let leagues = [];
+        let currentLeagueId = null;
+        let currentWeek = 1;
+        let previousRankings = {};
+        
+        // Load leagues from localStorage on page load
+        function loadLeagues() {
+            const savedLeagues = localStorage.getItem('monarchLeagues');
+            if (savedLeagues) {
+                leagues = JSON.parse(savedLeagues);
+            }
+        }
+        
+        // Save leagues to localStorage
+        function saveLeagues() {
+            localStorage.setItem('monarchLeagues', JSON.stringify(leagues));
+        }
+        
+        // Show/hide sections
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find the corresponding nav link and activate it
+            document.querySelectorAll('nav a').forEach(link => {
+                if (link.textContent.trim() === "Home" && sectionId === "home") {
+                    link.classList.add('active');
+                } else if (link.textContent.trim() === "Create League" && sectionId === "create") {
+                    link.classList.add('active');
+                } else if (link.textContent.trim() === "My Leagues" && sectionId === "leagues") {
+                    link.classList.add('active');
+                    renderLeagues();
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Create league function
+        function createLeague() {
+            const leagueName = document.getElementById('leagueName').value;
+            if (!leagueName) {
+                showNotification('Please enter a league name', 'error');
+                return;
+            }
+            
+            const teamCount = parseInt(document.getElementById('teams').value);
+            let teamNames = [];
+            
+            if (document.getElementById('custom-distribution').classList.contains('selected')) {
+                teamNames = document.getElementById('teamNames').value.split('\n')
+                    .map(name => name.trim())
+                    .filter(name => name.length > 0);
+            } else {
+                const previewTeams = document.querySelectorAll('#randomTeamsPreview div');
+                previewTeams.forEach(div => teamNames.push(div.textContent));
+            }
+            
+            // Pad or trim teams as needed
+            while (teamNames.length < teamCount) {
+                teamNames.push(`Team ${teamNames.length + 1}`);
+            }
+            teamNames = teamNames.slice(0, teamCount);
+            
+            // Create league object
+            const leagueId = Date.now();
+            const newLeague = {
+                id: leagueId,
+                name: leagueName,
+                teams: teamNames,
+                table: generateInitialTable(teamNames),
+                fixtures: generateFixtures(teamNames),
+                distribution: document.querySelector('.distribution-option.selected').id.includes('custom') ? 'custom' : 'random'
+            };
+            
+            // Add to leagues
+            leagues.push(newLeague);
+            
+            // Save to localStorage
+            saveLeagues();
+            
+            // Show notification
+            showNotification('League created successfully!');
+            
+            // Show My Leagues section
+            showSection('leagues');
+        }
+        
+        // Generate initial league table
+        function generateInitialTable(teams) {
+            return teams.map(team => ({
+                name: team,
+                played: 0,
+                wins: 0,
+                draws: 0,
+                losses: 0,
+                gf: 0,
+                ga: 0,
+                gd: 0,
+                points: 0,
+                form: []
+            }));
+        }
+        
+        // Generate fixtures with proper season structure
+        function generateFixtures(teams) {
+            const fixtures = [];
+            const teamCount = teams.length;
+            const totalWeeks = (teamCount - 1) * 2;
+            const matchesPerWeek = teamCount / 2;
+            
+            // Create a copy of teams array to avoid mutation
+            let teamsCopy = [...teams];
+            
+            // Generate first half of the season (weeks 1-19 for 20 teams)
+            for (let week = 1; week <= totalWeeks / 2; week++) {
+                // Rotate teams for each week (except first team)
+                if (week > 1) {
+                    const first = teamsCopy[0];
+                    const last = teamsCopy[teamsCopy.length - 1];
+                    const middle = teamsCopy.slice(1, teamsCopy.length - 1);
+                    teamsCopy = [first, last, ...middle];
+                }
+                
+                // Create matches for this week
+                for (let i = 0; i < matchesPerWeek; i++) {
+                    const homeIndex = i;
+                    const awayIndex = teamCount - 1 - i;
+                    
+                    fixtures.push({
+                        id: Date.now() + Math.floor(Math.random() * 10000),
+                        home: teamsCopy[homeIndex],
+                        away: teamsCopy[awayIndex],
+                        homeScore: null,
+                        awayScore: null,
+                        week: week
+                    });
+                }
+            }
+            
+            // Generate second half of the season (weeks 20-38 for 20 teams)
+            for (let week = 1; week <= totalWeeks / 2; week++) {
+                // For the second leg, swap home and away teams
+                const firstLegWeek = week;
+                const secondLegWeek = week + totalWeeks / 2;
+                
+                // Find all fixtures for this week in the first leg
+                const firstLegFixtures = fixtures.filter(f => f.week === firstLegWeek);
+                
+                // Create reverse fixtures for the second leg
+                firstLegFixtures.forEach(fixture => {
+                    fixtures.push({
+                        id: Date.now() + Math.floor(Math.random() * 10000),
+                        home: fixture.away,
+                        away: fixture.home,
+                        homeScore: null,
+                        awayScore: null,
+                        week: secondLegWeek
+                    });
+                });
+            }
+            
+            return fixtures;
+        }
+        
+        // Show league details
+        function showLeagueDetails(leagueId) {
+            const league = leagues.find(l => l.id === leagueId);
+            if (!league) return;
+            
+            currentLeagueId = leagueId;
+            currentWeek = 1; // Reset to first week
+            
+            // Set league title
+            document.getElementById('leagueTitle').textContent = league.name;
+            
+            // Populate table
+            populateLeagueTable(league.table);
+            
+            // Generate week selector
+            generateWeekSelector(league);
+            
+            // Populate fixtures for current week
+            populateFixtures(league.fixtures, currentWeek);
+            
+            // Show the league details section
+            document.getElementById('league-details').style.display = 'block';
+            
+            // Hide all other sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                if (section.id !== 'league-details') {
+                    section.style.display = 'none';
+                }
+            });
+        }
+        
+        // Generate week selector buttons
+        function generateWeekSelector(league) {
+            // Calculate total weeks (38 for 20 teams)
+            const totalWeeks = league.teams.length > 0 ? (league.teams.length - 1) * 2 : 38;
+            const container = document.getElementById('weekSelector');
+            container.innerHTML = '';
+            
+            for (let week = 1; week <= totalWeeks; week++) {
+                const button = document.createElement('button');
+                button.className = 'week-btn' + (week === currentWeek ? ' active' : '');
+                button.textContent = week;
+                button.onclick = () => {
+                    currentWeek = week;
+                    document.getElementById('currentWeek').textContent = week;
+                    populateFixtures(league.fixtures, week);
+                    
+                    // Update active button
+                    document.querySelectorAll('.week-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    button.classList.add('active');
+                };
+                container.appendChild(button);
+            }
+        }
+        
+        // Get movement indicator based on previous ranking
+        function getMovementIndicator(teamName, currentRank) {
+            if (!previousRankings[teamName]) return '';
+            
+            const prevRank = previousRankings[teamName];
+            if (currentRank < prevRank) {
+                return `<span class="movement movement-up">▲</span>`;
+            } else if (currentRank > prevRank) {
+                return `<span class="movement movement-down">▼</span>`;
+            } else {
+                return `<span class="movement movement-same">—</span>`;
+            }
+        }
+        
+        // Populate league table
+        function populateLeagueTable(tableData) {
+            const tbody = document.querySelector('#leagueTable tbody');
+            tbody.innerHTML = '';
+            
+            // Update previous rankings
+            const league = leagues.find(l => l.id === currentLeagueId);
+            if (league) {
+                league.table.forEach((team, index) => {
+                    previousRankings[team.name] = index + 1;
+                });
+            }
+            
+            // Sort table by points, GD, GF
+            tableData.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.gd !== a.gd) return b.gd - a.gd;
+                return b.gf - a.gf;
+            });
+            
+            // Render table with movement indicators
+            tableData.forEach((team, index) => {
+                const row = document.createElement('tr');
+                const currentRank = index + 1;
+                
+                // Generate form indicators
+                const formIndicators = team.form.map(result => {
+                    const cls = result === 'W' ? 'form-win' : result === 'D' ? 'form-draw' : 'form-loss';
+                    return `<span class="form-indicator ${cls}">${result}</span>`;
+                }).join('');
+                
+                // Fill with empty indicators if less than 5
+                const emptyIndicators = Array(5 - team.form.length)
+                    .fill('<span class="form-indicator"></span>')
+                    .join('');
+                
+                // Get movement indicator
+                const movementIndicator = getMovementIndicator(team.name, currentRank);
+                
+                row.innerHTML = `
+                    <td>${currentRank}</td>
+                    <td>${movementIndicator} ${team.name}</td>
+                    <td>${team.played}</td>
+                    <td>${team.wins}</td>
+                    <td>${team.draws}</td>
+                    <td>${team.losses}</td>
+                    <td>${team.gf}</td>
+                    <td>${team.ga}</td>
+                    <td>${team.gd >= 0 ? '+' : ''}${team.gd}</td>
+                    <td><strong>${team.points}</strong></td>
+                    <td>${formIndicators}${emptyIndicators}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Populate fixtures for a specific week
+        function populateFixtures(fixtures, week) {
+            const container = document.getElementById('fixturesContainer');
+            container.innerHTML = '';
+            
+            // Filter fixtures for this week
+            const weekFixtures = fixtures.filter(f => f.week === week);
+            
+            if (weekFixtures.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-futbol"></i>
+                        <h3>No Fixtures This Week</h3>
+                        <p>Enjoy the break! Come back next matchweek for more action.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            weekFixtures.forEach(fixture => {
+                const card = document.createElement('div');
+                card.className = 'fixture-card';
+                card.innerHTML = `
+                    <div class="fixture-teams">
+                        <div class="team">
+                            <div class="team-name">${fixture.home}</div>
+                            <div>(Home)</div>
+                        </div>
+                        <div class="vs-container">
+                            <input type="number" min="0" class="score-input" value="${fixture.homeScore !== null ? fixture.homeScore : ''}" 
+                                data-fixture-id="${fixture.id}" data-team="home" onchange="updateScore(this)">
+                            <div class="vs">VS</div>
+                            <input type="number" min="0" class="score-input" value="${fixture.awayScore !== null ? fixture.awayScore : ''}" 
+                                data-fixture-id="${fixture.id}" data-team="away" onchange="updateScore(this)">
+                        </div>
+                        <div class="team">
+                            <div class="team-name">${fixture.away}</div>
+                            <div>(Away)</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        // Revert previous fixture result from table
+        function revertFixtureResult(league, fixture) {
+            const homeTeam = league.table.find(t => t.name === fixture.home);
+            const awayTeam = league.table.find(t => t.name === fixture.away);
+            
+            if (!homeTeam || !awayTeam) return;
+            
+            // Decrement played matches
+            homeTeam.played -= 1;
+            awayTeam.played -= 1;
+            
+            // Revert goals
+            homeTeam.gf -= fixture.homeScore;
+            homeTeam.ga -= fixture.awayScore;
+            homeTeam.gd = homeTeam.gf - homeTeam.ga;
+            
+            awayTeam.gf -= fixture.awayScore;
+            awayTeam.ga -= fixture.homeScore;
+            awayTeam.gd = awayTeam.gf - awayTeam.ga;
+            
+            // Revert points and form
+            if (fixture.homeScore > fixture.awayScore) {
+                // Home win
+                homeTeam.wins -= 1;
+                homeTeam.points -= 3;
+                homeTeam.form.pop();
+                
+                awayTeam.losses -= 1;
+                awayTeam.form.pop();
+            } else if (fixture.homeScore < fixture.awayScore) {
+                // Away win
+                awayTeam.wins -= 1;
+                awayTeam.points -= 3;
+                awayTeam.form.pop();
+                
+                homeTeam.losses -= 1;
+                homeTeam.form.pop();
+            } else {
+                // Draw
+                homeTeam.draws -= 1;
+                homeTeam.points -= 1;
+                homeTeam.form.pop();
+                
+                awayTeam.draws -= 1;
+                awayTeam.points -= 1;
+                awayTeam.form.pop();
+            }
+        }
+        
+        // Update score and recalculate table
+        function updateScore(input) {
+            const fixtureId = parseInt(input.dataset.fixtureId);
+            const teamType = input.dataset.team;
+            const score = input.value !== '' ? parseInt(input.value) : null;
+            
+            const league = leagues.find(l => l.id === currentLeagueId);
+            if (!league) return;
+            
+            const fixture = league.fixtures.find(f => f.id === fixtureId);
+            if (!fixture) return;
+            
+            // Check if we need to revert previous result
+            const hadPreviousResult = fixture.homeScore !== null && fixture.awayScore !== null;
+            
+            // Revert previous result if it exists
+            if (hadPreviousResult) {
+                revertFixtureResult(league, fixture);
+            }
+            
+            // Update score
+            if (teamType === 'home') {
+                fixture.homeScore = score;
+            } else {
+                fixture.awayScore = score;
+            }
+            
+            // Apply new result if both scores are set
+            if (fixture.homeScore !== null && fixture.awayScore !== null) {
+                updateLeagueTable(league, fixture);
+            }
+            
+            // Save changes
+            saveLeagues();
+            
+            // Update the table display
+            populateLeagueTable(league.table);
+        }
+        
+        // Update league table with fixture result
+        function updateLeagueTable(league, fixture) {
+            const homeTeam = league.table.find(t => t.name === fixture.home);
+            const awayTeam = league.table.find(t => t.name === fixture.away);
+            
+            if (!homeTeam || !awayTeam) return;
+            
+            // Update played matches
+            homeTeam.played += 1;
+            awayTeam.played += 1;
+            
+            // Update goals
+            homeTeam.gf += fixture.homeScore;
+            homeTeam.ga += fixture.awayScore;
+            homeTeam.gd = homeTeam.gf - homeTeam.ga;
+            
+            awayTeam.gf += fixture.awayScore;
+            awayTeam.ga += fixture.homeScore;
+            awayTeam.gd = awayTeam.gf - awayTeam.ga;
+            
+            // Update points and form
+            if (fixture.homeScore > fixture.awayScore) {
+                // Home win
+                homeTeam.wins += 1;
+                homeTeam.points += 3;
+                homeTeam.form.push('W');
+                
+                awayTeam.losses += 1;
+                awayTeam.form.push('L');
+            } else if (fixture.homeScore < fixture.awayScore) {
+                // Away win
+                awayTeam.wins += 1;
+                awayTeam.points += 3;
+                awayTeam.form.push('W');
+                
+                homeTeam.losses += 1;
+                homeTeam.form.push('L');
+            } else {
+                // Draw
+                homeTeam.draws += 1;
+                homeTeam.points += 1;
+                homeTeam.form.push('D');
+                
+                awayTeam.draws += 1;
+                awayTeam.points += 1;
+                awayTeam.form.push('D');
+            }
+            
+            // Keep only last 5 form results
+            if (homeTeam.form.length > 5) homeTeam.form.shift();
+            if (awayTeam.form.length > 5) awayTeam.form.shift();
+        }
+        
+        // Render leagues in My Leagues section
+        function renderLeagues() {
+            const container = document.getElementById('leaguesContainer');
+            container.innerHTML = '';
+            
+            if (leagues.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <h3>No Leagues Created Yet</h3>
+                        <p>Create your first league to get started. Build your dream competition with custom teams and track results in real-time.</p>
+                        <button class="btn btn-primary" onclick="showSection('create')">
+                            <i class="fas fa-plus-circle"></i> Create League
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            leagues.forEach(league => {
+                const card = document.createElement('div');
+                card.className = 'league-card';
+                card.innerHTML = `
+                    <h3>${league.name} <span class="status status-ongoing">Ongoing</span></h3>
+                    <div class="league-details">
+                        <p><i class="fas fa-shield-alt"></i> ${league.teams.length} teams</p>
+                        <p><i class="fas fa-calendar"></i> Season: 2023-2024</p>
+                        <p><i class="fas fa-random"></i> Distribution: ${league.distribution === 'custom' ? 'Custom' : 'Random'}</p>
+                    </div>
+                    <div class="league-actions">
+                        <button class="action-btn" onclick="showLeagueDetails(${league.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        // Delete a league
+        function deleteLeague(leagueId) {
+            if (confirm('Are you sure you want to delete this league? All data will be permanently lost.')) {
+                leagues = leagues.filter(league => league.id !== leagueId);
+                saveLeagues();
+                renderLeagues();
+                showNotification('League deleted successfully');
+            }
+        }
+        
+        // Delete the current league from details view
+        function deleteCurrentLeague() {
+            if (currentLeagueId && confirm('Are you sure you want to delete this league? All data will be permanently lost.')) {
+                leagues = leagues.filter(league => league.id !== currentLeagueId);
+                saveLeagues();
+                showNotification('League deleted successfully');
+                showSection('leagues');
+            }
+        }
+        
+        // Show edit teams modal
+        function showEditTeamsModal(leagueId) {
+            // If called from league details, use currentLeagueId
+            const id = leagueId || currentLeagueId;
+            if (!id) return;
+            
+            const league = leagues.find(l => l.id === id);
+            if (!league) return;
+            
+            // Populate textarea with team names
+            document.getElementById('editTeamNames').value = league.teams.join('\n');
+            
+            // Show the modal
+            document.getElementById('editTeamsModal').style.display = 'flex';
+        }
+        
+        // Save team edits without resetting league data
+        function saveTeamEdits() {
+            if (!currentLeagueId) return;
+            
+            const league = leagues.find(l => l.id === currentLeagueId);
+            if (!league) return;
+            
+            const teamNames = document.getElementById('editTeamNames').value.split('\n')
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+            
+            if (teamNames.length < 4) {
+                showNotification('A league needs at least 4 teams', 'error');
+                return;
+            }
+            
+            // Check if team count has changed
+            if (teamNames.length !== league.teams.length) {
+                showNotification('You cannot change the number of teams when editing', 'error');
+                return;
+            }
+            
+            // Create mapping of old names to new names
+            const nameMapping = {};
+            league.teams.forEach((oldName, index) => {
+                nameMapping[oldName] = teamNames[index];
+            });
+            
+            // Update league teams
+            league.teams = teamNames;
+            
+            // Update team names in the table
+            league.table.forEach(team => {
+                if (nameMapping[team.name]) {
+                    team.name = nameMapping[team.name];
+                }
+            });
+            
+            // Update team names in fixtures
+            league.fixtures.forEach(fixture => {
+                if (nameMapping[fixture.home]) {
+                    fixture.home = nameMapping[fixture.home];
+                }
+                if (nameMapping[fixture.away]) {
+                    fixture.away = nameMapping[fixture.away];
+                }
+            });
+            
+            // Save changes
+            saveLeagues();
+            
+            // Update UI
+            populateLeagueTable(league.table);
+            populateFixtures(league.fixtures, currentWeek);
+            
+            // Close modal
+            closeModal('editTeamsModal');
+            
+            showNotification('Teams updated successfully!');
+        }
+        
+        // Show backup modal
+        function showBackupModal() {
+            const backupData = JSON.stringify(leagues, null, 2);
+            document.getElementById('backupData').value = backupData;
+            document.getElementById('backupModal').style.display = 'flex';
+        }
+        
+        // Copy backup data to clipboard
+        function copyBackupData() {
+            const backupData = document.getElementById('backupData');
+            backupData.select();
+            document.execCommand('copy');
+            showNotification('Backup data copied to clipboard!');
+        }
+        
+        // Restore data from backup
+        function restoreData() {
+            const restoreData = document.getElementById('restoreData').value;
+            if (!restoreData) {
+                showNotification('Please enter backup data', 'error');
+                return;
+            }
+            
+            try {
+                const parsedData = JSON.parse(restoreData);
+                if (!Array.isArray(parsedData)) {
+                    throw new Error('Invalid data format');
+                }
+                
+                leagues = parsedData;
+                saveLeagues();
+                renderLeagues();
+                showNotification('Data restored successfully!');
+                closeModal('backupModal');
+            } catch (error) {
+                showNotification('Invalid backup data format', 'error');
+                console.error(error);
+            }
+        }
+        
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Update team names preview
+        function updateTeamNamesPreview() {
+            const teamCount = parseInt(document.getElementById('teams').value);
+            const teamNames = document.getElementById('teamNames').value.split('\n');
+            const previewContainer = document.getElementById('teamNamesPreview');
+            
+            // Clear existing preview
+            previewContainer.innerHTML = '';
+            
+            // Add team placeholders
+            for (let i = 0; i < teamCount; i++) {
+                const teamDiv = document.createElement('div');
+                teamDiv.textContent = teamNames[i] || `Team ${i+1}`;
+                previewContainer.appendChild(teamDiv);
+            }
+        }
+        
+        // Select distribution type
+        function selectDistribution(type) {
+            document.querySelectorAll('.distribution-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            if (type === 'custom') {
+                document.getElementById('custom-distribution').classList.add('selected');
+                document.getElementById('custom-team-section').classList.remove('hidden');
+                document.getElementById('random-team-section').classList.add('hidden');
+            } else {
+                document.getElementById('random-distribution').classList.add('selected');
+                document.getElementById('custom-team-section').classList.add('hidden');
+                document.getElementById('random-team-section').classList.remove('hidden');
+                shuffleTeamNames();
+            }
+        }
+        
+        // Shuffle the team names
+        function shuffleTeamNames() {
+            const teamCount = parseInt(document.getElementById('teams').value);
+            let teams = document.getElementById('teamNames').value.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            
+            // Pad if necessary
+            while (teams.length < teamCount) {
+                teams.push(`Team ${teams.length + 1}`);
+            }
+            
+            // Take only the required number of teams
+            if (teams.length > teamCount) {
+                teams = teams.slice(0, teamCount);
+            }
+            
+            // Shuffle the teams
+            for (let i = teams.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [teams[i], teams[j]] = [teams[j], teams[i]];
+            }
+            
+            const previewContainer = document.getElementById('randomTeamsPreview');
+            previewContainer.innerHTML = '';
+            teams.forEach(team => {
+                const div = document.createElement('div');
+                div.textContent = team;
+                previewContainer.appendChild(div);
+            });
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${message}`;
+            notification.className = `notification ${type === 'error' ? 'error' : ''} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load leagues from localStorage
+            loadLeagues();
+            
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show selected tab content
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Initialize the preview
+            updateTeamNamesPreview();
+            
+            // Add sample data for demonstration if no leagues exist
+            if (leagues.length === 0) {
+                leagues = [
+                    {
+                        id: 1,
+                        name: "Premier League",
+                        teams: ["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"],
+                        table: generateInitialTable(["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"]),
+                        fixtures: generateFixtures(["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"]),
+                        distribution: "custom"
+                    }
+                ];
+                saveLeagues();
+            }
+            
+            // Initialize the league table for sample data
+            if (leagues.length > 0) {
+                populateLeagueTable(leagues[0].table);
+            }
+        });
+    </script>
+</body>
+</html>
