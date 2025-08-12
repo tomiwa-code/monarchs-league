@@ -1210,7 +1210,8 @@ Wolverhampton Wanderers</textarea>
         let leagues = [];
         let currentLeagueId = null;
         let currentWeek = 1;
-        let previousRankings = {};
+        let leaguePreviousRankings = {};
+        let baseRankings = {};
         
         // Load leagues from localStorage on page load
         function loadLeagues() {
@@ -1394,6 +1395,21 @@ Wolverhampton Wanderers</textarea>
             // Set league title
             document.getElementById('leagueTitle').textContent = league.name;
             
+            // Store base rankings when first entering league
+            if (!baseRankings[leagueId]) {
+                const baseTable = [...league.table];
+                baseTable.sort((a, b) => {
+                    if (b.points !== a.points) return b.points - a.points;
+                    if (b.gd !== a.gd) return b.gd - a.gd;
+                    return b.gf - a.gf;
+                });
+                
+                baseRankings[leagueId] = {};
+                baseTable.forEach((team, index) => {
+                    baseRankings[leagueId][team.name] = index + 1;
+                });
+            }
+            
             // Populate table
             populateLeagueTable(league.table);
             
@@ -1440,44 +1456,51 @@ Wolverhampton Wanderers</textarea>
             }
         }
         
-        // Get movement indicator based on previous ranking
-        function getMovementIndicator(teamName, currentRank) {
-            if (!previousRankings[teamName]) return '';
-            
-            const prevRank = previousRankings[teamName];
-            if (currentRank < prevRank) {
-                return `<span class="movement movement-up">▲</span>`;
-            } else if (currentRank > prevRank) {
-                return `<span class="movement movement-down">▼</span>`;
-            } else {
-                return `<span class="movement movement-same">—</span>`;
-            }
-        }
-        
         // Populate league table
         function populateLeagueTable(tableData) {
             const tbody = document.querySelector('#leagueTable tbody');
             tbody.innerHTML = '';
             
-            // Update previous rankings
             const league = leagues.find(l => l.id === currentLeagueId);
-            if (league) {
-                league.table.forEach((team, index) => {
-                    previousRankings[team.name] = index + 1;
-                });
-            }
+            if (!league) return;
             
-            // Sort table by points, GD, GF
-            tableData.sort((a, b) => {
+            // Get the base rankings for this league
+            const baseRank = baseRankings[league.id];
+            
+            // Sort the table
+            const sortedTable = [...tableData];
+            sortedTable.sort((a, b) => {
                 if (b.points !== a.points) return b.points - a.points;
                 if (b.gd !== a.gd) return b.gd - a.gd;
                 return b.gf - a.gf;
             });
             
-            // Render table with movement indicators
-            tableData.forEach((team, index) => {
+            // Create new rankings
+            const newRankings = {};
+            sortedTable.forEach((team, index) => {
+                newRankings[team.name] = index + 1;
+            });
+            
+            // Render rows
+            sortedTable.forEach((team, index) => {
                 const row = document.createElement('tr');
                 const currentRank = index + 1;
+                const basePosition = baseRank[team.name];
+                
+                // Generate movement indicator
+                let movementIndicator = '';
+                if (basePosition !== undefined) {
+                    if (currentRank < basePosition) {
+                        movementIndicator = `<span class="movement movement-up">▲</span>`;
+                    } else if (currentRank > basePosition) {
+                        movementIndicator = `<span class="movement movement-down">▼</span>`;
+                    } else {
+                        movementIndicator = `<span class="movement movement-same">—</span>`;
+                    }
+                } else {
+                    // First time, no base rank - show dash
+                    movementIndicator = `<span class="movement movement-same">—</span>`;
+                }
                 
                 // Generate form indicators
                 const formIndicators = team.form.map(result => {
@@ -1489,9 +1512,6 @@ Wolverhampton Wanderers</textarea>
                 const emptyIndicators = Array(5 - team.form.length)
                     .fill('<span class="form-indicator"></span>')
                     .join('');
-                
-                // Get movement indicator
-                const movementIndicator = getMovementIndicator(team.name, currentRank);
                 
                 row.innerHTML = `
                     <td>${currentRank}</td>
@@ -1824,6 +1844,9 @@ Wolverhampton Wanderers</textarea>
                     fixture.away = nameMapping[fixture.away];
                 }
             });
+            
+            // Reset base rankings
+            baseRankings[currentLeagueId] = null;
             
             // Save changes
             saveLeagues();
