@@ -478,28 +478,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Movement Indicators */
-        .movement {
-            display: inline-block;
-            font-weight: bold;
-            margin-right: 8px;
-            font-size: 1.2em;
-            width: 20px;
-            text-align: center;
-        }
-
-        .movement-up {
-            color: #4CAF50;
-        }
-
-        .movement-down {
-            color: #F44336;
-        }
-
-        .movement-same {
-            color: #aaa;
-        }
-
         /* Fixtures Styles */
         .fixtures-container {
             max-width: 800px;
@@ -1145,7 +1123,7 @@ Wolverhampton Wanderers</textarea>
             
             <div class="tab-content" id="fixtures-tab">
                 <div class="fixture-counter">
-                    Matchweek <span id="currentWeek">1</span> of 38
+                    Matchweek <span id="currentWeek">1</span> of <span id="totalWeeks">38</span>
                 </div>
                 <div class="week-selector" id="weekSelector">
                     <!-- Week buttons will be generated here -->
@@ -1210,8 +1188,6 @@ Wolverhampton Wanderers</textarea>
         let leagues = [];
         let currentLeagueId = null;
         let currentWeek = 1;
-        let leaguePreviousRankings = {};
-        let baseRankings = {};
         
         // Load leagues from localStorage on page load
         function loadLeagues() {
@@ -1290,7 +1266,7 @@ Wolverhampton Wanderers</textarea>
                 name: leagueName,
                 teams: teamNames,
                 table: generateInitialTable(teamNames),
-                fixtures: generateFixtures(teamNames),
+                fixtures: generateRoundRobinFixtures(teamNames),
                 distribution: document.querySelector('.distribution-option.selected').id.includes('custom') ? 'custom' : 'random'
             };
             
@@ -1323,65 +1299,60 @@ Wolverhampton Wanderers</textarea>
             }));
         }
         
-        // Generate fixtures with proper season structure
-        function generateFixtures(teams) {
+        // Generate round-robin fixtures (home and away)
+        function generateRoundRobinFixtures(teams) {
             const fixtures = [];
             const teamCount = teams.length;
-            const totalWeeks = (teamCount - 1) * 2;
-            const matchesPerWeek = teamCount / 2;
+            const rounds = teamCount - 1;
+            const matchesPerRound = teamCount / 2;
             
-            // Create a copy of teams array to avoid mutation
-            let teamsCopy = [...teams];
+            // Create array of team indices
+            let teamIndexes = Array.from({length: teamCount}, (_, i) => i);
             
-            // Generate first half of the season (weeks 1-19 for 20 teams)
-            for (let week = 1; week <= totalWeeks / 2; week++) {
-                // Rotate teams for each week (except first team)
-                if (week > 1) {
-                    const first = teamsCopy[0];
-                    const last = teamsCopy[teamsCopy.length - 1];
-                    const middle = teamsCopy.slice(1, teamsCopy.length - 1);
-                    teamsCopy = [first, last, ...middle];
-                }
-                
-                // Create matches for this week
-                for (let i = 0; i < matchesPerWeek; i++) {
-                    const homeIndex = i;
-                    const awayIndex = teamCount - 1 - i;
+            // Generate first half (home games)
+            for (let round = 0; round < rounds; round++) {
+                for (let match = 0; match < matchesPerRound; match++) {
+                    const home = (round + match) % (teamCount - 1);
+                    let away = (teamCount - 1 - match + round) % (teamCount - 1);
+                    
+                    // Last team stays in the same place while the others rotate
+                    if (match === 0) {
+                        away = teamCount - 1;
+                    }
+                    
+                    const homeTeam = teams[teamIndexes[home]];
+                    const awayTeam = teams[teamIndexes[away]];
+                    
+                    // Skip if same team
+                    if (homeTeam === awayTeam) continue;
                     
                     fixtures.push({
-                        id: Date.now() + Math.floor(Math.random() * 10000),
-                        home: teamsCopy[homeIndex],
-                        away: teamsCopy[awayIndex],
+                        id: Date.now() + round * 100 + match,
+                        home: homeTeam,
+                        away: awayTeam,
                         homeScore: null,
                         awayScore: null,
-                        week: week
+                        week: round + 1,
+                        played: false
                     });
                 }
             }
             
-            // Generate second half of the season (weeks 20-38 for 20 teams)
-            for (let week = 1; week <= totalWeeks / 2; week++) {
-                // For the second leg, swap home and away teams
-                const firstLegWeek = week;
-                const secondLegWeek = week + totalWeeks / 2;
-                
-                // Find all fixtures for this week in the first leg
-                const firstLegFixtures = fixtures.filter(f => f.week === firstLegWeek);
-                
-                // Create reverse fixtures for the second leg
-                firstLegFixtures.forEach(fixture => {
-                    fixtures.push({
-                        id: Date.now() + Math.floor(Math.random() * 10000),
-                        home: fixture.away,
-                        away: fixture.home,
-                        homeScore: null,
-                        awayScore: null,
-                        week: secondLegWeek
-                    });
+            // Generate second half (away games) by swapping home/away
+            const secondHalfFixtures = [];
+            fixtures.forEach(fixture => {
+                secondHalfFixtures.push({
+                    id: fixture.id + 1000,
+                    home: fixture.away,
+                    away: fixture.home,
+                    homeScore: null,
+                    awayScore: null,
+                    week: fixture.week + rounds,
+                    played: false
                 });
-            }
+            });
             
-            return fixtures;
+            return [...fixtures, ...secondHalfFixtures];
         }
         
         // Show league details
@@ -1390,25 +1361,14 @@ Wolverhampton Wanderers</textarea>
             if (!league) return;
             
             currentLeagueId = leagueId;
-            currentWeek = 1; // Reset to first week
+            currentWeek = 1;
             
             // Set league title
             document.getElementById('leagueTitle').textContent = league.name;
             
-            // Store base rankings when first entering league
-            if (!baseRankings[leagueId]) {
-                const baseTable = [...league.table];
-                baseTable.sort((a, b) => {
-                    if (b.points !== a.points) return b.points - a.points;
-                    if (b.gd !== a.gd) return b.gd - a.gd;
-                    return b.gf - a.gf;
-                });
-                
-                baseRankings[leagueId] = {};
-                baseTable.forEach((team, index) => {
-                    baseRankings[leagueId][team.name] = index + 1;
-                });
-            }
+            // Calculate total weeks
+            const totalWeeks = Math.max(...league.fixtures.map(f => f.week));
+            document.getElementById('totalWeeks').textContent = totalWeeks;
             
             // Populate table
             populateLeagueTable(league.table);
@@ -1432,8 +1392,7 @@ Wolverhampton Wanderers</textarea>
         
         // Generate week selector buttons
         function generateWeekSelector(league) {
-            // Calculate total weeks (38 for 20 teams)
-            const totalWeeks = league.teams.length > 0 ? (league.teams.length - 1) * 2 : 38;
+            const totalWeeks = Math.max(...league.fixtures.map(f => f.week));
             const container = document.getElementById('weekSelector');
             container.innerHTML = '';
             
@@ -1461,46 +1420,15 @@ Wolverhampton Wanderers</textarea>
             const tbody = document.querySelector('#leagueTable tbody');
             tbody.innerHTML = '';
             
-            const league = leagues.find(l => l.id === currentLeagueId);
-            if (!league) return;
-            
-            // Get the base rankings for this league
-            const baseRank = baseRankings[league.id];
-            
-            // Sort the table
-            const sortedTable = [...tableData];
-            sortedTable.sort((a, b) => {
+            // Sort table by points, GD, GF
+            tableData.sort((a, b) => {
                 if (b.points !== a.points) return b.points - a.points;
                 if (b.gd !== a.gd) return b.gd - a.gd;
                 return b.gf - a.gf;
             });
             
-            // Create new rankings
-            const newRankings = {};
-            sortedTable.forEach((team, index) => {
-                newRankings[team.name] = index + 1;
-            });
-            
-            // Render rows
-            sortedTable.forEach((team, index) => {
+            tableData.forEach((team, index) => {
                 const row = document.createElement('tr');
-                const currentRank = index + 1;
-                const basePosition = baseRank[team.name];
-                
-                // Generate movement indicator
-                let movementIndicator = '';
-                if (basePosition !== undefined) {
-                    if (currentRank < basePosition) {
-                        movementIndicator = `<span class="movement movement-up">▲</span>`;
-                    } else if (currentRank > basePosition) {
-                        movementIndicator = `<span class="movement movement-down">▼</span>`;
-                    } else {
-                        movementIndicator = `<span class="movement movement-same">—</span>`;
-                    }
-                } else {
-                    // First time, no base rank - show dash
-                    movementIndicator = `<span class="movement movement-same">—</span>`;
-                }
                 
                 // Generate form indicators
                 const formIndicators = team.form.map(result => {
@@ -1514,8 +1442,8 @@ Wolverhampton Wanderers</textarea>
                     .join('');
                 
                 row.innerHTML = `
-                    <td>${currentRank}</td>
-                    <td>${movementIndicator} ${team.name}</td>
+                    <td>${index + 1}</td>
+                    <td>${team.name}</td>
                     <td>${team.played}</td>
                     <td>${team.wins}</td>
                     <td>${team.draws}</td>
@@ -1633,8 +1561,12 @@ Wolverhampton Wanderers</textarea>
             const league = leagues.find(l => l.id === currentLeagueId);
             if (!league) return;
             
+            // Find the fixture by ID
             const fixture = league.fixtures.find(f => f.id === fixtureId);
-            if (!fixture) return;
+            if (!fixture) {
+                console.error('Fixture not found:', fixtureId);
+                return;
+            }
             
             // Check if we need to revert previous result
             const hadPreviousResult = fixture.homeScore !== null && fixture.awayScore !== null;
@@ -1651,8 +1583,11 @@ Wolverhampton Wanderers</textarea>
                 fixture.awayScore = score;
             }
             
+            // Mark as played if both scores are set
+            fixture.played = fixture.homeScore !== null && fixture.awayScore !== null;
+            
             // Apply new result if both scores are set
-            if (fixture.homeScore !== null && fixture.awayScore !== null) {
+            if (fixture.played) {
                 updateLeagueTable(league, fixture);
             }
             
@@ -1736,13 +1671,19 @@ Wolverhampton Wanderers</textarea>
             }
             
             leagues.forEach(league => {
+                // Calculate some stats for display
+                const totalFixtures = league.fixtures.length;
+                const completedFixtures = league.fixtures.filter(f => f.played).length;
+                const completionPercentage = totalFixtures > 0 ? Math.round((completedFixtures / totalFixtures) * 100) : 0;
+                
                 const card = document.createElement('div');
                 card.className = 'league-card';
                 card.innerHTML = `
-                    <h3>${league.name} <span class="status status-ongoing">Ongoing</span></h3>
+                    <h3>${league.name} <span class="status status-ongoing">${completionPercentage}% Complete</span></h3>
                     <div class="league-details">
                         <p><i class="fas fa-shield-alt"></i> ${league.teams.length} teams</p>
-                        <p><i class="fas fa-calendar"></i> Season: 2023-2024</p>
+                        <p><i class="fas fa-calendar"></i> ${totalFixtures} fixtures total</p>
+                        <p><i class="fas fa-check-circle"></i> ${completedFixtures} completed</p>
                         <p><i class="fas fa-random"></i> Distribution: ${league.distribution === 'custom' ? 'Custom' : 'Random'}</p>
                     </div>
                     <div class="league-actions">
@@ -1797,7 +1738,7 @@ Wolverhampton Wanderers</textarea>
             document.getElementById('editTeamsModal').style.display = 'flex';
         }
         
-        // Save team edits without resetting league data
+        // Save team edits
         function saveTeamEdits() {
             if (!currentLeagueId) return;
             
@@ -1813,46 +1754,21 @@ Wolverhampton Wanderers</textarea>
                 return;
             }
             
-            // Check if team count has changed
-            if (teamNames.length !== league.teams.length) {
-                showNotification('You cannot change the number of teams when editing', 'error');
-                return;
-            }
-            
-            // Create mapping of old names to new names
-            const nameMapping = {};
-            league.teams.forEach((oldName, index) => {
-                nameMapping[oldName] = teamNames[index];
-            });
-            
             // Update league teams
             league.teams = teamNames;
             
-            // Update team names in the table
-            league.table.forEach(team => {
-                if (nameMapping[team.name]) {
-                    team.name = nameMapping[team.name];
-                }
-            });
-            
-            // Update team names in fixtures
-            league.fixtures.forEach(fixture => {
-                if (nameMapping[fixture.home]) {
-                    fixture.home = nameMapping[fixture.home];
-                }
-                if (nameMapping[fixture.away]) {
-                    fixture.away = nameMapping[fixture.away];
-                }
-            });
-            
-            // Reset base rankings
-            baseRankings[currentLeagueId] = null;
+            // Reset table and fixtures
+            league.table = generateInitialTable(teamNames);
+            league.fixtures = generateRoundRobinFixtures(teamNames);
             
             // Save changes
             saveLeagues();
             
             // Update UI
+            const totalWeeks = Math.max(...league.fixtures.map(f => f.week));
+            document.getElementById('totalWeeks').textContent = totalWeeks;
             populateLeagueTable(league.table);
+            generateWeekSelector(league);
             populateFixtures(league.fixtures, currentWeek);
             
             // Close modal
@@ -2023,7 +1939,7 @@ Wolverhampton Wanderers</textarea>
                         name: "Premier League",
                         teams: ["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"],
                         table: generateInitialTable(["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"]),
-                        fixtures: generateFixtures(["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"]),
+                        fixtures: generateRoundRobinFixtures(["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"]),
                         distribution: "custom"
                     }
                 ];
