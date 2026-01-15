@@ -478,6 +478,28 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        /* Movement Indicators */
+        .movement {
+            display: inline-block;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 1.2em;
+            width: 20px;
+            text-align: center;
+        }
+
+        .movement-up {
+            color: #4CAF50;
+        }
+
+        .movement-down {
+            color: #F44336;
+        }
+
+        .movement-same {
+            color: #aaa;
+        }
+
         /* Fixtures Styles */
         .fixtures-container {
             max-width: 800px;
@@ -948,7 +970,6 @@
             </nav>
         </header>
 
-        <!-- Home Section -->
         <section id="home" class="content-section">
             <div class="hero">
                 <h2>Manage Your Football Leagues Like Royalty</h2>
@@ -984,7 +1005,6 @@
             </div>
         </section>
 
-        <!-- Create League Section -->
         <section id="create" class="content-section" style="display:none;">
             <h2 class="section-title"><i class="fas fa-plus-circle"></i> Create New League</h2>
             
@@ -1047,8 +1067,7 @@ Wolverhampton Wanderers</textarea>
                         <label>Shuffled Teams</label>
                         <div class="team-names-box">
                             <div class="team-list" id="randomTeamsPreview">
-                                <!-- Teams will be populated here -->
-                            </div>
+                                </div>
                         </div>
                         <button class="btn btn-secondary" style="width:100%; margin-top: 15px;" onclick="shuffleTeamNames()">
                             <i class="fas fa-sync-alt"></i> Shuffle Again
@@ -1062,16 +1081,13 @@ Wolverhampton Wanderers</textarea>
             </div>
         </section>
 
-        <!-- My Leagues Section -->
         <section id="leagues" class="content-section" style="display:none;">
             <h2 class="section-title"><i class="fas fa-list"></i> My Leagues</h2>
             
             <div class="leagues-container" id="leaguesContainer">
-                <!-- Leagues will be dynamically added here -->
-            </div>
+                </div>
         </section>
 
-        <!-- League Details Section -->
         <section id="league-details" class="content-section" style="display:none;">
             <a href="#" class="back-btn" onclick="showSection('leagues')">
                 <i class="fas fa-arrow-left"></i> Back to My Leagues
@@ -1115,26 +1131,22 @@ Wolverhampton Wanderers</textarea>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Table will be dynamically generated -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
             
             <div class="tab-content" id="fixtures-tab">
                 <div class="fixture-counter">
-                    Matchweek <span id="currentWeek">1</span> of <span id="totalWeeks">38</span>
+                    Matchweek <span id="currentWeek">1</span> of 38
                 </div>
                 <div class="week-selector" id="weekSelector">
-                    <!-- Week buttons will be generated here -->
-                </div>
+                    </div>
                 <div class="fixtures-container" id="fixturesContainer">
-                    <!-- Fixtures will be dynamically generated -->
-                </div>
+                    </div>
             </div>
         </section>
 
-        <!-- Modal for Editing Teams -->
         <div class="modal" id="editTeamsModal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1151,7 +1163,6 @@ Wolverhampton Wanderers</textarea>
             </div>
         </div>
         
-        <!-- Modal for Backup/Restore -->
         <div class="modal" id="backupModal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1160,16 +1171,22 @@ Wolverhampton Wanderers</textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>Backup Data</label>
-                    <textarea id="backupData" readonly style="min-height: 100px; background: rgba(0, 0, 0, 0.4);"></textarea>
-                    <button class="btn btn-secondary" style="width:100%; margin-top: 10px;" onclick="copyBackupData()">
-                        <i class="fas fa-copy"></i> Copy to Clipboard
-                    </button>
+                    <label>Download/Copy Backup</label>
+                    <textarea id="backupData" readonly style="min-height: 80px; background: rgba(0, 0, 0, 0.4);"></textarea>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn btn-secondary" style="flex: 1; min-width: auto;" onclick="copyBackupData()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button class="btn btn-primary" style="flex: 1; min-width: auto;" onclick="downloadBackupFile()">
+                            <i class="fas fa-download"></i> Download .json
+                        </button>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label>Restore Data</label>
-                    <textarea id="restoreData" placeholder="Paste your backup data here" style="min-height: 100px;"></textarea>
+                <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                    <label>Upload/Restore Data</label>
+                    <input type="file" id="uploadFile" accept=".json" style="margin-bottom: 10px; padding: 10px;">
+                    <textarea id="restoreData" placeholder="Or paste your backup data here" style="min-height: 80px;"></textarea>
                     <button class="btn btn-secondary" style="width:100%; margin-top: 10px;" onclick="restoreData()">
                         <i class="fas fa-history"></i> Restore Data
                     </button>
@@ -1188,6 +1205,7 @@ Wolverhampton Wanderers</textarea>
         let leagues = [];
         let currentLeagueId = null;
         let currentWeek = 1;
+        let previousRankings = {};
         
         // Load leagues from localStorage on page load
         function loadLeagues() {
@@ -1204,32 +1222,22 @@ Wolverhampton Wanderers</textarea>
         
         // Show/hide sections
         function showSection(sectionId) {
-            // Hide all sections
             document.querySelectorAll('.content-section').forEach(section => {
                 section.style.display = 'none';
             });
-            
-            // Show the selected section
             document.getElementById(sectionId).style.display = 'block';
-            
-            // Update active navigation
             document.querySelectorAll('nav a').forEach(link => {
                 link.classList.remove('active');
             });
             
-            // Find the corresponding nav link and activate it
             document.querySelectorAll('nav a').forEach(link => {
-                if (link.textContent.trim() === "Home" && sectionId === "home") {
-                    link.classList.add('active');
-                } else if (link.textContent.trim() === "Create League" && sectionId === "create") {
-                    link.classList.add('active');
-                } else if (link.textContent.trim() === "My Leagues" && sectionId === "leagues") {
+                if (link.textContent.trim() === "Home" && sectionId === "home") link.classList.add('active');
+                else if (link.textContent.trim() === "Create League" && sectionId === "create") link.classList.add('active');
+                else if (link.textContent.trim() === "My Leagues" && sectionId === "leagues") {
                     link.classList.add('active');
                     renderLeagues();
                 }
             });
-            
-            // Scroll to top
             window.scrollTo(0, 0);
         }
         
@@ -1253,149 +1261,157 @@ Wolverhampton Wanderers</textarea>
                 previewTeams.forEach(div => teamNames.push(div.textContent));
             }
             
-            // Pad or trim teams as needed
             while (teamNames.length < teamCount) {
                 teamNames.push(`Team ${teamNames.length + 1}`);
             }
             teamNames = teamNames.slice(0, teamCount);
             
-            // Create league object
             const leagueId = Date.now();
             const newLeague = {
                 id: leagueId,
                 name: leagueName,
                 teams: teamNames,
-                table: generateInitialTable(teamNames),
-                fixtures: generateRoundRobinFixtures(teamNames),
+                fixtures: generateFixtures(teamNames),
                 distribution: document.querySelector('.distribution-option.selected').id.includes('custom') ? 'custom' : 'random'
             };
             
-            // Add to leagues
+            // Re-calculate the table immediately to ensure fresh object structure
+            newLeague.table = recalculateTable(newLeague);
+            
             leagues.push(newLeague);
-            
-            // Save to localStorage
             saveLeagues();
-            
-            // Show notification
             showNotification('League created successfully!');
-            
-            // Show My Leagues section
             showSection('leagues');
         }
         
-        // Generate initial league table
         function generateInitialTable(teams) {
             return teams.map(team => ({
-                name: team,
-                played: 0,
-                wins: 0,
-                draws: 0,
-                losses: 0,
-                gf: 0,
-                ga: 0,
-                gd: 0,
-                points: 0,
-                form: []
+                name: team, played: 0, wins: 0, draws: 0, losses: 0,
+                gf: 0, ga: 0, gd: 0, points: 0, form: []
             }));
         }
         
-        // Generate round-robin fixtures (home and away)
-        function generateRoundRobinFixtures(teams) {
+        function generateFixtures(teams) {
             const fixtures = [];
             const teamCount = teams.length;
-            const rounds = teamCount - 1;
-            const matchesPerRound = teamCount / 2;
+            const totalWeeks = (teamCount - 1) * 2;
+            const matchesPerWeek = teamCount / 2;
+            let teamsCopy = [...teams];
             
-            // Create array of team indices
-            let teamIndexes = Array.from({length: teamCount}, (_, i) => i);
-            
-            // Generate first half (home games)
-            for (let round = 0; round < rounds; round++) {
-                for (let match = 0; match < matchesPerRound; match++) {
-                    const home = (round + match) % (teamCount - 1);
-                    let away = (teamCount - 1 - match + round) % (teamCount - 1);
-                    
-                    // Last team stays in the same place while the others rotate
-                    if (match === 0) {
-                        away = teamCount - 1;
-                    }
-                    
-                    const homeTeam = teams[teamIndexes[home]];
-                    const awayTeam = teams[teamIndexes[away]];
-                    
-                    // Skip if same team
-                    if (homeTeam === awayTeam) continue;
-                    
+            for (let week = 1; week <= totalWeeks / 2; week++) {
+                if (week > 1) {
+                    const first = teamsCopy[0];
+                    const last = teamsCopy[teamsCopy.length - 1];
+                    const middle = teamsCopy.slice(1, teamsCopy.length - 1);
+                    teamsCopy = [first, last, ...middle];
+                }
+                for (let i = 0; i < matchesPerWeek; i++) {
                     fixtures.push({
-                        id: Date.now() + round * 100 + match,
-                        home: homeTeam,
-                        away: awayTeam,
-                        homeScore: null,
-                        awayScore: null,
-                        week: round + 1,
-                        played: false
+                        id: Date.now() + Math.floor(Math.random() * 100000),
+                        home: teamsCopy[i],
+                        away: teamsCopy[teamCount - 1 - i],
+                        homeScore: null, awayScore: null, week: week
                     });
                 }
             }
             
-            // Generate second half (away games) by swapping home/away
-            const secondHalfFixtures = [];
-            fixtures.forEach(fixture => {
-                secondHalfFixtures.push({
-                    id: fixture.id + 1000,
-                    home: fixture.away,
-                    away: fixture.home,
-                    homeScore: null,
-                    awayScore: null,
-                    week: fixture.week + rounds,
-                    played: false
+            const firstHalf = [...fixtures];
+            firstHalf.forEach(f => {
+                fixtures.push({
+                    id: Date.now() + Math.floor(Math.random() * 100000),
+                    home: f.away, away: f.home,
+                    homeScore: null, awayScore: null, week: f.week + (totalWeeks / 2)
                 });
             });
             
-            return [...fixtures, ...secondHalfFixtures];
+            return fixtures;
         }
-        
-        // Show league details
+
+        // --- CORE SCORING LOGIC FIX ---
+        // Instead of incremental updates, we recalculate from the fixtures list
+        // This prevents data corruption or missed updates.
+        function recalculateTable(league) {
+            const table = generateInitialTable(league.teams);
+            
+            // Sort fixtures by week to ensure form is calculated in chronological order
+            const sortedFixtures = [...league.fixtures].sort((a, b) => a.week - b.week);
+
+            sortedFixtures.forEach(fix => {
+                if (fix.homeScore !== null && fix.awayScore !== null) {
+                    const home = table.find(t => t.name === fix.home);
+                    const away = table.find(t => t.name === fix.away);
+
+                    if (home && away) {
+                        home.played++;
+                        away.played++;
+                        home.gf += fix.homeScore;
+                        home.ga += fix.awayScore;
+                        away.gf += fix.awayScore;
+                        away.ga += fix.homeScore;
+
+                        if (fix.homeScore > fix.awayScore) {
+                            home.wins++; home.points += 3; home.form.push('W');
+                            away.losses++; away.form.push('L');
+                        } else if (fix.homeScore < fix.awayScore) {
+                            away.wins++; away.points += 3; away.form.push('W');
+                            home.losses++; home.form.push('L');
+                        } else {
+                            home.draws++; home.points += 1; home.form.push('D');
+                            away.draws++; away.points += 1; away.form.push('D');
+                        }
+                    }
+                }
+            });
+
+            table.forEach(t => {
+                t.gd = t.gf - t.ga;
+                t.form = t.form.slice(-5); // Keep last 5
+            });
+
+            return table;
+        }
+
+        function updateScore(input) {
+            const fixtureId = parseInt(input.dataset.fixtureId);
+            const teamType = input.dataset.team;
+            const val = input.value.trim();
+            const score = val === '' ? null : parseInt(val);
+            
+            const league = leagues.find(l => l.id === currentLeagueId);
+            if (!league) return;
+            
+            const fixture = league.fixtures.find(f => f.id === fixtureId);
+            if (!fixture) return;
+            
+            if (teamType === 'home') fixture.homeScore = score;
+            else fixture.awayScore = score;
+            
+            // Recalculate entire table from fixtures to ensure 100% accuracy
+            league.table = recalculateTable(league);
+            
+            saveLeagues();
+            populateLeagueTable(league.table);
+        }
+
         function showLeagueDetails(leagueId) {
             const league = leagues.find(l => l.id === leagueId);
             if (!league) return;
-            
             currentLeagueId = leagueId;
             currentWeek = 1;
-            
-            // Set league title
             document.getElementById('leagueTitle').textContent = league.name;
-            
-            // Calculate total weeks
-            const totalWeeks = Math.max(...league.fixtures.map(f => f.week));
-            document.getElementById('totalWeeks').textContent = totalWeeks;
-            
-            // Populate table
             populateLeagueTable(league.table);
-            
-            // Generate week selector
             generateWeekSelector(league);
-            
-            // Populate fixtures for current week
             populateFixtures(league.fixtures, currentWeek);
-            
-            // Show the league details section
             document.getElementById('league-details').style.display = 'block';
-            
-            // Hide all other sections
             document.querySelectorAll('.content-section').forEach(section => {
-                if (section.id !== 'league-details') {
-                    section.style.display = 'none';
-                }
+                if (section.id !== 'league-details') section.style.display = 'none';
             });
         }
         
-        // Generate week selector buttons
         function generateWeekSelector(league) {
-            const totalWeeks = Math.max(...league.fixtures.map(f => f.week));
+            const totalWeeks = (league.teams.length - 1) * 2;
             const container = document.getElementById('weekSelector');
             container.innerHTML = '';
-            
             for (let week = 1; week <= totalWeeks; week++) {
                 const button = document.createElement('button');
                 button.className = 'week-btn' + (week === currentWeek ? ' active' : '');
@@ -1404,46 +1420,47 @@ Wolverhampton Wanderers</textarea>
                     currentWeek = week;
                     document.getElementById('currentWeek').textContent = week;
                     populateFixtures(league.fixtures, week);
-                    
-                    // Update active button
-                    document.querySelectorAll('.week-btn').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
+                    document.querySelectorAll('.week-btn').forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                 };
                 container.appendChild(button);
             }
         }
         
-        // Populate league table
         function populateLeagueTable(tableData) {
             const tbody = document.querySelector('#leagueTable tbody');
             tbody.innerHTML = '';
             
-            // Sort table by points, GD, GF
-            tableData.sort((a, b) => {
+            const league = leagues.find(l => l.id === currentLeagueId);
+            if (league) {
+                league.table.forEach((team, index) => {
+                    previousRankings[team.name] = index + 1;
+                });
+            }
+            
+            const sorted = [...tableData].sort((a, b) => {
                 if (b.points !== a.points) return b.points - a.points;
                 if (b.gd !== a.gd) return b.gd - a.gd;
                 return b.gf - a.gf;
             });
             
-            tableData.forEach((team, index) => {
+            sorted.forEach((team, index) => {
                 const row = document.createElement('tr');
-                
-                // Generate form indicators
-                const formIndicators = team.form.map(result => {
-                    const cls = result === 'W' ? 'form-win' : result === 'D' ? 'form-draw' : 'form-loss';
-                    return `<span class="form-indicator ${cls}">${result}</span>`;
+                const formInd = team.form.map(r => {
+                    const cls = r === 'W' ? 'form-win' : r === 'D' ? 'form-draw' : 'form-loss';
+                    return `<span class="form-indicator ${cls}">${r}</span>`;
                 }).join('');
+                const emptyInd = Array(Math.max(0, 5 - team.form.length)).fill('<span class="form-indicator"></span>').join('');
                 
-                // Fill with empty indicators if less than 5
-                const emptyIndicators = Array(5 - team.form.length)
-                    .fill('<span class="form-indicator"></span>')
-                    .join('');
-                
+                let move = '<span class="movement movement-same">—</span>';
+                if (previousRankings[team.name]) {
+                    if (index + 1 < previousRankings[team.name]) move = '<span class="movement movement-up">▲</span>';
+                    else if (index + 1 > previousRankings[team.name]) move = '<span class="movement movement-down">▼</span>';
+                }
+
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${team.name}</td>
+                    <td>${move} ${team.name}</td>
                     <td>${team.played}</td>
                     <td>${team.wins}</td>
                     <td>${team.draws}</td>
@@ -1452,28 +1469,19 @@ Wolverhampton Wanderers</textarea>
                     <td>${team.ga}</td>
                     <td>${team.gd >= 0 ? '+' : ''}${team.gd}</td>
                     <td><strong>${team.points}</strong></td>
-                    <td>${formIndicators}${emptyIndicators}</td>
+                    <td>${formInd}${emptyInd}</td>
                 `;
                 tbody.appendChild(row);
             });
         }
         
-        // Populate fixtures for a specific week
         function populateFixtures(fixtures, week) {
             const container = document.getElementById('fixturesContainer');
             container.innerHTML = '';
-            
-            // Filter fixtures for this week
             const weekFixtures = fixtures.filter(f => f.week === week);
             
             if (weekFixtures.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-futbol"></i>
-                        <h3>No Fixtures This Week</h3>
-                        <p>Enjoy the break! Come back next matchweek for more action.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-futbol"></i><h3>No Fixtures</h3></div>`;
                 return;
             }
             
@@ -1482,10 +1490,7 @@ Wolverhampton Wanderers</textarea>
                 card.className = 'fixture-card';
                 card.innerHTML = `
                     <div class="fixture-teams">
-                        <div class="team">
-                            <div class="team-name">${fixture.home}</div>
-                            <div>(Home)</div>
-                        </div>
+                        <div class="team"><div class="team-name">${fixture.home}</div><div>(Home)</div></div>
                         <div class="vs-container">
                             <input type="number" min="0" class="score-input" value="${fixture.homeScore !== null ? fixture.homeScore : ''}" 
                                 data-fixture-id="${fixture.id}" data-team="home" onchange="updateScore(this)">
@@ -1493,358 +1498,152 @@ Wolverhampton Wanderers</textarea>
                             <input type="number" min="0" class="score-input" value="${fixture.awayScore !== null ? fixture.awayScore : ''}" 
                                 data-fixture-id="${fixture.id}" data-team="away" onchange="updateScore(this)">
                         </div>
-                        <div class="team">
-                            <div class="team-name">${fixture.away}</div>
-                            <div>(Away)</div>
-                        </div>
+                        <div class="team"><div class="team-name">${fixture.away}</div><div>(Away)</div></div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
-        
-        // Revert previous fixture result from table
-        function revertFixtureResult(league, fixture) {
-            const homeTeam = league.table.find(t => t.name === fixture.home);
-            const awayTeam = league.table.find(t => t.name === fixture.away);
-            
-            if (!homeTeam || !awayTeam) return;
-            
-            // Decrement played matches
-            homeTeam.played -= 1;
-            awayTeam.played -= 1;
-            
-            // Revert goals
-            homeTeam.gf -= fixture.homeScore;
-            homeTeam.ga -= fixture.awayScore;
-            homeTeam.gd = homeTeam.gf - homeTeam.ga;
-            
-            awayTeam.gf -= fixture.awayScore;
-            awayTeam.ga -= fixture.homeScore;
-            awayTeam.gd = awayTeam.gf - awayTeam.ga;
-            
-            // Revert points and form
-            if (fixture.homeScore > fixture.awayScore) {
-                // Home win
-                homeTeam.wins -= 1;
-                homeTeam.points -= 3;
-                homeTeam.form.pop();
-                
-                awayTeam.losses -= 1;
-                awayTeam.form.pop();
-            } else if (fixture.homeScore < fixture.awayScore) {
-                // Away win
-                awayTeam.wins -= 1;
-                awayTeam.points -= 3;
-                awayTeam.form.pop();
-                
-                homeTeam.losses -= 1;
-                homeTeam.form.pop();
-            } else {
-                // Draw
-                homeTeam.draws -= 1;
-                homeTeam.points -= 1;
-                homeTeam.form.pop();
-                
-                awayTeam.draws -= 1;
-                awayTeam.points -= 1;
-                awayTeam.form.pop();
-            }
-        }
-        
-        // Update score and recalculate table
-        function updateScore(input) {
-            const fixtureId = parseInt(input.dataset.fixtureId);
-            const teamType = input.dataset.team;
-            const score = input.value !== '' ? parseInt(input.value) : null;
-            
-            const league = leagues.find(l => l.id === currentLeagueId);
-            if (!league) return;
-            
-            // Find the fixture by ID
-            const fixture = league.fixtures.find(f => f.id === fixtureId);
-            if (!fixture) {
-                console.error('Fixture not found:', fixtureId);
-                return;
-            }
-            
-            // Check if we need to revert previous result
-            const hadPreviousResult = fixture.homeScore !== null && fixture.awayScore !== null;
-            
-            // Revert previous result if it exists
-            if (hadPreviousResult) {
-                revertFixtureResult(league, fixture);
-            }
-            
-            // Update score
-            if (teamType === 'home') {
-                fixture.homeScore = score;
-            } else {
-                fixture.awayScore = score;
-            }
-            
-            // Mark as played if both scores are set
-            fixture.played = fixture.homeScore !== null && fixture.awayScore !== null;
-            
-            // Apply new result if both scores are set
-            if (fixture.played) {
-                updateLeagueTable(league, fixture);
-            }
-            
-            // Save changes
-            saveLeagues();
-            
-            // Update the table display
-            populateLeagueTable(league.table);
-        }
-        
-        // Update league table with fixture result
-        function updateLeagueTable(league, fixture) {
-            const homeTeam = league.table.find(t => t.name === fixture.home);
-            const awayTeam = league.table.find(t => t.name === fixture.away);
-            
-            if (!homeTeam || !awayTeam) return;
-            
-            // Update played matches
-            homeTeam.played += 1;
-            awayTeam.played += 1;
-            
-            // Update goals
-            homeTeam.gf += fixture.homeScore;
-            homeTeam.ga += fixture.awayScore;
-            homeTeam.gd = homeTeam.gf - homeTeam.ga;
-            
-            awayTeam.gf += fixture.awayScore;
-            awayTeam.ga += fixture.homeScore;
-            awayTeam.gd = awayTeam.gf - awayTeam.ga;
-            
-            // Update points and form
-            if (fixture.homeScore > fixture.awayScore) {
-                // Home win
-                homeTeam.wins += 1;
-                homeTeam.points += 3;
-                homeTeam.form.push('W');
-                
-                awayTeam.losses += 1;
-                awayTeam.form.push('L');
-            } else if (fixture.homeScore < fixture.awayScore) {
-                // Away win
-                awayTeam.wins += 1;
-                awayTeam.points += 3;
-                awayTeam.form.push('W');
-                
-                homeTeam.losses += 1;
-                homeTeam.form.push('L');
-            } else {
-                // Draw
-                homeTeam.draws += 1;
-                homeTeam.points += 1;
-                homeTeam.form.push('D');
-                
-                awayTeam.draws += 1;
-                awayTeam.points += 1;
-                awayTeam.form.push('D');
-            }
-            
-            // Keep only last 5 form results
-            if (homeTeam.form.length > 5) homeTeam.form.shift();
-            if (awayTeam.form.length > 5) awayTeam.form.shift();
-        }
-        
-        // Render leagues in My Leagues section
-        function renderLeagues() {
-            const container = document.getElementById('leaguesContainer');
-            container.innerHTML = '';
-            
-            if (leagues.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-trophy"></i>
-                        <h3>No Leagues Created Yet</h3>
-                        <p>Create your first league to get started. Build your dream competition with custom teams and track results in real-time.</p>
-                        <button class="btn btn-primary" onclick="showSection('create')">
-                            <i class="fas fa-plus-circle"></i> Create League
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-            
-            leagues.forEach(league => {
-                // Calculate some stats for display
-                const totalFixtures = league.fixtures.length;
-                const completedFixtures = league.fixtures.filter(f => f.played).length;
-                const completionPercentage = totalFixtures > 0 ? Math.round((completedFixtures / totalFixtures) * 100) : 0;
-                
-                const card = document.createElement('div');
-                card.className = 'league-card';
-                card.innerHTML = `
-                    <h3>${league.name} <span class="status status-ongoing">${completionPercentage}% Complete</span></h3>
-                    <div class="league-details">
-                        <p><i class="fas fa-shield-alt"></i> ${league.teams.length} teams</p>
-                        <p><i class="fas fa-calendar"></i> ${totalFixtures} fixtures total</p>
-                        <p><i class="fas fa-check-circle"></i> ${completedFixtures} completed</p>
-                        <p><i class="fas fa-random"></i> Distribution: ${league.distribution === 'custom' ? 'Custom' : 'Random'}</p>
-                    </div>
-                    <div class="league-actions">
-                        <button class="action-btn" onclick="showLeagueDetails(${league.id})">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-        
-        // Delete a league
-        function deleteLeague(leagueId) {
-            if (confirm('Are you sure you want to delete this league? All data will be permanently lost.')) {
-                leagues = leagues.filter(league => league.id !== leagueId);
-                saveLeagues();
-                renderLeagues();
-                showNotification('League deleted successfully');
-            }
-        }
-        
-        // Delete the current league from details view
-        function deleteCurrentLeague() {
-            if (currentLeagueId && confirm('Are you sure you want to delete this league? All data will be permanently lost.')) {
-                leagues = leagues.filter(league => league.id !== currentLeagueId);
-                saveLeagues();
-                showNotification('League deleted successfully');
-                showSection('leagues');
-            }
-        }
-        
-        // Show edit teams modal
-        function showEditTeamsModal(leagueId) {
-            // If called from league details, use currentLeagueId
-            const id = leagueId || currentLeagueId;
-            if (!id) return;
-            
-            const league = leagues.find(l => l.id === id);
-            if (!league) return;
-            
-            // Populate textarea with team names
-            document.getElementById('editTeamNames').value = league.teams.join('\n');
-            
-            // Show the modal
-            document.getElementById('editTeamsModal').style.display = 'flex';
-        }
-        
-        // Save team edits
-        function saveTeamEdits() {
-            if (!currentLeagueId) return;
-            
-            const league = leagues.find(l => l.id === currentLeagueId);
-            if (!league) return;
-            
-            const teamNames = document.getElementById('editTeamNames').value.split('\n')
-                .map(name => name.trim())
-                .filter(name => name.length > 0);
-            
-            if (teamNames.length < 4) {
-                showNotification('A league needs at least 4 teams', 'error');
-                return;
-            }
-            
-            // Update league teams
-            league.teams = teamNames;
-            
-            // Reset table and fixtures
-            league.table = generateInitialTable(teamNames);
-            league.fixtures = generateRoundRobinFixtures(teamNames);
-            
-            // Save changes
-            saveLeagues();
-            
-            // Update UI
-            const totalWeeks = Math.max(...league.fixtures.map(f => f.week));
-            document.getElementById('totalWeeks').textContent = totalWeeks;
-            populateLeagueTable(league.table);
-            generateWeekSelector(league);
-            populateFixtures(league.fixtures, currentWeek);
-            
-            // Close modal
-            closeModal('editTeamsModal');
-            
-            showNotification('Teams updated successfully!');
-        }
-        
-        // Show backup modal
+
+        // --- BACKUP & RESTORE UPGRADES ---
         function showBackupModal() {
             const backupData = JSON.stringify(leagues, null, 2);
             document.getElementById('backupData').value = backupData;
             document.getElementById('backupModal').style.display = 'flex';
         }
-        
-        // Copy backup data to clipboard
+
+        function downloadBackupFile() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(leagues));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "monarch_league_backup_" + new Date().toLocaleDateString() + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showNotification('Backup file downloaded!');
+        }
+
+        function restoreData() {
+            const fileInput = document.getElementById('uploadFile');
+            const textArea = document.getElementById('restoreData');
+            
+            const handleRestore = (jsonString) => {
+                try {
+                    const parsedData = JSON.parse(jsonString);
+                    if (!Array.isArray(parsedData)) throw new Error('Invalid format');
+                    leagues = parsedData;
+                    saveLeagues();
+                    renderLeagues();
+                    showNotification('Data restored successfully!');
+                    closeModal('backupModal');
+                    if (currentLeagueId) showLeagueDetails(currentLeagueId);
+                } catch (e) {
+                    showNotification('Invalid backup data', 'error');
+                }
+            };
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => handleRestore(e.target.result);
+                reader.readAsText(fileInput.files[0]);
+            } else if (textArea.value.trim() !== '') {
+                handleRestore(textArea.value.trim());
+            } else {
+                showNotification('Please select a file or paste data', 'error');
+            }
+        }
+
         function copyBackupData() {
             const backupData = document.getElementById('backupData');
             backupData.select();
             document.execCommand('copy');
-            showNotification('Backup data copied to clipboard!');
+            showNotification('Copied to clipboard!');
         }
-        
-        // Restore data from backup
-        function restoreData() {
-            const restoreData = document.getElementById('restoreData').value;
-            if (!restoreData) {
-                showNotification('Please enter backup data', 'error');
+
+        function renderLeagues() {
+            const container = document.getElementById('leaguesContainer');
+            container.innerHTML = '';
+            if (leagues.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-trophy"></i><h3>No Leagues</h3><button class="btn btn-primary" onclick="showSection('create')">Create League</button></div>`;
                 return;
             }
-            
-            try {
-                const parsedData = JSON.parse(restoreData);
-                if (!Array.isArray(parsedData)) {
-                    throw new Error('Invalid data format');
-                }
-                
-                leagues = parsedData;
-                saveLeagues();
-                renderLeagues();
-                showNotification('Data restored successfully!');
-                closeModal('backupModal');
-            } catch (error) {
-                showNotification('Invalid backup data format', 'error');
-                console.error(error);
-            }
-        }
-        
-        // Close modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // Update team names preview
-        function updateTeamNamesPreview() {
-            const teamCount = parseInt(document.getElementById('teams').value);
-            const teamNames = document.getElementById('teamNames').value.split('\n');
-            const previewContainer = document.getElementById('teamNamesPreview');
-            
-            // Clear existing preview
-            previewContainer.innerHTML = '';
-            
-            // Add team placeholders
-            for (let i = 0; i < teamCount; i++) {
-                const teamDiv = document.createElement('div');
-                teamDiv.textContent = teamNames[i] || `Team ${i+1}`;
-                previewContainer.appendChild(teamDiv);
-            }
-        }
-        
-        // Select distribution type
-        function selectDistribution(type) {
-            document.querySelectorAll('.distribution-option').forEach(option => {
-                option.classList.remove('selected');
+            leagues.forEach(league => {
+                const card = document.createElement('div');
+                card.className = 'league-card';
+                card.innerHTML = `
+                    <h3>${league.name} <span class="status status-ongoing">Active</span></h3>
+                    <div class="league-details">
+                        <p><i class="fas fa-shield-alt"></i> ${league.teams.length} teams</p>
+                        <p><i class="fas fa-calendar"></i> Season: 2023-2024</p>
+                    </div>
+                    <div class="league-actions">
+                        <button class="action-btn" onclick="showLeagueDetails(${league.id})"><i class="fas fa-eye"></i> View</button>
+                        <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
             });
-            
+        }
+        
+        function deleteLeague(leagueId) {
+            if (confirm('Delete this league permanently?')) {
+                leagues = leagues.filter(l => l.id !== leagueId);
+                saveLeagues(); renderLeagues();
+                showNotification('League deleted');
+            }
+        }
+        
+        function deleteCurrentLeague() {
+            if (currentLeagueId && confirm('Delete this league?')) {
+                leagues = leagues.filter(l => l.id !== currentLeagueId);
+                saveLeagues(); showNotification('League deleted'); showSection('leagues');
+            }
+        }
+        
+        function showEditTeamsModal(leagueId) {
+            const id = leagueId || currentLeagueId;
+            const league = leagues.find(l => l.id === id);
+            if (!league) return;
+            document.getElementById('editTeamNames').value = league.teams.join('\n');
+            document.getElementById('editTeamsModal').style.display = 'flex';
+        }
+        
+        function saveTeamEdits() {
+            const league = leagues.find(l => l.id === currentLeagueId);
+            if (!league) return;
+            const newNames = document.getElementById('editTeamNames').value.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+            if (newNames.length !== league.teams.length) {
+                showNotification('Cannot change team count', 'error'); return;
+            }
+            const map = {};
+            league.teams.forEach((old, i) => map[old] = newNames[i]);
+            league.teams = newNames;
+            league.fixtures.forEach(f => {
+                f.home = map[f.home]; f.away = map[f.away];
+            });
+            league.table = recalculateTable(league);
+            saveLeagues(); populateLeagueTable(league.table); populateFixtures(league.fixtures, currentWeek);
+            closeModal('editTeamsModal'); showNotification('Updated successfully');
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function updateTeamNamesPreview() {
+            const count = parseInt(document.getElementById('teams').value);
+            const names = document.getElementById('teamNames').value.split('\n');
+            const container = document.getElementById('randomTeamsPreview');
+            if (container) {
+                container.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    const d = document.createElement('div'); d.textContent = names[i] || `Team ${i+1}`;
+                    container.appendChild(d);
+                }
+            }
+        }
+        
+        function selectDistribution(type) {
+            document.querySelectorAll('.distribution-option').forEach(o => o.classList.remove('selected'));
             if (type === 'custom') {
                 document.getElementById('custom-distribution').classList.add('selected');
                 document.getElementById('custom-team-section').classList.remove('hidden');
@@ -1857,99 +1656,42 @@ Wolverhampton Wanderers</textarea>
             }
         }
         
-        // Shuffle the team names
         function shuffleTeamNames() {
-            const teamCount = parseInt(document.getElementById('teams').value);
-            let teams = document.getElementById('teamNames').value.split('\n')
-                .map(line => line.trim())
-                .filter(line => line.length > 0);
-            
-            // Pad if necessary
-            while (teams.length < teamCount) {
-                teams.push(`Team ${teams.length + 1}`);
-            }
-            
-            // Take only the required number of teams
-            if (teams.length > teamCount) {
-                teams = teams.slice(0, teamCount);
-            }
-            
-            // Shuffle the teams
+            const count = parseInt(document.getElementById('teams').value);
+            let teams = document.getElementById('teamNames').value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            while (teams.length < count) teams.push(`Team ${teams.length + 1}`);
+            teams = teams.slice(0, count);
             for (let i = teams.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [teams[i], teams[j]] = [teams[j], teams[i]];
             }
-            
-            const previewContainer = document.getElementById('randomTeamsPreview');
-            previewContainer.innerHTML = '';
-            teams.forEach(team => {
-                const div = document.createElement('div');
-                div.textContent = team;
-                previewContainer.appendChild(div);
+            const container = document.getElementById('randomTeamsPreview');
+            container.innerHTML = '';
+            teams.forEach(t => {
+                const d = document.createElement('div'); d.textContent = t; container.appendChild(d);
             });
         }
         
-        // Show notification
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${message}`;
-            notification.className = `notification ${type === 'error' ? 'error' : ''} show`;
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+        function showNotification(msg, type = 'success') {
+            const n = document.getElementById('notification');
+            n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${msg}`;
+            n.className = `notification ${type === 'error' ? 'error' : ''} show`;
+            setTimeout(() => n.classList.remove('show'), 3000);
         }
         
-        // Tab functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load leagues from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
             loadLeagues();
-            
-            // Tab switching
-            document.querySelectorAll('.tab-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    
-                    // Remove active class from all buttons
-                    document.querySelectorAll('.tab-btn').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    
-                    // Add active class to clicked button
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    
-                    // Hide all tab contents
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    // Show selected tab content
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(`${tab}-tab`).classList.add('active');
                 });
             });
-            
-            // Initialize the preview
             updateTeamNamesPreview();
-            
-            // Add sample data for demonstration if no leagues exist
-            if (leagues.length === 0) {
-                leagues = [
-                    {
-                        id: 1,
-                        name: "Premier League",
-                        teams: ["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"],
-                        table: generateInitialTable(["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"]),
-                        fixtures: generateRoundRobinFixtures(["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest", "Sheffield United", "Tottenham Hotspur", "West Ham United", "Wolverhampton Wanderers"]),
-                        distribution: "custom"
-                    }
-                ];
-                saveLeagues();
-            }
-            
-            // Initialize the league table for sample data
-            if (leagues.length > 0) {
-                populateLeagueTable(leagues[0].table);
-            }
+            if (leagues.length > 0) renderLeagues();
         });
     </script>
 </body>
