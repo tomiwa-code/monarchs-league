@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monarch League Manager</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
     <style>
+        /* ── reset & base ── */
         * {
             margin: 0;
             padding: 0;
@@ -27,6 +28,7 @@
             margin: 0 auto;
         }
 
+        /* ── header ── */
         header {
             text-align: center;
             padding: 25px 0;
@@ -84,13 +86,63 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        nav a:hover, nav a.active {
+        nav a:hover,
+        nav a.active {
             background: linear-gradient(to right, #ffcc00, #ff6600);
             color: #1a2a6c;
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
         }
 
+        /* ── sections ── */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            padding: 30px 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            color: #ffcc00;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #ffcc00, #ff6600);
+            border-radius: 2px;
+        }
+
+        .section-title i {
+            color: #ffcc00;
+        }
+
+        /* ── hero ── */
         .hero {
             text-align: center;
             padding: 50px 20px;
@@ -101,7 +153,7 @@
         .hero h2 {
             font-size: 2.5rem;
             margin-bottom: 40px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(to right, #fff, #ffcc00);
             -webkit-background-clip: text;
@@ -144,7 +196,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             z-index: -1;
             transform: scale(0, 1);
             transform-origin: top right;
@@ -181,48 +233,7 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s ease;
-            padding: 30px 0;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-title {
-            font-size: 2rem;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            justify-content: center;
-            color: #ffcc00;
-            text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            position: relative;
-            padding-bottom: 15px;
-        }
-
-        .section-title::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(to right, #ffcc00, #ff6600);
-            border-radius: 2px;
-        }
-
-        .section-title i {
-            color: #ffcc00;
-        }
-
-        /* Create League Form */
+        /* ── forms ── */
         .form-container {
             max-width: 600px;
             margin: 0 auto;
@@ -244,7 +255,9 @@
             color: #ffcc00;
         }
 
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 14px 18px;
             border-radius: 8px;
@@ -255,7 +268,9 @@
             transition: all 0.3s ease;
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             border-color: #ffcc00;
             outline: none;
             box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.2);
@@ -273,7 +288,11 @@
             font-style: italic;
         }
 
-        /* Distribution Radio Buttons */
+        .hidden {
+            display: none;
+        }
+
+        /* ── distribution ── */
         .distribution-options {
             display: flex;
             gap: 30px;
@@ -318,11 +337,7 @@
             font-size: 0.9rem;
         }
 
-        .hidden {
-            display: none;
-        }
-
-        /* My Leagues */
+        /* ── league cards ── */
         .leagues-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -440,7 +455,66 @@
             background: rgba(244, 67, 54, 0.3);
         }
 
-        /* League Table */
+        /* ── sort control ── */
+        .sort-control {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto 25px auto;
+            flex-wrap: wrap;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .sort-control label {
+            margin: 0;
+            font-weight: 600;
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .sort-control label i {
+            color: #ffcc00;
+        }
+
+        .sort-select {
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 160px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffcc00' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        .sort-select:hover,
+        .sort-select:focus {
+            border-color: #ffcc00;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.15);
+        }
+
+        .sort-select option {
+            background: #1a3a5f;
+            color: #fff;
+        }
+
+        /* ── table ── */
         .table-container {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
@@ -478,7 +552,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Movement Indicators */
         .movement {
             display: inline-block;
             font-weight: bold;
@@ -491,16 +564,38 @@
         .movement-up {
             color: #4CAF50;
         }
-
         .movement-down {
             color: #F44336;
         }
-
         .movement-same {
             color: #aaa;
         }
 
-        /* Fixtures Styles */
+        .form-indicator {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin: 0 2px;
+            background-color: #777;
+        }
+
+        .form-win {
+            background-color: #4CAF50;
+        }
+        .form-draw {
+            background-color: #FFC107;
+            color: #333;
+        }
+        .form-loss {
+            background-color: #F44336;
+        }
+
+        /* ── fixtures ── */
         .fixtures-container {
             max-width: 800px;
             margin: 30px auto;
@@ -575,34 +670,7 @@
             font-size: 1.2rem;
         }
 
-        /* Form indicators */
-        .form-indicator {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 24px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin: 0 2px;
-            background-color: #777; /* Default gray color */
-        }
-
-        .form-win {
-            background-color: #4CAF50;
-        }
-
-        .form-draw {
-            background-color: #FFC107;
-            color: #333;
-        }
-
-        .form-loss {
-            background-color: #F44336;
-        }
-
-        /* Tab Navigation */
+        /* ── tabs ── */
         .tabs {
             display: flex;
             justify-content: center;
@@ -623,7 +691,8 @@
             transition: all 0.3s ease;
         }
 
-        .tab-btn.active, .tab-btn:hover {
+        .tab-btn.active,
+        .tab-btn:hover {
             background: #ffcc00;
             color: #1a2a6c;
         }
@@ -636,54 +705,54 @@
             display: block;
         }
 
-        /* Edit Teams */
-        .teams-edit-container {
-            max-width: 800px;
-            margin: 30px auto;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .teams-list {
-            margin-top: 20px;
-        }
-
-        .team-item {
+        /* ── week selector ── */
+        .week-selector {
             display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .team-item input {
-            flex: 1;
-            padding: 12px 15px;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
+        .week-btn {
+            padding: 8px 15px;
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            border-radius: 30px;
-            text-decoration: none;
-            margin-bottom: 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        .back-btn:hover {
-            background: rgba(255, 204, 0, 0.3);
-            transform: translateY(-2px);
+        .week-btn.active,
+        .week-btn:hover {
+            background: #ffcc00;
+            color: #1a2a6c;
         }
 
-        /* Team Names Box */
+        .fixture-counter {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-buttons .btn {
+            min-width: auto;
+            padding: 12px 25px;
+        }
+
+        /* ── team names box ── */
         .team-names-box {
             margin-top: 20px;
             background: rgba(0, 0, 0, 0.3);
@@ -715,7 +784,7 @@
             border-bottom: none;
         }
 
-        /* Modal */
+        /* ── modal ── */
         .modal {
             display: none;
             position: fixed;
@@ -775,7 +844,7 @@
             color: #ff6600;
         }
 
-        /* Notification */
+        /* ── notification ── */
         .notification {
             position: fixed;
             top: 20px;
@@ -784,7 +853,7 @@
             background: #4CAF50;
             color: white;
             border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
             transform: translateX(200%);
             transition: transform 0.3s ease;
@@ -793,77 +862,37 @@
             gap: 10px;
             font-weight: 600;
         }
-        
+
         .notification.show {
             transform: translateX(0);
         }
-        
+
         .notification.error {
             background: #F44336;
         }
-        
-        /* Fixture Week Selector */
-        .week-selector {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .week-btn {
-            padding: 8px 15px;
+
+        /* ── back button ── */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
+            border-radius: 30px;
+            text-decoration: none;
+            margin-bottom: 20px;
             transition: all 0.3s ease;
             font-weight: 600;
-        }
-        
-        .week-btn.active, .week-btn:hover {
-            background: #ffcc00;
-            color: #1a2a6c;
-        }
-        
-        .fixture-counter {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #ffcc00;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .action-buttons .btn {
-            min-width: auto;
-            padding: 12px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #aaa;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.9rem;
+        .back-btn:hover {
+            background: rgba(255, 204, 0, 0.3);
+            transform: translateY(-2px);
         }
 
-        footer p {
-            margin: 5px 0;
-        }
-
-        /* Empty state */
+        /* ── empty state ── */
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -893,46 +922,60 @@
             line-height: 1.6;
         }
 
-        /* Responsive */
+        /* ── footer ── */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #aaa;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        /* ── responsive ── */
         @media (max-width: 768px) {
             nav ul {
                 gap: 10px;
             }
-            
+
             nav a {
                 padding: 10px 15px;
                 font-size: 0.9rem;
             }
-            
+
             .btn {
                 min-width: 100%;
                 padding: 16px;
             }
-            
+
             .fixture-card {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .fixture-teams {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             .vs-container {
                 margin: 10px 0;
                 flex-direction: column;
             }
-            
+
             .team {
                 width: 100%;
             }
-            
+
             .distribution-options {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             table {
                 min-width: 100%;
             }
@@ -948,15 +991,31 @@
             .section-title {
                 font-size: 1.6rem;
             }
+
+            .sort-control {
+                justify-content: center;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sort-control label {
+                justify-content: center;
+            }
+
+            .sort-select {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Notification -->
         <div class="notification" id="notification">
             <i class="fas fa-check-circle"></i> League created successfully!
         </div>
-        
+
+        <!-- Header -->
         <header>
             <div class="logo">
                 <h1>Monarch League Manager</h1>
@@ -970,6 +1029,7 @@
             </nav>
         </header>
 
+        <!-- HOME -->
         <section id="home" class="content-section">
             <div class="hero">
                 <h2>Manage Your Football Leagues Like Royalty</h2>
@@ -983,42 +1043,43 @@
                 </div>
             </div>
 
-            <div style="max-width: 800px; margin: 50px auto; text-align: center;">
-                <h3 style="color: #ffcc00; margin-bottom: 20px; font-family: 'Montserrat', sans-serif;">Why Monarch League Manager?</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                    <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px;">
-                        <i class="fas fa-trophy" style="font-size: 2.5rem; color: #ffcc00; margin-bottom: 15px;"></i>
-                        <h4 style="margin-bottom: 10px;">Professional Management</h4>
-                        <p style="color: #aaa;">Manage leagues with real-time updates and comprehensive statistics</p>
+            <div style="max-width:800px;margin:50px auto;text-align:center;">
+                <h3 style="color:#ffcc00;margin-bottom:20px;font-family:'Montserrat',sans-serif;">Why Monarch League Manager?</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;">
+                    <div style="background:rgba(0,0,0,0.2);padding:20px;border-radius:10px;">
+                        <i class="fas fa-trophy" style="font-size:2.5rem;color:#ffcc00;margin-bottom:15px;"></i>
+                        <h4 style="margin-bottom:10px;">Professional Management</h4>
+                        <p style="color:#aaa;">Manage leagues with real-time updates and comprehensive statistics</p>
                     </div>
-                    <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px;">
-                        <i class="fas fa-cogs" style="font-size: 2.5rem; color: #ffcc00; margin-bottom: 15px;"></i>
-                        <h4 style="margin-bottom: 10px;">Easy Customization</h4>
-                        <p style="color: #aaa;">Create leagues with custom team names, sizes, and distribution</p>
+                    <div style="background:rgba(0,0,0,0.2);padding:20px;border-radius:10px;">
+                        <i class="fas fa-cogs" style="font-size:2.5rem;color:#ffcc00;margin-bottom:15px;"></i>
+                        <h4 style="margin-bottom:10px;">Easy Customization</h4>
+                        <p style="color:#aaa;">Create leagues with custom team names, sizes, and distribution</p>
                     </div>
-                    <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px;">
-                        <i class="fas fa-mobile-alt" style="font-size: 2.5rem; color: #ffcc00; margin-bottom: 15px;"></i>
-                        <h4 style="margin-bottom: 10px;">Mobile Friendly</h4>
-                        <p style="color: #aaa;">Access your leagues from any device with a responsive design</p>
+                    <div style="background:rgba(0,0,0,0.2);padding:20px;border-radius:10px;">
+                        <i class="fas fa-mobile-alt" style="font-size:2.5rem;color:#ffcc00;margin-bottom:15px;"></i>
+                        <h4 style="margin-bottom:10px;">Mobile Friendly</h4>
+                        <p style="color:#aaa;">Access your leagues from any device with a responsive design</p>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- CREATE -->
         <section id="create" class="content-section" style="display:none;">
             <h2 class="section-title"><i class="fas fa-plus-circle"></i> Create New League</h2>
-            
+
             <div class="form-container">
                 <div class="form-group">
                     <label for="leagueName">League Name</label>
-                    <input type="text" id="leagueName" placeholder="Enter league name" value="Premier League">
+                    <input type="text" id="leagueName" placeholder="Enter league name" value="Premier League" />
                 </div>
-                
+
                 <div class="form-group">
                     <label for="teams">Number of Teams</label>
-                    <input type="number" id="teams" min="4" max="24" value="20" onchange="updateTeamNamesPreview()">
+                    <input type="number" id="teams" min="4" max="24" value="20" onchange="updateTeamNamesPreview()" />
                 </div>
-                
+
                 <div class="form-group">
                     <label>Team Distribution</label>
                     <div class="distribution-options">
@@ -1034,7 +1095,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div id="custom-team-section">
                     <div class="form-group">
                         <label for="teamNames">Team Names (one per line)</label>
@@ -1061,40 +1122,51 @@ Wolverhampton Wanderers</textarea>
                         <p class="info-text">Enter one team name per line. The number of teams must match the number above.</p>
                     </div>
                 </div>
-                
+
                 <div id="random-team-section" class="hidden">
                     <div class="form-group">
                         <label>Shuffled Teams</label>
                         <div class="team-names-box">
-                            <div class="team-list" id="randomTeamsPreview">
-                                </div>
+                            <div class="team-list" id="randomTeamsPreview"></div>
                         </div>
-                        <button class="btn btn-secondary" style="width:100%; margin-top: 15px;" onclick="shuffleTeamNames()">
+                        <button class="btn btn-secondary" style="width:100%;margin-top:15px;" onclick="shuffleTeamNames()">
                             <i class="fas fa-sync-alt"></i> Shuffle Again
                         </button>
                     </div>
                 </div>
-                
-                <button class="btn btn-primary" style="width:100%; margin-top: 20px;" onclick="createLeague()">
+
+                <button class="btn btn-primary" style="width:100%;margin-top:20px;" onclick="createLeague()">
                     <i class="fas fa-check-circle"></i> Create League
                 </button>
             </div>
         </section>
 
+        <!-- MY LEAGUES -->
         <section id="leagues" class="content-section" style="display:none;">
             <h2 class="section-title"><i class="fas fa-list"></i> My Leagues</h2>
-            
-            <div class="leagues-container" id="leaguesContainer">
-                </div>
+
+            <!-- Sort Control -->
+            <div class="sort-control">
+                <label><i class="fas fa-sort"></i> Sort by</label>
+                <select class="sort-select" id="sortLeagues" onchange="renderLeagues()">
+                    <option value="newest">⬇ Newest</option>
+                    <option value="oldest">⬆ Oldest</option>
+                    <option value="name-asc">A → Z</option>
+                    <option value="name-desc">Z → A</option>
+                </select>
+            </div>
+
+            <div class="leagues-container" id="leaguesContainer"></div>
         </section>
 
+        <!-- LEAGUE DETAILS -->
         <section id="league-details" class="content-section" style="display:none;">
             <a href="#" class="back-btn" onclick="showSection('leagues')">
                 <i class="fas fa-arrow-left"></i> Back to My Leagues
             </a>
-            
+
             <h2 class="section-title"><i class="fas fa-trophy"></i> <span id="leagueTitle">Premier League</span></h2>
-            
+
             <div class="action-buttons">
                 <button class="btn btn-secondary" onclick="showEditTeamsModal()">
                     <i class="fas fa-edit"></i> Edit Teams
@@ -1102,16 +1174,16 @@ Wolverhampton Wanderers</textarea>
                 <button class="btn btn-secondary" onclick="showBackupModal()">
                     <i class="fas fa-database"></i> Backup Data
                 </button>
-                <button class="btn btn-secondary" onclick="deleteCurrentLeague()" style="background: rgba(244, 67, 54, 0.3);">
+                <button class="btn btn-secondary" onclick="deleteCurrentLeague()" style="background:rgba(244,67,54,0.3);">
                     <i class="fas fa-trash"></i> Delete League
                 </button>
             </div>
-            
+
             <div class="tabs">
                 <button class="tab-btn active" data-tab="table">Table</button>
                 <button class="tab-btn" data-tab="fixtures">Fixtures</button>
             </div>
-            
+
             <div class="tab-content active" id="table-tab">
                 <div class="table-container">
                     <table id="leagueTable">
@@ -1130,23 +1202,21 @@ Wolverhampton Wanderers</textarea>
                                 <th>Form</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
-            
+
             <div class="tab-content" id="fixtures-tab">
                 <div class="fixture-counter">
                     Matchweek <span id="currentWeek">1</span> of 38
                 </div>
-                <div class="week-selector" id="weekSelector">
-                    </div>
-                <div class="fixtures-container" id="fixturesContainer">
-                    </div>
+                <div class="week-selector" id="weekSelector"></div>
+                <div class="fixtures-container" id="fixturesContainer"></div>
             </div>
         </section>
 
+        <!-- MODALS -->
         <div class="modal" id="editTeamsModal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1155,39 +1225,39 @@ Wolverhampton Wanderers</textarea>
                 </div>
                 <div class="form-group">
                     <label for="editTeamNames">Team Names (one per line)</label>
-                    <textarea id="editTeamNames" placeholder="Enter team names, one per line" style="min-height: 300px;"></textarea>
+                    <textarea id="editTeamNames" placeholder="Enter team names, one per line" style="min-height:300px;"></textarea>
                 </div>
-                <button class="btn btn-primary" style="width:100%; margin-top: 15px;" onclick="saveTeamEdits()">
+                <button class="btn btn-primary" style="width:100%;margin-top:15px;" onclick="saveTeamEdits()">
                     <i class="fas fa-save"></i> Save Changes
                 </button>
             </div>
         </div>
-        
+
         <div class="modal" id="backupModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title"><i class="fas fa-database"></i> Backup & Restore</h3>
+                    <h3 class="modal-title"><i class="fas fa-database"></i> Backup &amp; Restore</h3>
                     <button class="close-modal" onclick="closeModal('backupModal')">&times;</button>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>Download/Copy Backup</label>
-                    <textarea id="backupData" readonly style="min-height: 80px; background: rgba(0, 0, 0, 0.4);"></textarea>
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button class="btn btn-secondary" style="flex: 1; min-width: auto;" onclick="copyBackupData()">
+                    <label>Download / Copy Backup</label>
+                    <textarea id="backupData" readonly style="min-height:80px;background:rgba(0,0,0,0.4);"></textarea>
+                    <div style="display:flex;gap:10px;margin-top:10px;">
+                        <button class="btn btn-secondary" style="flex:1;min-width:auto;" onclick="copyBackupData()">
                             <i class="fas fa-copy"></i> Copy
                         </button>
-                        <button class="btn btn-primary" style="flex: 1; min-width: auto;" onclick="downloadBackupFile()">
+                        <button class="btn btn-primary" style="flex:1;min-width:auto;" onclick="downloadBackupFile()">
                             <i class="fas fa-download"></i> Download .json
                         </button>
                     </div>
                 </div>
-                
-                <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                    <label>Upload/Restore Data</label>
-                    <input type="file" id="uploadFile" accept=".json" style="margin-bottom: 10px; padding: 10px;">
-                    <textarea id="restoreData" placeholder="Or paste your backup data here" style="min-height: 80px;"></textarea>
-                    <button class="btn btn-secondary" style="width:100%; margin-top: 10px;" onclick="restoreData()">
+
+                <div class="form-group" style="border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;">
+                    <label>Upload / Restore Data</label>
+                    <input type="file" id="uploadFile" accept=".json" style="margin-bottom:10px;padding:10px;" />
+                    <textarea id="restoreData" placeholder="Or paste your backup data here" style="min-height:80px;"></textarea>
+                    <button class="btn btn-secondary" style="width:100%;margin-top:10px;" onclick="restoreData()">
                         <i class="fas fa-history"></i> Restore Data
                     </button>
                 </div>
@@ -1201,171 +1271,190 @@ Wolverhampton Wanderers</textarea>
     </div>
 
     <script>
-        // Data storage for leagues
+        // ─── DATA ──────────────────────────────────────────────────────────
         let leagues = [];
         let currentLeagueId = null;
         let currentWeek = 1;
         let previousRankings = {};
-        
-        // Load leagues from localStorage on page load
+
+        // ─── STORAGE ──────────────────────────────────────────────────────
         function loadLeagues() {
-            const savedLeagues = localStorage.getItem('monarchLeagues');
-            if (savedLeagues) {
-                leagues = JSON.parse(savedLeagues);
-            }
+            const saved = localStorage.getItem('monarchLeagues');
+            if (saved) leagues = JSON.parse(saved);
         }
-        
-        // Save leagues to localStorage
+
         function saveLeagues() {
             localStorage.setItem('monarchLeagues', JSON.stringify(leagues));
         }
-        
-        // Show/hide sections
+
+        // ─── NAVIGATION ──────────────────────────────────────────────────
         function showSection(sectionId) {
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = 'none';
-            });
+            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
             document.getElementById(sectionId).style.display = 'block';
+
+            document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
             document.querySelectorAll('nav a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            document.querySelectorAll('nav a').forEach(link => {
-                if (link.textContent.trim() === "Home" && sectionId === "home") link.classList.add('active');
-                else if (link.textContent.trim() === "Create League" && sectionId === "create") link.classList.add('active');
-                else if (link.textContent.trim() === "My Leagues" && sectionId === "leagues") {
+                const txt = link.textContent.trim();
+                if ((txt === 'Home' && sectionId === 'home') ||
+                    (txt === 'Create League' && sectionId === 'create') ||
+                    (txt === 'My Leagues' && sectionId === 'leagues')) {
                     link.classList.add('active');
-                    renderLeagues();
                 }
             });
+
+            if (sectionId === 'leagues') renderLeagues();
             window.scrollTo(0, 0);
         }
-        
-        // Create league function
+
+        // ─── NOTIFICATION ────────────────────────────────────────────────
+        function showNotification(msg, type = 'success') {
+            const n = document.getElementById('notification');
+            n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${msg}`;
+            n.className = `notification ${type === 'error' ? 'error' : ''} show`;
+            setTimeout(() => n.classList.remove('show'), 3000);
+        }
+
+        // ─── MODALS ──────────────────────────────────────────────────────
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // ─── CREATE LEAGUE ──────────────────────────────────────────────
         function createLeague() {
-            const leagueName = document.getElementById('leagueName').value;
-            if (!leagueName) {
-                showNotification('Please enter a league name', 'error');
-                return;
-            }
-            
+            const leagueName = document.getElementById('leagueName').value.trim();
+            if (!leagueName) { showNotification('Please enter a league name', 'error'); return; }
+
             const teamCount = parseInt(document.getElementById('teams').value);
             let teamNames = [];
-            
+
             if (document.getElementById('custom-distribution').classList.contains('selected')) {
                 teamNames = document.getElementById('teamNames').value.split('\n')
-                    .map(name => name.trim())
-                    .filter(name => name.length > 0);
+                    .map(n => n.trim()).filter(n => n.length > 0);
             } else {
-                const previewTeams = document.querySelectorAll('#randomTeamsPreview div');
-                previewTeams.forEach(div => teamNames.push(div.textContent));
+                const preview = document.querySelectorAll('#randomTeamsPreview div');
+                preview.forEach(d => teamNames.push(d.textContent));
             }
-            
-            while (teamNames.length < teamCount) {
-                teamNames.push(`Team ${teamNames.length + 1}`);
-            }
+
+            while (teamNames.length < teamCount) teamNames.push(`Team ${teamNames.length + 1}`);
             teamNames = teamNames.slice(0, teamCount);
-            
+
             const leagueId = Date.now();
             const newLeague = {
                 id: leagueId,
                 name: leagueName,
                 teams: teamNames,
                 fixtures: generateFixtures(teamNames),
-                distribution: document.querySelector('.distribution-option.selected').id.includes('custom') ? 'custom' : 'random'
+                distribution: document.querySelector('.distribution-option.selected').id.includes('custom') ? 'custom' :
+                    'random'
             };
-            
-            // Re-calculate the table immediately to ensure fresh object structure
             newLeague.table = recalculateTable(newLeague);
-            
+
             leagues.push(newLeague);
             saveLeagues();
             showNotification('League created successfully!');
             showSection('leagues');
         }
-        
+
         function generateInitialTable(teams) {
-            return teams.map(team => ({
-                name: team, played: 0, wins: 0, draws: 0, losses: 0,
-                gf: 0, ga: 0, gd: 0, points: 0, form: []
+            return teams.map(t => ({
+                name: t,
+                played: 0,
+                wins: 0,
+                draws: 0,
+                losses: 0,
+                gf: 0,
+                ga: 0,
+                gd: 0,
+                points: 0,
+                form: []
             }));
         }
-        
+
         function generateFixtures(teams) {
-            const fixtures = [];
-            const teamCount = teams.length;
-            const totalWeeks = (teamCount - 1) * 2;
-            const matchesPerWeek = teamCount / 2;
-            let teamsCopy = [...teams];
-            
+            const n = teams.length;
+            const totalWeeks = (n - 1) * 2;
+            const matchesPerWeek = n / 2;
+            let fixtures = [];
+            let copy = [...teams];
+
             for (let week = 1; week <= totalWeeks / 2; week++) {
                 if (week > 1) {
-                    const first = teamsCopy[0];
-                    const last = teamsCopy[teamsCopy.length - 1];
-                    const middle = teamsCopy.slice(1, teamsCopy.length - 1);
-                    teamsCopy = [first, last, ...middle];
+                    const first = copy[0];
+                    const last = copy[copy.length - 1];
+                    const middle = copy.slice(1, copy.length - 1);
+                    copy = [first, last, ...middle];
                 }
                 for (let i = 0; i < matchesPerWeek; i++) {
                     fixtures.push({
                         id: Date.now() + Math.floor(Math.random() * 100000),
-                        home: teamsCopy[i],
-                        away: teamsCopy[teamCount - 1 - i],
-                        homeScore: null, awayScore: null, week: week
+                        home: copy[i],
+                        away: copy[n - 1 - i],
+                        homeScore: null,
+                        awayScore: null,
+                        week: week
                     });
                 }
             }
-            
+
             const firstHalf = [...fixtures];
             firstHalf.forEach(f => {
                 fixtures.push({
                     id: Date.now() + Math.floor(Math.random() * 100000),
-                    home: f.away, away: f.home,
-                    homeScore: null, awayScore: null, week: f.week + (totalWeeks / 2)
+                    home: f.away,
+                    away: f.home,
+                    homeScore: null,
+                    awayScore: null,
+                    week: f.week + totalWeeks / 2
                 });
             });
-            
+
             return fixtures;
         }
 
-        // --- CORE SCORING LOGIC FIX ---
-        // Instead of incremental updates, we recalculate from the fixtures list
-        // This prevents data corruption or missed updates.
+        // ─── RECALCULATE TABLE ──────────────────────────────────────────
         function recalculateTable(league) {
             const table = generateInitialTable(league.teams);
-            
-            // Sort fixtures by week to ensure form is calculated in chronological order
             const sortedFixtures = [...league.fixtures].sort((a, b) => a.week - b.week);
 
             sortedFixtures.forEach(fix => {
                 if (fix.homeScore !== null && fix.awayScore !== null) {
                     const home = table.find(t => t.name === fix.home);
                     const away = table.find(t => t.name === fix.away);
+                    if (!home || !away) return;
 
-                    if (home && away) {
-                        home.played++;
-                        away.played++;
-                        home.gf += fix.homeScore;
-                        home.ga += fix.awayScore;
-                        away.gf += fix.awayScore;
-                        away.ga += fix.homeScore;
+                    home.played++;
+                    away.played++;
+                    home.gf += fix.homeScore;
+                    home.ga += fix.awayScore;
+                    away.gf += fix.awayScore;
+                    away.ga += fix.homeScore;
 
-                        if (fix.homeScore > fix.awayScore) {
-                            home.wins++; home.points += 3; home.form.push('W');
-                            away.losses++; away.form.push('L');
-                        } else if (fix.homeScore < fix.awayScore) {
-                            away.wins++; away.points += 3; away.form.push('W');
-                            home.losses++; home.form.push('L');
-                        } else {
-                            home.draws++; home.points += 1; home.form.push('D');
-                            away.draws++; away.points += 1; away.form.push('D');
-                        }
+                    if (fix.homeScore > fix.awayScore) {
+                        home.wins++;
+                        home.points += 3;
+                        home.form.push('W');
+                        away.losses++;
+                        away.form.push('L');
+                    } else if (fix.homeScore < fix.awayScore) {
+                        away.wins++;
+                        away.points += 3;
+                        away.form.push('W');
+                        home.losses++;
+                        home.form.push('L');
+                    } else {
+                        home.draws++;
+                        home.points += 1;
+                        home.form.push('D');
+                        away.draws++;
+                        away.points += 1;
+                        away.form.push('D');
                     }
                 }
             });
 
             table.forEach(t => {
                 t.gd = t.gf - t.ga;
-                t.form = t.form.slice(-5); // Keep last 5
+                t.form = t.form.slice(-5);
             });
 
             return table;
@@ -1376,23 +1465,81 @@ Wolverhampton Wanderers</textarea>
             const teamType = input.dataset.team;
             const val = input.value.trim();
             const score = val === '' ? null : parseInt(val);
-            
+
             const league = leagues.find(l => l.id === currentLeagueId);
             if (!league) return;
-            
+
             const fixture = league.fixtures.find(f => f.id === fixtureId);
             if (!fixture) return;
-            
+
             if (teamType === 'home') fixture.homeScore = score;
             else fixture.awayScore = score;
-            
-            // Recalculate entire table from fixtures to ensure 100% accuracy
+
             league.table = recalculateTable(league);
-            
             saveLeagues();
             populateLeagueTable(league.table);
         }
 
+        // ─── RENDER LEAGUES (with sorting) ──────────────────────────────
+        function renderLeagues() {
+            const container = document.getElementById('leaguesContainer');
+            container.innerHTML = '';
+
+            if (leagues.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <h3>No Leagues</h3>
+                        <button class="btn btn-primary" onclick="showSection('create')">Create League</button>
+                    </div>
+                `;
+                return;
+            }
+
+            // ── sorting ──
+            const sortKey = document.getElementById('sortLeagues').value;
+            const sorted = [...leagues];
+
+            switch (sortKey) {
+                case 'newest':
+                    sorted.sort((a, b) => b.id - a.id);
+                    break;
+                case 'oldest':
+                    sorted.sort((a, b) => a.id - b.id);
+                    break;
+                case 'name-asc':
+                    sorted.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name-desc':
+                    sorted.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+                default:
+                    sorted.sort((a, b) => b.id - a.id);
+            }
+
+            sorted.forEach(league => {
+                const card = document.createElement('div');
+                card.className = 'league-card';
+                card.innerHTML = `
+                    <h3>${league.name} <span class="status status-ongoing">Active</span></h3>
+                    <div class="league-details">
+                        <p><i class="fas fa-shield-alt"></i> ${league.teams.length} teams</p>
+                        <p><i class="fas fa-calendar"></i> Season: 2023-2024</p>
+                        <p style="font-size:0.85rem;color:#888;margin-top:6px;">
+                            <i class="far fa-clock"></i> ${new Date(league.id).toLocaleDateString()}
+                        </p>
+                    </div>
+                    <div class="league-actions">
+                        <button class="action-btn" onclick="showLeagueDetails(${league.id})"><i class="fas fa-eye"></i> View</button>
+                        <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ─── LEAGUE DETAILS ──────────────────────────────────────────────
         function showLeagueDetails(leagueId) {
             const league = leagues.find(l => l.id === leagueId);
             if (!league) return;
@@ -1403,59 +1550,59 @@ Wolverhampton Wanderers</textarea>
             generateWeekSelector(league);
             populateFixtures(league.fixtures, currentWeek);
             document.getElementById('league-details').style.display = 'block';
-            document.querySelectorAll('.content-section').forEach(section => {
-                if (section.id !== 'league-details') section.style.display = 'none';
+            document.querySelectorAll('.content-section').forEach(s => {
+                if (s.id !== 'league-details') s.style.display = 'none';
             });
         }
-        
+
         function generateWeekSelector(league) {
             const totalWeeks = (league.teams.length - 1) * 2;
             const container = document.getElementById('weekSelector');
             container.innerHTML = '';
-            for (let week = 1; week <= totalWeeks; week++) {
-                const button = document.createElement('button');
-                button.className = 'week-btn' + (week === currentWeek ? ' active' : '');
-                button.textContent = week;
-                button.onclick = () => {
-                    currentWeek = week;
-                    document.getElementById('currentWeek').textContent = week;
-                    populateFixtures(league.fixtures, week);
-                    document.querySelectorAll('.week-btn').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
+            for (let w = 1; w <= totalWeeks; w++) {
+                const btn = document.createElement('button');
+                btn.className = 'week-btn' + (w === currentWeek ? ' active' : '');
+                btn.textContent = w;
+                btn.onclick = () => {
+                    currentWeek = w;
+                    document.getElementById('currentWeek').textContent = w;
+                    populateFixtures(league.fixtures, w);
+                    document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
                 };
-                container.appendChild(button);
+                container.appendChild(btn);
             }
         }
-        
+
         function populateLeagueTable(tableData) {
             const tbody = document.querySelector('#leagueTable tbody');
             tbody.innerHTML = '';
-            
+
             const league = leagues.find(l => l.id === currentLeagueId);
             if (league) {
-                league.table.forEach((team, index) => {
-                    previousRankings[team.name] = index + 1;
-                });
+                league.table.forEach((team, idx) => { previousRankings[team.name] = idx + 1; });
             }
-            
+
             const sorted = [...tableData].sort((a, b) => {
                 if (b.points !== a.points) return b.points - a.points;
                 if (b.gd !== a.gd) return b.gd - a.gd;
                 return b.gf - a.gf;
             });
-            
+
             sorted.forEach((team, index) => {
                 const row = document.createElement('tr');
                 const formInd = team.form.map(r => {
                     const cls = r === 'W' ? 'form-win' : r === 'D' ? 'form-draw' : 'form-loss';
                     return `<span class="form-indicator ${cls}">${r}</span>`;
                 }).join('');
-                const emptyInd = Array(Math.max(0, 5 - team.form.length)).fill('<span class="form-indicator"></span>').join('');
-                
+                const emptyInd = Array(Math.max(0, 5 - team.form.length)).fill(
+                    '<span class="form-indicator"></span>').join('');
+
                 let move = '<span class="movement movement-same">—</span>';
                 if (previousRankings[team.name]) {
                     if (index + 1 < previousRankings[team.name]) move = '<span class="movement movement-up">▲</span>';
-                    else if (index + 1 > previousRankings[team.name]) move = '<span class="movement movement-down">▼</span>';
+                    else if (index + 1 > previousRankings[team.name]) move =
+                    '<span class="movement movement-down">▼</span>';
                 }
 
                 row.innerHTML = `
@@ -1474,17 +1621,18 @@ Wolverhampton Wanderers</textarea>
                 tbody.appendChild(row);
             });
         }
-        
+
         function populateFixtures(fixtures, week) {
             const container = document.getElementById('fixturesContainer');
             container.innerHTML = '';
             const weekFixtures = fixtures.filter(f => f.week === week);
-            
+
             if (weekFixtures.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-futbol"></i><h3>No Fixtures</h3></div>`;
+                container.innerHTML =
+                    `<div class="empty-state"><i class="fas fa-futbol"></i><h3>No Fixtures</h3></div>`;
                 return;
             }
-            
+
             weekFixtures.forEach(fixture => {
                 const card = document.createElement('div');
                 card.className = 'fixture-card';
@@ -1505,33 +1653,90 @@ Wolverhampton Wanderers</textarea>
             });
         }
 
-        // --- BACKUP & RESTORE UPGRADES ---
+        // ─── LEAGUE ACTIONS ──────────────────────────────────────────────
+        function deleteLeague(leagueId) {
+            if (confirm('Delete this league permanently?')) {
+                leagues = leagues.filter(l => l.id !== leagueId);
+                saveLeagues();
+                renderLeagues();
+                showNotification('League deleted');
+            }
+        }
+
+        function deleteCurrentLeague() {
+            if (currentLeagueId && confirm('Delete this league?')) {
+                leagues = leagues.filter(l => l.id !== currentLeagueId);
+                saveLeagues();
+                showNotification('League deleted');
+                showSection('leagues');
+            }
+        }
+
+        function showEditTeamsModal(leagueId) {
+            const id = leagueId || currentLeagueId;
+            const league = leagues.find(l => l.id === id);
+            if (!league) return;
+            document.getElementById('editTeamNames').value = league.teams.join('\n');
+            document.getElementById('editTeamsModal').style.display = 'flex';
+        }
+
+        function saveTeamEdits() {
+            const league = leagues.find(l => l.id === currentLeagueId);
+            if (!league) return;
+            const newNames = document.getElementById('editTeamNames').value.split('\n').map(n => n.trim()).filter(n => n
+            .length > 0);
+            if (newNames.length !== league.teams.length) {
+                showNotification('Cannot change team count', 'error');
+                return;
+            }
+            const map = {};
+            league.teams.forEach((old, i) => map[old] = newNames[i]);
+            league.teams = newNames;
+            league.fixtures.forEach(f => {
+                f.home = map[f.home];
+                f.away = map[f.away];
+            });
+            league.table = recalculateTable(league);
+            saveLeagues();
+            populateLeagueTable(league.table);
+            populateFixtures(league.fixtures, currentWeek);
+            closeModal('editTeamsModal');
+            showNotification('Updated successfully');
+        }
+
+        // ─── BACKUP & RESTORE ────────────────────────────────────────────
         function showBackupModal() {
-            const backupData = JSON.stringify(leagues, null, 2);
-            document.getElementById('backupData').value = backupData;
+            document.getElementById('backupData').value = JSON.stringify(leagues, null, 2);
             document.getElementById('backupModal').style.display = 'flex';
         }
 
         function downloadBackupFile() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(leagues));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "monarch_league_backup_" + new Date().toLocaleDateString() + ".json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+            const a = document.createElement('a');
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", "monarch_league_backup_" + new Date().toLocaleDateString() + ".json");
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
             showNotification('Backup file downloaded!');
+        }
+
+        function copyBackupData() {
+            const el = document.getElementById('backupData');
+            el.select();
+            document.execCommand('copy');
+            showNotification('Copied to clipboard!');
         }
 
         function restoreData() {
             const fileInput = document.getElementById('uploadFile');
             const textArea = document.getElementById('restoreData');
-            
+
             const handleRestore = (jsonString) => {
                 try {
-                    const parsedData = JSON.parse(jsonString);
-                    if (!Array.isArray(parsedData)) throw new Error('Invalid format');
-                    leagues = parsedData;
+                    const parsed = JSON.parse(jsonString);
+                    if (!Array.isArray(parsed)) throw new Error('Invalid format');
+                    leagues = parsed;
                     saveLeagues();
                     renderLeagues();
                     showNotification('Data restored successfully!');
@@ -1553,95 +1758,20 @@ Wolverhampton Wanderers</textarea>
             }
         }
 
-        function copyBackupData() {
-            const backupData = document.getElementById('backupData');
-            backupData.select();
-            document.execCommand('copy');
-            showNotification('Copied to clipboard!');
-        }
-
-        function renderLeagues() {
-            const container = document.getElementById('leaguesContainer');
-            container.innerHTML = '';
-            if (leagues.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-trophy"></i><h3>No Leagues</h3><button class="btn btn-primary" onclick="showSection('create')">Create League</button></div>`;
-                return;
-            }
-            leagues.forEach(league => {
-                const card = document.createElement('div');
-                card.className = 'league-card';
-                card.innerHTML = `
-                    <h3>${league.name} <span class="status status-ongoing">Active</span></h3>
-                    <div class="league-details">
-                        <p><i class="fas fa-shield-alt"></i> ${league.teams.length} teams</p>
-                        <p><i class="fas fa-calendar"></i> Season: 2023-2024</p>
-                    </div>
-                    <div class="league-actions">
-                        <button class="action-btn" onclick="showLeagueDetails(${league.id})"><i class="fas fa-eye"></i> View</button>
-                        <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-        
-        function deleteLeague(leagueId) {
-            if (confirm('Delete this league permanently?')) {
-                leagues = leagues.filter(l => l.id !== leagueId);
-                saveLeagues(); renderLeagues();
-                showNotification('League deleted');
-            }
-        }
-        
-        function deleteCurrentLeague() {
-            if (currentLeagueId && confirm('Delete this league?')) {
-                leagues = leagues.filter(l => l.id !== currentLeagueId);
-                saveLeagues(); showNotification('League deleted'); showSection('leagues');
-            }
-        }
-        
-        function showEditTeamsModal(leagueId) {
-            const id = leagueId || currentLeagueId;
-            const league = leagues.find(l => l.id === id);
-            if (!league) return;
-            document.getElementById('editTeamNames').value = league.teams.join('\n');
-            document.getElementById('editTeamsModal').style.display = 'flex';
-        }
-        
-        function saveTeamEdits() {
-            const league = leagues.find(l => l.id === currentLeagueId);
-            if (!league) return;
-            const newNames = document.getElementById('editTeamNames').value.split('\n').map(n => n.trim()).filter(n => n.length > 0);
-            if (newNames.length !== league.teams.length) {
-                showNotification('Cannot change team count', 'error'); return;
-            }
-            const map = {};
-            league.teams.forEach((old, i) => map[old] = newNames[i]);
-            league.teams = newNames;
-            league.fixtures.forEach(f => {
-                f.home = map[f.home]; f.away = map[f.away];
-            });
-            league.table = recalculateTable(league);
-            saveLeagues(); populateLeagueTable(league.table); populateFixtures(league.fixtures, currentWeek);
-            closeModal('editTeamsModal'); showNotification('Updated successfully');
-        }
-
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
+        // ─── CREATE FORM HELPERS ────────────────────────────────────────
         function updateTeamNamesPreview() {
             const count = parseInt(document.getElementById('teams').value);
             const names = document.getElementById('teamNames').value.split('\n');
             const container = document.getElementById('randomTeamsPreview');
-            if (container) {
-                container.innerHTML = '';
-                for (let i = 0; i < count; i++) {
-                    const d = document.createElement('div'); d.textContent = names[i] || `Team ${i+1}`;
-                    container.appendChild(d);
-                }
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const d = document.createElement('div');
+                d.textContent = names[i] || `Team ${i+1}`;
+                container.appendChild(d);
             }
         }
-        
+
         function selectDistribution(type) {
             document.querySelectorAll('.distribution-option').forEach(o => o.classList.remove('selected'));
             if (type === 'custom') {
@@ -1655,7 +1785,7 @@ Wolverhampton Wanderers</textarea>
                 shuffleTeamNames();
             }
         }
-        
+
         function shuffleTeamNames() {
             const count = parseInt(document.getElementById('teams').value);
             let teams = document.getElementById('teamNames').value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -1668,19 +1798,16 @@ Wolverhampton Wanderers</textarea>
             const container = document.getElementById('randomTeamsPreview');
             container.innerHTML = '';
             teams.forEach(t => {
-                const d = document.createElement('div'); d.textContent = t; container.appendChild(d);
+                const d = document.createElement('div');
+                d.textContent = t;
+                container.appendChild(d);
             });
         }
-        
-        function showNotification(msg, type = 'success') {
-            const n = document.getElementById('notification');
-            n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${msg}`;
-            n.className = `notification ${type === 'error' ? 'error' : ''} show`;
-            setTimeout(() => n.classList.remove('show'), 3000);
-        }
-        
+
+        // ─── TABS ────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
             loadLeagues();
+
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const tab = this.getAttribute('data-tab');
@@ -1690,6 +1817,7 @@ Wolverhampton Wanderers</textarea>
                     document.getElementById(`${tab}-tab`).classList.add('active');
                 });
             });
+
             updateTeamNamesPreview();
             if (leagues.length > 0) renderLeagues();
         });
