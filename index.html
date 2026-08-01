@@ -3,108 +3,41 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Monarch League Manager</title>
+    <title>League Arena</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        /* ── reset & base ── */
+        /* ── reset & base (dark mode) ── */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0a1929, #1a3a5f);
-            color: #fff;
+            background: #0b1120;
+            color: #e8edf5;
             min-height: 100vh;
-            padding: 20px;
-            background-attachment: fixed;
+            padding: 24px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-        }
-
-        /* ── header ── */
-        header {
-            text-align: center;
-            padding: 25px 0;
-            margin-bottom: 30px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-
-        .logo {
-            position: relative;
-            display: inline-block;
-        }
-
-        .logo h1 {
-            font-size: 2.8rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #ffcc00, #ff6600);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: -0.5px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .logo::after {
-            content: "⚽";
-            position: absolute;
-            top: -15px;
-            right: -35px;
-            font-size: 3.5rem;
-            opacity: 0.2;
-            transform: rotate(25deg);
-        }
-
-        nav ul {
-            display: flex;
-            gap: 15px;
-            list-style: none;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #fff;
-            font-weight: 600;
-            padding: 12px 28px;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.08);
-            display: inline-block;
-            font-size: 1.05rem;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        nav a:hover,
-        nav a.active {
-            background: linear-gradient(to right, #ffcc00, #ff6600);
-            color: #1a2a6c;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
         }
 
         /* ── sections ── */
         .content-section {
             display: none;
-            animation: fadeIn 0.5s ease;
-            padding: 30px 0;
+            animation: fadeIn 0.3s ease;
+            padding: 12px 0 40px;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -113,346 +46,423 @@
         }
 
         .section-title {
-            font-size: 2rem;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            justify-content: center;
-            color: #ffcc00;
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 28px;
+            color: #f1f5f9;
+            letter-spacing: -0.3px;
             text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            position: relative;
-            padding-bottom: 15px;
-        }
-
-        .section-title::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(to right, #ffcc00, #ff6600);
-            border-radius: 2px;
         }
 
         .section-title i {
-            color: #ffcc00;
+            color: #60a5fa;
+            margin-right: 10px;
         }
 
-        /* ── hero ── */
+        /* ── hero (home) ── */
         .hero {
             text-align: center;
-            padding: 50px 20px;
-            margin: 40px auto;
-            max-width: 800px;
+            padding: 20px 20px 10px;
+            max-width: 720px;
+            margin: 0 auto;
         }
 
-        .hero h2 {
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(to right, #fff, #ffcc00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1.3;
+        .hero .app-title {
+            font-size: 3.4rem;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            color: #f1f5f9;
+            margin-bottom: 8px;
         }
 
-        .btn-container {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+        .hero .app-title span {
+            color: #60a5fa;
         }
 
-        .btn {
-            padding: 18px 40px;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
+        .hero .sub {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            margin-bottom: 36px;
+            font-weight: 400;
+        }
+
+        /* ── home action cards ── */
+        .home-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto 48px;
+        }
+
+        .home-action-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 32px 20px;
+            text-align: center;
             cursor: pointer;
-            border: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            min-width: 260px;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .btn::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            z-index: -1;
-            transform: scale(0, 1);
-            transform-origin: top right;
-            transition: transform 0.4s ease;
+        .home-action-card:hover {
+            transform: translateY(-6px);
+            border-color: #60a5fa;
+            box-shadow: 0 8px 28px rgba(96, 165, 250, 0.15);
+            background: #1e2a3e;
         }
 
-        .btn:hover::after {
-            transform: scale(1, 1);
-            transform-origin: top left;
+        .home-action-card i {
+            font-size: 2.4rem;
+            color: #60a5fa;
+            margin-bottom: 12px;
+            display: block;
         }
 
-        .btn-primary {
-            background: linear-gradient(to right, #ffcc00, #ff6600);
-            color: #1a2a6c;
+        .home-action-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 4px;
         }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .home-action-card p {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin: 0;
         }
 
-        .btn:hover {
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        /* ── features grid ── */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            max-width: 700px;
+            margin: 20px auto 0;
+            text-align: left;
         }
 
-        .btn-primary:hover {
-            background: linear-gradient(to right, #ffd84d, #ff8533);
+        .feature-item {
+            background: #1a2332;
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: 1px solid #2a3445;
+            transition: all 0.2s;
         }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .feature-item:hover {
+            border-color: #3b4a5e;
+            transform: translateY(-2px);
+        }
+
+        .feature-item i {
+            font-size: 1.4rem;
+            color: #60a5fa;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .feature-item h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 2px;
+        }
+
+        .feature-item p {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            line-height: 1.4;
         }
 
         /* ── forms ── */
         .form-container {
-            max-width: 600px;
+            max-width: 540px;
             margin: 0 auto;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: #1a2332;
+            padding: 32px 36px;
+            border-radius: 18px;
+            border: 1px solid #2a3445;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 22px;
         }
 
         label {
             display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #ffcc00;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #e8edf5;
         }
 
         input,
         select,
         textarea {
             width: 100%;
-            padding: 14px 18px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
-            font-size: 1.05rem;
-            transition: all 0.3s ease;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #2a3445;
+            background: #0f172a;
+            color: #e8edf5;
+            font-size: 0.95rem;
+            transition: border 0.2s;
         }
 
         input:focus,
         select:focus,
         textarea:focus {
-            border-color: #ffcc00;
+            border-color: #60a5fa;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.2);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+            background: #0f172a;
         }
 
         textarea {
-            min-height: 150px;
+            min-height: 130px;
             resize: vertical;
+            font-family: 'Inter', sans-serif;
         }
 
         .info-text {
-            color: #aaa;
-            font-size: 0.9rem;
-            margin-top: 5px;
-            font-style: italic;
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-top: 4px;
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
-        /* ── distribution ── */
+        /* ── distribution options ── */
         .distribution-options {
             display: flex;
-            gap: 30px;
-            margin-top: 15px;
+            gap: 16px;
+            margin-top: 8px;
         }
 
         .distribution-option {
             flex: 1;
-            padding: 20px;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 14px;
+            border-radius: 12px;
+            background: #0f172a;
+            border: 2px solid #2a3445;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-align: center;
         }
 
         .distribution-option:hover {
-            border-color: rgba(255, 204, 0, 0.5);
-            transform: translateY(-5px);
+            border-color: #3b4a5e;
         }
 
         .distribution-option.selected {
-            border-color: #ffcc00;
-            background: rgba(255, 204, 0, 0.1);
-            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.2);
+            border-color: #60a5fa;
+            background: #1a2a44;
         }
 
         .distribution-option i {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: #ffcc00;
+            font-size: 1.5rem;
+            color: #60a5fa;
+            margin-bottom: 6px;
+            display: block;
         }
 
         .distribution-option h3 {
-            margin-bottom: 10px;
-            color: #ffcc00;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 2px;
         }
 
         .distribution-option p {
-            color: #aaa;
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .team-names-box {
+            margin-top: 12px;
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #2a3445;
+        }
+
+        .team-names-box h3 {
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .team-list {
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+
+        .team-list div {
+            padding: 6px 8px;
             font-size: 0.9rem;
+            border-bottom: 1px solid #1e2a3a;
+            color: #e8edf5;
+        }
+
+        .team-list div:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            padding: 14px 34px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #f1f5f9;
+            color: #0b1120;
+        }
+
+        .btn-primary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 1px solid #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #334155;
+            transform: translateY(-2px);
         }
 
         /* ── league cards ── */
         .leagues-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         .league-card {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            padding: 25px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #1a2332;
+            border-radius: 16px;
+            padding: 24px 26px;
+            transition: all 0.2s ease;
+            border: 1px solid #2a3445;
             display: flex;
             flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .league-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(to right, #ffcc00, #ff6600);
         }
 
         .league-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+            border-color: #3b4a5e;
         }
 
         .league-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #ffcc00;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #f1f5f9;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 12px;
         }
 
         .league-card h3 .status {
-            font-size: 0.9rem;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .status-ongoing {
-            background: rgba(76, 175, 80, 0.2);
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-        }
-
-        .status-upcoming {
-            background: rgba(33, 150, 243, 0.2);
-            color: #2196F3;
-            border: 1px solid #2196F3;
-        }
-
-        .status-completed {
-            background: rgba(244, 67, 54, 0.2);
-            color: #F44336;
-            border: 1px solid #F44336;
+            font-size: 0.7rem;
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+            background: #1a3a2a;
+            color: #86efac;
         }
 
         .league-details {
-            margin: 15px 0;
-            color: #ccc;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin: 6px 0 14px;
+            flex: 1;
         }
 
         .league-details p {
-            margin: 10px 0;
+            margin: 4px 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+
+        .league-details i {
+            width: 18px;
+            color: #64748b;
         }
 
         .league-actions {
-            margin-top: auto;
             display: flex;
-            gap: 10px;
-            padding-top: 15px;
+            gap: 8px;
+            padding-top: 14px;
+            border-top: 1px solid #2a3445;
         }
 
         .action-btn {
             flex: 1;
-            padding: 10px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: none;
+            padding: 9px 12px;
+            border-radius: 8px;
+            background: #0f172a;
+            color: #e8edf5;
+            border: 1px solid #2a3445;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-weight: 600;
+            gap: 6px;
         }
 
         .action-btn:hover {
-            background: rgba(255, 204, 0, 0.2);
-            transform: translateY(-2px);
+            background: #1e2a3a;
+            border-color: #3b4a5e;
         }
 
-        .edit-btn {
-            background: rgba(255, 204, 0, 0.3);
+        .action-btn.edit-btn {
+            background: #1a2a44;
+            border-color: #2a4a6a;
+            color: #93c5fd;
         }
 
-        .delete-btn {
-            background: rgba(244, 67, 54, 0.3);
+        .action-btn.edit-btn:hover {
+            background: #1a3a5a;
+        }
+
+        .action-btn.delete-btn {
+            background: #2a1a1a;
+            border-color: #4a2a2a;
+            color: #fca5a5;
+        }
+
+        .action-btn.delete-btn:hover {
+            background: #3a1a1a;
         }
 
         /* ── sort control ── */
@@ -460,163 +470,179 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 15px;
-            max-width: 1200px;
-            margin: 0 auto 25px auto;
-            flex-wrap: wrap;
-            background: rgba(0, 0, 0, 0.15);
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            gap: 12px;
+            max-width: 1100px;
+            margin: 0 auto 22px auto;
+            padding: 8px 0;
         }
 
         .sort-control label {
-            margin: 0;
-            font-weight: 600;
-            color: #ccc;
+            font-weight: 500;
+            color: #94a3b8;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-        }
-
-        .sort-control label i {
-            color: #ffcc00;
+            gap: 6px;
+            margin: 0;
         }
 
         .sort-select {
-            background: rgba(0, 0, 0, 0.4);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 8px 16px;
+            background: #0f172a;
+            color: #e8edf5;
+            border: 1px solid #2a3445;
+            padding: 7px 16px 7px 14px;
             border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.95rem;
+            font-weight: 500;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 160px;
+            transition: all 0.2s;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffcc00' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 14px center;
-            padding-right: 40px;
+            background-position: right 12px center;
+            padding-right: 34px;
+            min-width: 140px;
         }
 
         .sort-select:hover,
         .sort-select:focus {
-            border-color: #ffcc00;
+            border-color: #60a5fa;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.15);
-        }
-
-        .sort-select option {
-            background: #1a3a5f;
-            color: #fff;
         }
 
         /* ── table ── */
         .table-container {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            background: #1a2332;
+            border-radius: 16px;
             overflow: hidden;
-            margin: 30px auto;
-            max-width: 800px;
+            margin: 20px auto 0;
+            max-width: 880px;
+            border: 1px solid #2a3445;
             overflow-x: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 600px;
+            font-size: 0.9rem;
+            min-width: 620px;
         }
 
         th {
-            background: rgba(255, 204, 0, 0.2);
-            padding: 15px 10px;
+            background: #0f172a;
+            padding: 14px 12px;
             text-align: left;
             font-weight: 600;
-            color: #ffcc00;
-        }
-
-        tr:nth-child(even) {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        tr:hover {
-            background: rgba(255, 204, 0, 0.1);
+            color: #94a3b8;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid #2a3445;
         }
 
         td {
-            padding: 14px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 13px 12px;
+            border-bottom: 1px solid #1e2a3a;
+            color: #e8edf5;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #1e2a3a;
+        }
+
+        tr.winner-row td {
+            background: #0f2a1a !important;
+        }
+
+        tr.winner-row:hover td {
+            background: #1a3a2a !important;
+        }
+
+        tr.relegation-row td {
+            background: #2a1a1a !important;
+        }
+
+        tr.relegation-row:hover td {
+            background: #3a1a1a !important;
         }
 
         .movement {
             display: inline-block;
-            font-weight: bold;
-            margin-right: 8px;
-            font-size: 1.2em;
-            width: 20px;
+            font-weight: 600;
+            margin-right: 4px;
+            font-size: 0.9rem;
+            width: 18px;
             text-align: center;
         }
 
         .movement-up {
-            color: #4CAF50;
+            color: #4ade80;
         }
         .movement-down {
-            color: #F44336;
+            color: #f87171;
         }
         .movement-same {
-            color: #aaa;
+            color: #64748b;
         }
 
         .form-indicator {
             display: inline-block;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             text-align: center;
-            line-height: 24px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin: 0 2px;
-            background-color: #777;
+            line-height: 22px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin: 0 1px;
+            background: #2a3445;
+            color: #e8edf5;
         }
 
         .form-win {
-            background-color: #4CAF50;
+            background: #16a34a;
+            color: #fff;
         }
         .form-draw {
-            background-color: #FFC107;
-            color: #333;
+            background: #f59e0b;
+            color: #fff;
         }
         .form-loss {
-            background-color: #F44336;
+            background: #dc2626;
+            color: #fff;
+        }
+
+        .team-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         /* ── fixtures ── */
         .fixtures-container {
-            max-width: 800px;
-            margin: 30px auto;
+            max-width: 720px;
+            margin: 16px auto 0;
         }
 
         .fixture-card {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            gap: 16px;
+            border: 1px solid #2a3445;
+            transition: all 0.15s;
         }
 
         .fixture-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-color: #3b4a5e;
         }
 
         .fixture-teams {
@@ -629,72 +655,78 @@
         .team {
             flex: 1;
             text-align: center;
+            font-weight: 500;
         }
 
-        .team-name {
+        .team .team-name {
             font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #f1f5f9;
+        }
+
+        .team .role {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: 400;
         }
 
         .vs-container {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin: 0 20px;
+            gap: 12px;
+            margin: 0 14px;
         }
 
         .score-input {
-            width: 60px;
-            padding: 10px;
+            width: 50px;
+            padding: 8px 6px;
             text-align: center;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            color: #fff;
-            font-size: 1.1rem;
-            font-weight: bold;
+            background: #0f172a;
+            border: 1px solid #2a3445;
+            border-radius: 6px;
+            color: #f1f5f9;
+            font-size: 1rem;
+            font-weight: 600;
         }
 
         .score-input:focus {
-            border-color: #ffcc00;
+            border-color: #60a5fa;
             outline: none;
-            box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.2);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
         }
 
         .vs {
-            font-weight: bold;
-            color: #ffcc00;
-            min-width: 40px;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.85rem;
+            min-width: 28px;
             text-align: center;
-            font-size: 1.2rem;
         }
 
         /* ── tabs ── */
         .tabs {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0 10px;
         }
 
         .tab-btn {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            padding: 10px 26px;
+            background: transparent;
+            color: #94a3b8;
             border: none;
-            border-radius: 20px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .tab-btn.active,
         .tab-btn:hover {
-            background: #ffcc00;
-            color: #1a2a6c;
+            background: #f1f5f9;
+            color: #0b1120;
         }
 
         .tab-content {
@@ -709,79 +741,102 @@
         .week-selector {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
+            gap: 6px;
+            margin: 12px 0 18px;
             flex-wrap: wrap;
         }
 
         .week-btn {
-            padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            padding: 6px 14px;
+            background: #1e293b;
+            color: #e8edf5;
             border: none;
-            border-radius: 20px;
+            border-radius: 30px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
+            transition: all 0.15s ease;
+            font-weight: 500;
+            font-size: 0.8rem;
         }
 
         .week-btn.active,
         .week-btn:hover {
-            background: #ffcc00;
-            color: #1a2a6c;
+            background: #f1f5f9;
+            color: #0b1120;
         }
 
         .fixture-counter {
             text-align: center;
-            margin-bottom: 20px;
-            color: #ffcc00;
-            font-weight: 600;
-            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.95rem;
         }
 
         .action-buttons {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 18px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .action-buttons .btn {
+            padding: 10px 22px;
+            font-size: 0.85rem;
             min-width: auto;
-            padding: 12px 25px;
         }
 
-        /* ── team names box ── */
-        .team-names-box {
-            margin-top: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* ── back button ── */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            background: #1e293b;
+            color: #e8edf5;
+            border-radius: 30px;
+            text-decoration: none;
+            margin-bottom: 14px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.85rem;
+            border: 1px solid #2a3445;
+            cursor: pointer;
         }
 
-        .team-names-box h3 {
-            color: #ffcc00;
-            margin-bottom: 15px;
+        .back-btn:hover {
+            background: #2a3445;
+        }
+
+        /* ── empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            max-width: 460px;
+            margin: 0 auto;
+            background: #1a2332;
+            border-radius: 18px;
+            border: 1px solid #2a3445;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #475569;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .empty-state h3 {
             font-size: 1.3rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 8px;
         }
 
-        .team-list {
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-        }
-
-        .team-list div {
-            padding: 8px;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-        }
-
-        .team-list div:last-child {
-            border-bottom: none;
+        .empty-state p {
+            color: #94a3b8;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
         }
 
         /* ── modal ── */
@@ -793,22 +848,22 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: #1a3a5f;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
+            background: #1a2332;
+            border-radius: 20px;
+            padding: 32px 36px;
+            max-width: 480px;
+            width: 92%;
             max-height: 90vh;
             overflow-y: auto;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid #2a3445;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
 
         .modal-header {
@@ -819,20 +874,25 @@
         }
 
         .modal-title {
-            font-size: 1.8rem;
-            color: #ffcc00;
-            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .modal-title i {
+            color: #60a5fa;
+            margin-right: 8px;
         }
 
         .close-modal {
             background: none;
             border: none;
-            color: #fff;
-            font-size: 1.5rem;
+            color: #94a3b8;
+            font-size: 1.4rem;
             cursor: pointer;
-            transition: color 0.3s;
-            width: 40px;
-            height: 40px;
+            transition: color 0.2s;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -840,27 +900,29 @@
         }
 
         .close-modal:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ff6600;
+            color: #f1f5f9;
+            background: #2a3445;
         }
 
         /* ── notification ── */
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            transform: translateX(200%);
-            transition: transform 0.3s ease;
+            top: 24px;
+            right: 24px;
+            padding: 14px 24px;
+            background: #1a2332;
+            color: #f1f5f9;
+            border-radius: 12px;
+            border: 1px solid #2a3445;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 0.9rem;
         }
 
         .notification.show {
@@ -868,142 +930,74 @@
         }
 
         .notification.error {
-            background: #F44336;
-        }
-
-        /* ── back button ── */
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border-radius: 30px;
-            text-decoration: none;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 204, 0, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* ── empty state ── */
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            max-width: 600px;
-            margin: 0 auto;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: #ffcc00;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: #ffcc00;
-        }
-
-        .empty-state p {
-            color: #aaa;
-            margin-bottom: 20px;
-            line-height: 1.6;
+            border-color: #f87171;
+            color: #fca5a5;
         }
 
         /* ── footer ── */
         footer {
             text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #aaa;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.9rem;
-        }
-
-        footer p {
-            margin: 5px 0;
+            margin-top: 50px;
+            padding: 18px 0;
+            color: #64748b;
+            font-size: 0.8rem;
+            border-top: 1px solid #1e2a3a;
         }
 
         /* ── responsive ── */
-        @media (max-width: 768px) {
-            nav ul {
+        @media (max-width: 720px) {
+            .hero .app-title {
+                font-size: 2.4rem;
+            }
+
+            .form-container {
+                padding: 24px 18px;
+            }
+
+            .distribution-options {
+                flex-direction: column;
                 gap: 10px;
-            }
-
-            nav a {
-                padding: 10px 15px;
-                font-size: 0.9rem;
-            }
-
-            .btn {
-                min-width: 100%;
-                padding: 16px;
             }
 
             .fixture-card {
                 flex-direction: column;
                 align-items: stretch;
+                padding: 16px;
             }
 
             .fixture-teams {
                 flex-direction: column;
-                gap: 15px;
+                gap: 12px;
             }
 
             .vs-container {
-                margin: 10px 0;
+                margin: 8px 0;
                 flex-direction: column;
+                gap: 8px;
             }
 
             .team {
                 width: 100%;
             }
 
-            .distribution-options {
-                flex-direction: column;
-                gap: 15px;
+            .btn {
+                padding: 12px 22px;
+                font-size: 0.9rem;
+            }
+
+            .action-buttons .btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
             }
 
             table {
-                min-width: 100%;
+                font-size: 0.8rem;
+                min-width: 480px;
             }
 
-            .hero h2 {
-                font-size: 2rem;
-            }
-
-            .logo h1 {
-                font-size: 2.2rem;
-            }
-
-            .section-title {
-                font-size: 1.6rem;
-            }
-
-            .sort-control {
-                justify-content: center;
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .sort-control label {
-                justify-content: center;
-            }
-
-            .sort-select {
-                width: 100%;
+            th,
+            td {
+                padding: 10px 8px;
             }
         }
     </style>
@@ -1012,54 +1006,44 @@
     <div class="container">
         <!-- Notification -->
         <div class="notification" id="notification">
-            <i class="fas fa-check-circle"></i> League created successfully!
+            <i class="fas fa-check-circle"></i> <span id="notifMsg">Done</span>
         </div>
 
-        <!-- Header -->
-        <header>
-            <div class="logo">
-                <h1>Monarch League Manager</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#" class="active" onclick="showSection('home')">Home</a></li>
-                    <li><a href="#" onclick="showSection('create')">Create League</a></li>
-                    <li><a href="#" onclick="showSection('leagues')">My Leagues</a></li>
-                </ul>
-            </nav>
-        </header>
-
         <!-- HOME -->
-        <section id="home" class="content-section">
+        <section id="home" class="content-section" style="display: block;">
             <div class="hero">
-                <h2>Manage Your Football Leagues Like Royalty</h2>
-                <div class="btn-container">
-                    <a class="btn btn-primary" onclick="showSection('create')">
-                        <i class="fas fa-plus-circle"></i> Create New League
-                    </a>
-                    <a class="btn btn-secondary" onclick="showSection('leagues')">
-                        <i class="fas fa-list"></i> View Leagues
-                    </a>
-                </div>
-            </div>
+                <div class="app-title">League <span>Arena</span></div>
+                <p class="sub">Manage your football leagues with clarity and ease.</p>
 
-            <div style="max-width:800px;margin:50px auto;text-align:center;">
-                <h3 style="color:#ffcc00;margin-bottom:20px;font-family:'Montserrat',sans-serif;">Why Monarch League Manager?</h3>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;">
-                    <div style="background:rgba(0,0,0,0.2);padding:20px;border-radius:10px;">
-                        <i class="fas fa-trophy" style="font-size:2.5rem;color:#ffcc00;margin-bottom:15px;"></i>
-                        <h4 style="margin-bottom:10px;">Professional Management</h4>
-                        <p style="color:#aaa;">Manage leagues with real-time updates and comprehensive statistics</p>
+                <!-- Home action cards: Create League & My Leagues -->
+                <div class="home-actions">
+                    <div class="home-action-card" onclick="showSection('create')">
+                        <i class="fas fa-plus-circle"></i>
+                        <h3>Create League</h3>
+                        <p>Set up a new league with custom teams</p>
                     </div>
-                    <div style="background:rgba(0,0,0,0.2);padding:20px;border-radius:10px;">
-                        <i class="fas fa-cogs" style="font-size:2.5rem;color:#ffcc00;margin-bottom:15px;"></i>
-                        <h4 style="margin-bottom:10px;">Easy Customization</h4>
-                        <p style="color:#aaa;">Create leagues with custom team names, sizes, and distribution</p>
+                    <div class="home-action-card" onclick="showSection('leagues')">
+                        <i class="fas fa-list"></i>
+                        <h3>My Leagues</h3>
+                        <p>View and manage your existing leagues</p>
                     </div>
-                    <div style="background:rgba(0,0,0,0.2);padding:20px;border-radius:10px;">
-                        <i class="fas fa-mobile-alt" style="font-size:2.5rem;color:#ffcc00;margin-bottom:15px;"></i>
-                        <h4 style="margin-bottom:10px;">Mobile Friendly</h4>
-                        <p style="color:#aaa;">Access your leagues from any device with a responsive design</p>
+                </div>
+
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="fas fa-trophy"></i>
+                        <h4>Winners &amp; Relegation</h4>
+                        <p>Set how many teams win and go down — highlighted at a glance.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-arrows-left-right"></i>
+                        <h4>Full Fixtures</h4>
+                        <p>Round-robin schedule with live score entry and standings update.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-database"></i>
+                        <h4>Backup &amp; Restore</h4>
+                        <p>Export or import your league data in one click.</p>
                     </div>
                 </div>
             </div>
@@ -1067,12 +1051,16 @@
 
         <!-- CREATE -->
         <section id="create" class="content-section" style="display:none;">
-            <h2 class="section-title"><i class="fas fa-plus-circle"></i> Create New League</h2>
+            <button class="back-btn" onclick="showSection('home')">
+                <i class="fas fa-arrow-left"></i> Home
+            </button>
+
+            <h2 class="section-title"><i class="fas fa-plus-circle"></i> Create League</h2>
 
             <div class="form-container">
                 <div class="form-group">
                     <label for="leagueName">League Name</label>
-                    <input type="text" id="leagueName" placeholder="Enter league name" value="Premier League" />
+                    <input type="text" id="leagueName" placeholder="e.g. Premier League" value="Premier League" />
                 </div>
 
                 <div class="form-group">
@@ -1081,17 +1069,29 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="winnersCount"><i class="fas fa-trophy" style="color:#4ade80;"></i> Winners</label>
+                    <input type="number" id="winnersCount" min="0" max="10" value="1" />
+                    <p class="info-text">Top teams highlighted in green.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="relegationCount"><i class="fas fa-arrow-down" style="color:#f87171;"></i> Relegation</label>
+                    <input type="number" id="relegationCount" min="0" max="10" value="3" />
+                    <p class="info-text">Bottom teams highlighted in red.</p>
+                </div>
+
+                <div class="form-group">
                     <label>Team Distribution</label>
                     <div class="distribution-options">
                         <div class="distribution-option selected" onclick="selectDistribution('custom')" id="custom-distribution">
                             <i class="fas fa-edit"></i>
                             <h3>Custom</h3>
-                            <p>Enter your own team names</p>
+                            <p>Enter your own names</p>
                         </div>
                         <div class="distribution-option" onclick="selectDistribution('random')" id="random-distribution">
                             <i class="fas fa-random"></i>
                             <h3>Randomize</h3>
-                            <p>Shuffle the team names</p>
+                            <p>Shuffle the list</p>
                         </div>
                     </div>
                 </div>
@@ -1119,7 +1119,7 @@ Sheffield United
 Tottenham Hotspur
 West Ham United
 Wolverhampton Wanderers</textarea>
-                        <p class="info-text">Enter one team name per line. The number of teams must match the number above.</p>
+                        <p class="info-text">Must match the number of teams above.</p>
                     </div>
                 </div>
 
@@ -1129,13 +1129,13 @@ Wolverhampton Wanderers</textarea>
                         <div class="team-names-box">
                             <div class="team-list" id="randomTeamsPreview"></div>
                         </div>
-                        <button class="btn btn-secondary" style="width:100%;margin-top:15px;" onclick="shuffleTeamNames()">
+                        <button class="btn btn-secondary" style="width:100%;margin-top:12px;" onclick="shuffleTeamNames()">
                             <i class="fas fa-sync-alt"></i> Shuffle Again
                         </button>
                     </div>
                 </div>
 
-                <button class="btn btn-primary" style="width:100%;margin-top:20px;" onclick="createLeague()">
+                <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="createLeague()">
                     <i class="fas fa-check-circle"></i> Create League
                 </button>
             </div>
@@ -1143,14 +1143,17 @@ Wolverhampton Wanderers</textarea>
 
         <!-- MY LEAGUES -->
         <section id="leagues" class="content-section" style="display:none;">
+            <button class="back-btn" onclick="showSection('home')">
+                <i class="fas fa-arrow-left"></i> Home
+            </button>
+
             <h2 class="section-title"><i class="fas fa-list"></i> My Leagues</h2>
 
-            <!-- Sort Control -->
             <div class="sort-control">
-                <label><i class="fas fa-sort"></i> Sort by</label>
+                <label><i class="fas fa-sort"></i> Sort</label>
                 <select class="sort-select" id="sortLeagues" onchange="renderLeagues()">
-                    <option value="newest">⬇ Newest</option>
-                    <option value="oldest">⬆ Oldest</option>
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
                     <option value="name-asc">A → Z</option>
                     <option value="name-desc">Z → A</option>
                 </select>
@@ -1161,9 +1164,9 @@ Wolverhampton Wanderers</textarea>
 
         <!-- LEAGUE DETAILS -->
         <section id="league-details" class="content-section" style="display:none;">
-            <a href="#" class="back-btn" onclick="showSection('leagues')">
-                <i class="fas fa-arrow-left"></i> Back to My Leagues
-            </a>
+            <button class="back-btn" onclick="showSection('leagues')">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
 
             <h2 class="section-title"><i class="fas fa-trophy"></i> <span id="leagueTitle">Premier League</span></h2>
 
@@ -1172,10 +1175,10 @@ Wolverhampton Wanderers</textarea>
                     <i class="fas fa-edit"></i> Edit Teams
                 </button>
                 <button class="btn btn-secondary" onclick="showBackupModal()">
-                    <i class="fas fa-database"></i> Backup Data
+                    <i class="fas fa-database"></i> Backup
                 </button>
-                <button class="btn btn-secondary" onclick="deleteCurrentLeague()" style="background:rgba(244,67,54,0.3);">
-                    <i class="fas fa-trash"></i> Delete League
+                <button class="btn btn-secondary" onclick="deleteCurrentLeague()" style="color:#f87171;border-color:#4a2a2a;">
+                    <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
 
@@ -1209,7 +1212,7 @@ Wolverhampton Wanderers</textarea>
 
             <div class="tab-content" id="fixtures-tab">
                 <div class="fixture-counter">
-                    Matchweek <span id="currentWeek">1</span> of 38
+                    Matchweek <span id="currentWeek">1</span>
                 </div>
                 <div class="week-selector" id="weekSelector"></div>
                 <div class="fixtures-container" id="fixturesContainer"></div>
@@ -1225,9 +1228,9 @@ Wolverhampton Wanderers</textarea>
                 </div>
                 <div class="form-group">
                     <label for="editTeamNames">Team Names (one per line)</label>
-                    <textarea id="editTeamNames" placeholder="Enter team names, one per line" style="min-height:300px;"></textarea>
+                    <textarea id="editTeamNames" style="min-height:280px;"></textarea>
                 </div>
-                <button class="btn btn-primary" style="width:100%;margin-top:15px;" onclick="saveTeamEdits()">
+                <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="saveTeamEdits()">
                     <i class="fas fa-save"></i> Save Changes
                 </button>
             </div>
@@ -1242,31 +1245,30 @@ Wolverhampton Wanderers</textarea>
 
                 <div class="form-group">
                     <label>Download / Copy Backup</label>
-                    <textarea id="backupData" readonly style="min-height:80px;background:rgba(0,0,0,0.4);"></textarea>
-                    <div style="display:flex;gap:10px;margin-top:10px;">
-                        <button class="btn btn-secondary" style="flex:1;min-width:auto;" onclick="copyBackupData()">
+                    <textarea id="backupData" readonly style="min-height:70px;background:#0f172a;font-size:0.8rem;border-color:#2a3445;"></textarea>
+                    <div style="display:flex;gap:10px;margin-top:8px;">
+                        <button class="btn btn-secondary" style="flex:1;min-width:auto;padding:10px;" onclick="copyBackupData()">
                             <i class="fas fa-copy"></i> Copy
                         </button>
-                        <button class="btn btn-primary" style="flex:1;min-width:auto;" onclick="downloadBackupFile()">
-                            <i class="fas fa-download"></i> Download .json
+                        <button class="btn btn-primary" style="flex:1;min-width:auto;padding:10px;" onclick="downloadBackupFile()">
+                            <i class="fas fa-download"></i> Download
                         </button>
                     </div>
                 </div>
 
-                <div class="form-group" style="border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;">
-                    <label>Upload / Restore Data</label>
-                    <input type="file" id="uploadFile" accept=".json" style="margin-bottom:10px;padding:10px;" />
-                    <textarea id="restoreData" placeholder="Or paste your backup data here" style="min-height:80px;"></textarea>
-                    <button class="btn btn-secondary" style="width:100%;margin-top:10px;" onclick="restoreData()">
-                        <i class="fas fa-history"></i> Restore Data
+                <div class="form-group" style="border-top:1px solid #2a3445;padding-top:20px;">
+                    <label>Upload / Restore</label>
+                    <input type="file" id="uploadFile" accept=".json" style="margin-bottom:8px;padding:8px;background:#0f172a;border-color:#2a3445;" />
+                    <textarea id="restoreData" placeholder="Or paste backup data here" style="min-height:70px;font-size:0.8rem;background:#0f172a;border-color:#2a3445;"></textarea>
+                    <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="restoreData()">
+                        <i class="fas fa-history"></i> Restore
                     </button>
                 </div>
             </div>
         </div>
 
         <footer>
-            <p>Monarch League Manager &copy; 2023 | A Football League Management System</p>
-            <p><i class="fas fa-code"></i> Created with HTML, CSS, and JavaScript</p>
+            League Arena &middot; A clean league manager
         </footer>
     </div>
 
@@ -1279,29 +1281,26 @@ Wolverhampton Wanderers</textarea>
 
         // ─── STORAGE ──────────────────────────────────────────────────────
         function loadLeagues() {
-            const saved = localStorage.getItem('monarchLeagues');
-            if (saved) leagues = JSON.parse(saved);
+            const saved = localStorage.getItem('leagueArenaData');
+            if (saved) {
+                try {
+                    leagues = JSON.parse(saved);
+                    leagues.forEach(l => {
+                        if (l.winnersCount === undefined) l.winnersCount = 1;
+                        if (l.relegationCount === undefined) l.relegationCount = 3;
+                    });
+                } catch { leagues = []; }
+            }
         }
 
         function saveLeagues() {
-            localStorage.setItem('monarchLeagues', JSON.stringify(leagues));
+            localStorage.setItem('leagueArenaData', JSON.stringify(leagues));
         }
 
         // ─── NAVIGATION ──────────────────────────────────────────────────
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
             document.getElementById(sectionId).style.display = 'block';
-
-            document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
-            document.querySelectorAll('nav a').forEach(link => {
-                const txt = link.textContent.trim();
-                if ((txt === 'Home' && sectionId === 'home') ||
-                    (txt === 'Create League' && sectionId === 'create') ||
-                    (txt === 'My Leagues' && sectionId === 'leagues')) {
-                    link.classList.add('active');
-                }
-            });
-
             if (sectionId === 'leagues') renderLeagues();
             window.scrollTo(0, 0);
         }
@@ -1309,9 +1308,10 @@ Wolverhampton Wanderers</textarea>
         // ─── NOTIFICATION ────────────────────────────────────────────────
         function showNotification(msg, type = 'success') {
             const n = document.getElementById('notification');
-            n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${msg}`;
+            document.getElementById('notifMsg').textContent = msg;
             n.className = `notification ${type === 'error' ? 'error' : ''} show`;
-            setTimeout(() => n.classList.remove('show'), 3000);
+            clearTimeout(n._timer);
+            n._timer = setTimeout(() => n.classList.remove('show'), 2800);
         }
 
         // ─── MODALS ──────────────────────────────────────────────────────
@@ -1325,14 +1325,20 @@ Wolverhampton Wanderers</textarea>
             if (!leagueName) { showNotification('Please enter a league name', 'error'); return; }
 
             const teamCount = parseInt(document.getElementById('teams').value);
-            let teamNames = [];
+            const winnersCount = parseInt(document.getElementById('winnersCount').value) || 0;
+            const relegationCount = parseInt(document.getElementById('relegationCount').value) || 0;
 
+            if (winnersCount + relegationCount > teamCount) {
+                showNotification(`Winners + Relegation exceeds ${teamCount} teams`, 'error');
+                return;
+            }
+
+            let teamNames = [];
             if (document.getElementById('custom-distribution').classList.contains('selected')) {
                 teamNames = document.getElementById('teamNames').value.split('\n')
                     .map(n => n.trim()).filter(n => n.length > 0);
             } else {
-                const preview = document.querySelectorAll('#randomTeamsPreview div');
-                preview.forEach(d => teamNames.push(d.textContent));
+                document.querySelectorAll('#randomTeamsPreview div').forEach(d => teamNames.push(d.textContent));
             }
 
             while (teamNames.length < teamCount) teamNames.push(`Team ${teamNames.length + 1}`);
@@ -1345,13 +1351,15 @@ Wolverhampton Wanderers</textarea>
                 teams: teamNames,
                 fixtures: generateFixtures(teamNames),
                 distribution: document.querySelector('.distribution-option.selected').id.includes('custom') ? 'custom' :
-                    'random'
+                    'random',
+                winnersCount: winnersCount,
+                relegationCount: relegationCount
             };
             newLeague.table = recalculateTable(newLeague);
 
             leagues.push(newLeague);
             saveLeagues();
-            showNotification('League created successfully!');
+            showNotification('League created!');
             showSection('leagues');
         }
 
@@ -1386,7 +1394,7 @@ Wolverhampton Wanderers</textarea>
                 }
                 for (let i = 0; i < matchesPerWeek; i++) {
                     fixtures.push({
-                        id: Date.now() + Math.floor(Math.random() * 100000),
+                        id: Date.now() + Math.floor(Math.random() * 100000) + i,
                         home: copy[i],
                         away: copy[n - 1 - i],
                         homeScore: null,
@@ -1399,7 +1407,7 @@ Wolverhampton Wanderers</textarea>
             const firstHalf = [...fixtures];
             firstHalf.forEach(f => {
                 fixtures.push({
-                    id: Date.now() + Math.floor(Math.random() * 100000),
+                    id: Date.now() + Math.floor(Math.random() * 100000) + 999,
                     home: f.away,
                     away: f.home,
                     homeScore: null,
@@ -1411,7 +1419,6 @@ Wolverhampton Wanderers</textarea>
             return fixtures;
         }
 
-        // ─── RECALCULATE TABLE ──────────────────────────────────────────
         function recalculateTable(league) {
             const table = generateInitialTable(league.teams);
             const sortedFixtures = [...league.fixtures].sort((a, b) => a.week - b.week);
@@ -1477,10 +1484,10 @@ Wolverhampton Wanderers</textarea>
 
             league.table = recalculateTable(league);
             saveLeagues();
-            populateLeagueTable(league.table);
+            populateLeagueTable(league);
         }
 
-        // ─── RENDER LEAGUES (with sorting) ──────────────────────────────
+        // ─── RENDER LEAGUES ──────────────────────────────────────────────
         function renderLeagues() {
             const container = document.getElementById('leaguesContainer');
             container.innerHTML = '';
@@ -1489,17 +1496,16 @@ Wolverhampton Wanderers</textarea>
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-trophy"></i>
-                        <h3>No Leagues</h3>
+                        <h3>No leagues yet</h3>
+                        <p>Create your first league and start managing.</p>
                         <button class="btn btn-primary" onclick="showSection('create')">Create League</button>
                     </div>
                 `;
                 return;
             }
 
-            // ── sorting ──
             const sortKey = document.getElementById('sortLeagues').value;
             const sorted = [...leagues];
-
             switch (sortKey) {
                 case 'newest':
                     sorted.sort((a, b) => b.id - a.id);
@@ -1520,19 +1526,19 @@ Wolverhampton Wanderers</textarea>
             sorted.forEach(league => {
                 const card = document.createElement('div');
                 card.className = 'league-card';
+                const wc = league.winnersCount || 1;
+                const rc = league.relegationCount || 3;
                 card.innerHTML = `
-                    <h3>${league.name} <span class="status status-ongoing">Active</span></h3>
+                    <h3>${league.name} <span class="status">Active</span></h3>
                     <div class="league-details">
-                        <p><i class="fas fa-shield-alt"></i> ${league.teams.length} teams</p>
-                        <p><i class="fas fa-calendar"></i> Season: 2023-2024</p>
-                        <p style="font-size:0.85rem;color:#888;margin-top:6px;">
-                            <i class="far fa-clock"></i> ${new Date(league.id).toLocaleDateString()}
-                        </p>
+                        <p><i class="fas fa-users"></i> ${league.teams.length} teams</p>
+                        <p><i class="fas fa-trophy" style="color:#4ade80;"></i> ${wc} winner${wc > 1 ? 's' : ''} &middot; <i class="fas fa-arrow-down" style="color:#f87171;"></i> ${rc} relegation${rc > 1 ? 's' : ''}</p>
+                        <p style="font-size:0.8rem;color:#64748b;">${new Date(league.id).toLocaleDateString()}</p>
                     </div>
                     <div class="league-actions">
                         <button class="action-btn" onclick="showLeagueDetails(${league.id})"><i class="fas fa-eye"></i> View</button>
                         <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i> Delete</button>
+                        <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -1546,7 +1552,8 @@ Wolverhampton Wanderers</textarea>
             currentLeagueId = leagueId;
             currentWeek = 1;
             document.getElementById('leagueTitle').textContent = league.name;
-            populateLeagueTable(league.table);
+
+            populateLeagueTable(league);
             generateWeekSelector(league);
             populateFixtures(league.fixtures, currentWeek);
             document.getElementById('league-details').style.display = 'block';
@@ -1574,14 +1581,15 @@ Wolverhampton Wanderers</textarea>
             }
         }
 
-        function populateLeagueTable(tableData) {
+        function populateLeagueTable(league) {
             const tbody = document.querySelector('#leagueTable tbody');
             tbody.innerHTML = '';
 
-            const league = leagues.find(l => l.id === currentLeagueId);
-            if (league) {
-                league.table.forEach((team, idx) => { previousRankings[team.name] = idx + 1; });
-            }
+            const tableData = league.table || [];
+            const winnersCount = league.winnersCount || 1;
+            const relegationCount = league.relegationCount || 3;
+
+            tableData.forEach((team, idx) => { previousRankings[team.name] = idx + 1; });
 
             const sorted = [...tableData].sort((a, b) => {
                 if (b.points !== a.points) return b.points - a.points;
@@ -1591,6 +1599,14 @@ Wolverhampton Wanderers</textarea>
 
             sorted.forEach((team, index) => {
                 const row = document.createElement('tr');
+                const pos = index + 1;
+
+                if (pos <= winnersCount) {
+                    row.className = 'winner-row';
+                } else if (pos > sorted.length - relegationCount) {
+                    row.className = 'relegation-row';
+                }
+
                 const formInd = team.form.map(r => {
                     const cls = r === 'W' ? 'form-win' : r === 'D' ? 'form-draw' : 'form-loss';
                     return `<span class="form-indicator ${cls}">${r}</span>`;
@@ -1600,14 +1616,14 @@ Wolverhampton Wanderers</textarea>
 
                 let move = '<span class="movement movement-same">—</span>';
                 if (previousRankings[team.name]) {
-                    if (index + 1 < previousRankings[team.name]) move = '<span class="movement movement-up">▲</span>';
-                    else if (index + 1 > previousRankings[team.name]) move =
-                    '<span class="movement movement-down">▼</span>';
+                    if (pos < previousRankings[team.name]) move = '<span class="movement movement-up">▲</span>';
+                    else if (pos > previousRankings[team.name]) move =
+                        '<span class="movement movement-down">▼</span>';
                 }
 
                 row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${move} ${team.name}</td>
+                    <td>${pos}</td>
+                    <td><span class="team-cell">${move} ${team.name}</span></td>
                     <td>${team.played}</td>
                     <td>${team.wins}</td>
                     <td>${team.draws}</td>
@@ -1629,7 +1645,7 @@ Wolverhampton Wanderers</textarea>
 
             if (weekFixtures.length === 0) {
                 container.innerHTML =
-                    `<div class="empty-state"><i class="fas fa-futbol"></i><h3>No Fixtures</h3></div>`;
+                    `<div class="empty-state" style="padding:32px;"><i class="fas fa-futbol"></i><h3>No fixtures</h3></div>`;
                 return;
             }
 
@@ -1638,7 +1654,7 @@ Wolverhampton Wanderers</textarea>
                 card.className = 'fixture-card';
                 card.innerHTML = `
                     <div class="fixture-teams">
-                        <div class="team"><div class="team-name">${fixture.home}</div><div>(Home)</div></div>
+                        <div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div>
                         <div class="vs-container">
                             <input type="number" min="0" class="score-input" value="${fixture.homeScore !== null ? fixture.homeScore : ''}" 
                                 data-fixture-id="${fixture.id}" data-team="home" onchange="updateScore(this)">
@@ -1646,7 +1662,7 @@ Wolverhampton Wanderers</textarea>
                             <input type="number" min="0" class="score-input" value="${fixture.awayScore !== null ? fixture.awayScore : ''}" 
                                 data-fixture-id="${fixture.id}" data-team="away" onchange="updateScore(this)">
                         </div>
-                        <div class="team"><div class="team-name">${fixture.away}</div><div>(Away)</div></div>
+                        <div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div>
                     </div>
                 `;
                 container.appendChild(card);
@@ -1698,10 +1714,10 @@ Wolverhampton Wanderers</textarea>
             });
             league.table = recalculateTable(league);
             saveLeagues();
-            populateLeagueTable(league.table);
+            populateLeagueTable(league);
             populateFixtures(league.fixtures, currentWeek);
             closeModal('editTeamsModal');
-            showNotification('Updated successfully');
+            showNotification('Teams updated');
         }
 
         // ─── BACKUP & RESTORE ────────────────────────────────────────────
@@ -1714,18 +1730,18 @@ Wolverhampton Wanderers</textarea>
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(leagues));
             const a = document.createElement('a');
             a.setAttribute("href", dataStr);
-            a.setAttribute("download", "monarch_league_backup_" + new Date().toLocaleDateString() + ".json");
+            a.setAttribute("download", "league_arena_backup.json");
             document.body.appendChild(a);
             a.click();
             a.remove();
-            showNotification('Backup file downloaded!');
+            showNotification('Backup downloaded');
         }
 
         function copyBackupData() {
             const el = document.getElementById('backupData');
             el.select();
             document.execCommand('copy');
-            showNotification('Copied to clipboard!');
+            showNotification('Copied to clipboard');
         }
 
         function restoreData() {
@@ -1735,14 +1751,18 @@ Wolverhampton Wanderers</textarea>
             const handleRestore = (jsonString) => {
                 try {
                     const parsed = JSON.parse(jsonString);
-                    if (!Array.isArray(parsed)) throw new Error('Invalid format');
+                    if (!Array.isArray(parsed)) throw new Error('Invalid');
+                    parsed.forEach(l => {
+                        if (l.winnersCount === undefined) l.winnersCount = 1;
+                        if (l.relegationCount === undefined) l.relegationCount = 3;
+                    });
                     leagues = parsed;
                     saveLeagues();
                     renderLeagues();
-                    showNotification('Data restored successfully!');
+                    showNotification('Restored successfully');
                     closeModal('backupModal');
                     if (currentLeagueId) showLeagueDetails(currentLeagueId);
-                } catch (e) {
+                } catch {
                     showNotification('Invalid backup data', 'error');
                 }
             };
@@ -1754,11 +1774,11 @@ Wolverhampton Wanderers</textarea>
             } else if (textArea.value.trim() !== '') {
                 handleRestore(textArea.value.trim());
             } else {
-                showNotification('Please select a file or paste data', 'error');
+                showNotification('Select a file or paste data', 'error');
             }
         }
 
-        // ─── CREATE FORM HELPERS ────────────────────────────────────────
+        // ─── CREATE HELPERS ──────────────────────────────────────────────
         function updateTeamNamesPreview() {
             const count = parseInt(document.getElementById('teams').value);
             const names = document.getElementById('teamNames').value.split('\n');
@@ -1767,7 +1787,7 @@ Wolverhampton Wanderers</textarea>
             container.innerHTML = '';
             for (let i = 0; i < count; i++) {
                 const d = document.createElement('div');
-                d.textContent = names[i] || `Team ${i+1}`;
+                d.textContent = names[i]?.trim() || `Team ${i + 1}`;
                 container.appendChild(d);
             }
         }
@@ -1807,6 +1827,8 @@ Wolverhampton Wanderers</textarea>
         // ─── TABS ────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
             loadLeagues();
+            // Ensure home is visible by default
+            showSection('home');
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
