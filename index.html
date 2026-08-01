@@ -1071,13 +1071,13 @@
                 <div class="form-group">
                     <label for="winnersCount"><i class="fas fa-trophy" style="color:#4ade80;"></i> Winners</label>
                     <input type="number" id="winnersCount" min="0" max="10" value="1" />
-                    <p class="info-text">Top teams highlighted in green.</p>
+                    <p class="info-text">Top teams highlighted in green. Set to 0 for none.</p>
                 </div>
 
                 <div class="form-group">
                     <label for="relegationCount"><i class="fas fa-arrow-down" style="color:#f87171;"></i> Relegation</label>
                     <input type="number" id="relegationCount" min="0" max="10" value="3" />
-                    <p class="info-text">Bottom teams highlighted in red.</p>
+                    <p class="info-text">Bottom teams highlighted in red. Set to 0 for none.</p>
                 </div>
 
                 <div class="form-group">
@@ -1526,8 +1526,9 @@ Wolverhampton Wanderers</textarea>
             sorted.forEach(league => {
                 const card = document.createElement('div');
                 card.className = 'league-card';
-                const wc = league.winnersCount || 1;
-                const rc = league.relegationCount || 3;
+                // Use nullish coalescing to correctly handle 0 values
+                const wc = league.winnersCount ?? 1;
+                const rc = league.relegationCount ?? 3;
                 card.innerHTML = `
                     <h3>${league.name} <span class="status">Active</span></h3>
                     <div class="league-details">
@@ -1586,8 +1587,9 @@ Wolverhampton Wanderers</textarea>
             tbody.innerHTML = '';
 
             const tableData = league.table || [];
-            const winnersCount = league.winnersCount || 1;
-            const relegationCount = league.relegationCount || 3;
+            // Use nullish coalescing to correctly handle 0 values
+            const winnersCount = league.winnersCount ?? 1;
+            const relegationCount = league.relegationCount ?? 3;
 
             tableData.forEach((team, idx) => { previousRankings[team.name] = idx + 1; });
 
@@ -1601,9 +1603,10 @@ Wolverhampton Wanderers</textarea>
                 const row = document.createElement('tr');
                 const pos = index + 1;
 
-                if (pos <= winnersCount) {
+                // Highlight logic: only applies if winnersCount or relegationCount > 0
+                if (winnersCount > 0 && pos <= winnersCount) {
                     row.className = 'winner-row';
-                } else if (pos > sorted.length - relegationCount) {
+                } else if (relegationCount > 0 && pos > sorted.length - relegationCount) {
                     row.className = 'relegation-row';
                 }
 
