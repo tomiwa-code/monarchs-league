@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>League Arena</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -678,21 +678,38 @@
         }
 
         .score-input {
-            width: 50px;
-            padding: 8px 6px;
+            width: 54px;
+            padding: 8px 4px;
             text-align: center;
             background: #0f172a;
             border: 1px solid #2a3445;
             border-radius: 6px;
             color: #f1f5f9;
-            font-size: 1rem;
+            font-size: 16px !important;
+            /* prevent iOS zoom */
             font-weight: 600;
+            touch-action: manipulation;
+            /* prevent double-tap zoom */
+            -webkit-touch-callout: none;
+            -webkit-text-size-adjust: 100%;
+            min-height: 44px;
+            /* comfortable tap target */
         }
 
         .score-input:focus {
             border-color: #60a5fa;
             outline: none;
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+        }
+
+        /* hide number input spinners */
+        .score-input::-webkit-inner-spin-button,
+        .score-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .score-input {
+            -moz-appearance: textfield;
         }
 
         .vs {
@@ -972,8 +989,16 @@
 
             .vs-container {
                 margin: 8px 0;
-                flex-direction: column;
+                flex-direction: row;
+                justify-content: center;
                 gap: 8px;
+            }
+
+            .score-input {
+                width: 48px;
+                font-size: 16px !important;
+                padding: 8px 2px;
+                min-height: 44px;
             }
 
             .team {
@@ -998,6 +1023,24 @@
             th,
             td {
                 padding: 10px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .score-input {
+                width: 42px;
+                font-size: 16px !important;
+                padding: 6px 2px;
+                min-height: 40px;
+            }
+
+            .vs-container {
+                gap: 4px;
+            }
+
+            .vs {
+                font-size: 0.7rem;
+                min-width: 20px;
             }
         }
     </style>
@@ -1526,7 +1569,6 @@ Wolverhampton Wanderers</textarea>
             sorted.forEach(league => {
                 const card = document.createElement('div');
                 card.className = 'league-card';
-                // Use nullish coalescing to correctly handle 0 values
                 const wc = league.winnersCount ?? 1;
                 const rc = league.relegationCount ?? 3;
                 card.innerHTML = `
@@ -1587,7 +1629,6 @@ Wolverhampton Wanderers</textarea>
             tbody.innerHTML = '';
 
             const tableData = league.table || [];
-            // Use nullish coalescing to correctly handle 0 values
             const winnersCount = league.winnersCount ?? 1;
             const relegationCount = league.relegationCount ?? 3;
 
@@ -1603,7 +1644,6 @@ Wolverhampton Wanderers</textarea>
                 const row = document.createElement('tr');
                 const pos = index + 1;
 
-                // Highlight logic: only applies if winnersCount or relegationCount > 0
                 if (winnersCount > 0 && pos <= winnersCount) {
                     row.className = 'winner-row';
                 } else if (relegationCount > 0 && pos > sorted.length - relegationCount) {
@@ -1655,15 +1695,27 @@ Wolverhampton Wanderers</textarea>
             weekFixtures.forEach(fixture => {
                 const card = document.createElement('div');
                 card.className = 'fixture-card';
+
+                const homeVal = fixture.homeScore !== null ? fixture.homeScore : '';
+                const awayVal = fixture.awayScore !== null ? fixture.awayScore : '';
+
                 card.innerHTML = `
                     <div class="fixture-teams">
                         <div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div>
                         <div class="vs-container">
-                            <input type="number" min="0" class="score-input" value="${fixture.homeScore !== null ? fixture.homeScore : ''}" 
-                                data-fixture-id="${fixture.id}" data-team="home" onchange="updateScore(this)">
+                            <input type="number" min="0" step="1" inputmode="numeric" 
+                                class="score-input" value="${homeVal}" 
+                                data-fixture-id="${fixture.id}" data-team="home" 
+                                onchange="updateScore(this)" 
+                                autocomplete="off" autocorrect="off" spellcheck="false" 
+                                pattern="[0-9]*" enterkeyhint="done">
                             <div class="vs">VS</div>
-                            <input type="number" min="0" class="score-input" value="${fixture.awayScore !== null ? fixture.awayScore : ''}" 
-                                data-fixture-id="${fixture.id}" data-team="away" onchange="updateScore(this)">
+                            <input type="number" min="0" step="1" inputmode="numeric" 
+                                class="score-input" value="${awayVal}" 
+                                data-fixture-id="${fixture.id}" data-team="away" 
+                                onchange="updateScore(this)" 
+                                autocomplete="off" autocorrect="off" spellcheck="false" 
+                                pattern="[0-9]*" enterkeyhint="done">
                         </div>
                         <div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div>
                     </div>
@@ -1830,7 +1882,6 @@ Wolverhampton Wanderers</textarea>
         // ─── TABS ────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
             loadLeagues();
-            // Ensure home is visible by default
             showSection('home');
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
