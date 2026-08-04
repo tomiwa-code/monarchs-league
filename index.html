@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>League Arena</title>
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0b1120" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
@@ -686,14 +691,11 @@
             border-radius: 6px;
             color: #f1f5f9;
             font-size: 16px !important;
-            /* prevent iOS zoom */
             font-weight: 600;
             touch-action: manipulation;
-            /* prevent double-tap zoom */
             -webkit-touch-callout: none;
             -webkit-text-size-adjust: 100%;
             min-height: 44px;
-            /* comfortable tap target */
         }
 
         .score-input:focus {
@@ -702,7 +704,6 @@
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
         }
 
-        /* hide number input spinners */
         .score-input::-webkit-inner-spin-button,
         .score-input::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -1897,6 +1898,13 @@ Wolverhampton Wanderers</textarea>
             updateTeamNamesPreview();
             if (leagues.length > 0) renderLeagues();
         });
+
+        // ─── SERVICE WORKER REGISTRATION ──────────────────────────────
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed:', err));
+        }
     </script>
 </body>
 </html>
