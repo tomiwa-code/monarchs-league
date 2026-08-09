@@ -1033,6 +1033,28 @@
             padding: 10px 24px;
             font-size: 0.9rem;
         }
+
+        /* spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #2a3445;
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -1352,27 +1374,55 @@ Wolverhampton Wanderers</textarea>
     </div>
 
     <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
 
     <script>
-        console.log('League Arena script starting...');
+        /*
+         * ═══════════════════════════════════════════════════════════════════
+         *  SUPABASE SETUP – Run these SQL commands in your Supabase SQL Editor
+         *  before using cloud features.
+         * ═══════════════════════════════════════════════════════════════════
+         *
+         * CREATE TABLE IF NOT EXISTS users (
+         *     username TEXT PRIMARY KEY,
+         *     access_code TEXT NOT NULL,
+         *     created_at TIMESTAMPTZ DEFAULT NOW()
+         * );
+         *
+         * CREATE TABLE IF NOT EXISTS leagues (
+         *     id BIGINT NOT NULL,
+         *     username TEXT NOT NULL,
+         *     data JSONB NOT NULL,
+         *     -- optional: updated_at TIMESTAMPTZ DEFAULT NOW(),
+         *     PRIMARY KEY (id, username),
+         *     CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
+         * );
+         *
+         * -- For quick testing, disable RLS:
+         * ALTER TABLE users DISABLE ROW LEVEL SECURITY;
+         * ALTER TABLE leagues DISABLE ROW LEVEL SECURITY;
+         *
+         * -- Or enable RLS with policies (see docs for details)
+         */
 
-        // ─── SUPABASE INIT (safe) ──────────────────────────────────────
-        // ********** REPLACE WITH YOUR SUPABASE PROJECT DETAILS **********
-        const SUPABASE_URL = 'https://hbvpnslzoulogjivoipv.supabase.co';          // e.g. 'https://xxxxx.supabase.co'
-        const SUPABASE_ANON_KEY = 'sb_publishable_UTf_89tttlvxQ0N4JAqQaw_iXl7ocpm'; // e.g. 'eyJhbGciOiJIUzI1NiIs...'
-        // **************************************************************
+        // ═══════════════════════════════════════════════════════════════════
+        //  1.  SUPABASE CONFIG — REPLACE WITH YOUR PROJECT DETAILS
+        // ═══════════════════════════════════════════════════════════════════
+        const SUPABASE_URL = 'https://hbvpnslzoulogjivoipv.supabase.co'; // your project URL
+        const SUPABASE_ANON_KEY = 'sb_publishable_UTf_89tttlvxQ0N4JAqQaw_iXl7ocpm'; // your anon key
 
+        // ─── Supabase client ──────────────────────────────────────────────
         let supabaseClient = null;
         try {
             if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase client initialized.');
+                console.log('✅ Supabase client ready.');
             } else {
-                console.warn('Supabase library not loaded. Cloud features will be disabled.');
+                console.warn('⚠️ Supabase library not loaded. Cloud features disabled.');
             }
         } catch (e) {
-            console.warn('Failed to initialize Supabase:', e);
+            console.warn('⚠️ Failed to init Supabase:', e);
         }
 
         // ─── DATA ──────────────────────────────────────────────────────────
@@ -1559,7 +1609,6 @@ Wolverhampton Wanderers</textarea>
                         home.points += 1;
                         home.form.push('D');
                         away.draws++;
-                        away.points += 1;
                         away.form.push('D');
                     }
                 }
@@ -1601,13 +1650,13 @@ Wolverhampton Wanderers</textarea>
 
             if (leagues.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-trophy"></i>
-                        <h3>No leagues yet</h3>
-                        <p>Create your first league and start managing.</p>
-                        <button class="btn btn-primary" onclick="showSection('create')">Create League</button>
-                    </div>
-                `;
+                        <div class="empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <h3>No leagues yet</h3>
+                            <p>Create your first league and start managing.</p>
+                            <button class="btn btn-primary" onclick="showSection('create')">Create League</button>
+                        </div>
+                    `;
                 return;
             }
 
@@ -1636,18 +1685,18 @@ Wolverhampton Wanderers</textarea>
                 const wc = league.winnersCount ?? 1;
                 const rc = league.relegationCount ?? 3;
                 card.innerHTML = `
-                    <h3>${league.name} <span class="status">Active</span></h3>
-                    <div class="league-details">
-                        <p><i class="fas fa-users"></i> ${league.teams.length} teams</p>
-                        <p><i class="fas fa-trophy" style="color:#4ade80;"></i> ${wc} winner${wc > 1 ? 's' : ''} &middot; <i class="fas fa-arrow-down" style="color:#f87171;"></i> ${rc} relegation${rc > 1 ? 's' : ''}</p>
-                        <p style="font-size:0.8rem;color:#64748b;">${new Date(league.id).toLocaleDateString()}</p>
-                    </div>
-                    <div class="league-actions">
-                        <button class="action-btn" onclick="showLeagueDetails(${league.id})"><i class="fas fa-eye"></i> View</button>
-                        <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
+                        <h3>${league.name} <span class="status">Active</span></h3>
+                        <div class="league-details">
+                            <p><i class="fas fa-users"></i> ${league.teams.length} teams</p>
+                            <p><i class="fas fa-trophy" style="color:#4ade80;"></i> ${wc} winner${wc > 1 ? 's' : ''} &middot; <i class="fas fa-arrow-down" style="color:#f87171;"></i> ${rc} relegation${rc > 1 ? 's' : ''}</p>
+                            <p style="font-size:0.8rem;color:#64748b;">${new Date(league.id).toLocaleDateString()}</p>
+                        </div>
+                        <div class="league-actions">
+                            <button class="action-btn" onclick="showLeagueDetails(${league.id})"><i class="fas fa-eye"></i> View</button>
+                            <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
                 container.appendChild(card);
             });
         }
@@ -1731,18 +1780,18 @@ Wolverhampton Wanderers</textarea>
                 }
 
                 row.innerHTML = `
-                    <td>${pos}</td>
-                    <td><span class="team-cell">${move} ${team.name}</span></td>
-                    <td>${team.played}</td>
-                    <td>${team.wins}</td>
-                    <td>${team.draws}</td>
-                    <td>${team.losses}</td>
-                    <td>${team.gf}</td>
-                    <td>${team.ga}</td>
-                    <td>${team.gd >= 0 ? '+' : ''}${team.gd}</td>
-                    <td><strong>${team.points}</strong></td>
-                    <td>${formInd}${emptyInd}</td>
-                `;
+                        <td>${pos}</td>
+                        <td><span class="team-cell">${move} ${team.name}</span></td>
+                        <td>${team.played}</td>
+                        <td>${team.wins}</td>
+                        <td>${team.draws}</td>
+                        <td>${team.losses}</td>
+                        <td>${team.gf}</td>
+                        <td>${team.ga}</td>
+                        <td>${team.gd >= 0 ? '+' : ''}${team.gd}</td>
+                        <td><strong>${team.points}</strong></td>
+                        <td>${formInd}${emptyInd}</td>
+                    `;
                 tbody.appendChild(row);
             });
         }
@@ -1766,26 +1815,26 @@ Wolverhampton Wanderers</textarea>
                 const awayVal = fixture.awayScore !== null ? fixture.awayScore : '';
 
                 card.innerHTML = `
-                    <div class="fixture-teams">
-                        <div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div>
-                        <div class="vs-container">
-                            <input type="number" min="0" step="1" inputmode="numeric" 
-                                class="score-input" value="${homeVal}" 
-                                data-fixture-id="${fixture.id}" data-team="home" 
-                                onchange="updateScore(this)" 
-                                autocomplete="off" autocorrect="off" spellcheck="false" 
-                                pattern="[0-9]*" enterkeyhint="done">
-                            <div class="vs">VS</div>
-                            <input type="number" min="0" step="1" inputmode="numeric" 
-                                class="score-input" value="${awayVal}" 
-                                data-fixture-id="${fixture.id}" data-team="away" 
-                                onchange="updateScore(this)" 
-                                autocomplete="off" autocorrect="off" spellcheck="false" 
-                                pattern="[0-9]*" enterkeyhint="done">
+                        <div class="fixture-teams">
+                            <div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div>
+                            <div class="vs-container">
+                                <input type="number" min="0" step="1" inputmode="numeric" 
+                                    class="score-input" value="${homeVal}" 
+                                    data-fixture-id="${fixture.id}" data-team="home" 
+                                    onchange="updateScore(this)" 
+                                    autocomplete="off" autocorrect="off" spellcheck="false" 
+                                    pattern="[0-9]*" enterkeyhint="done">
+                                <div class="vs">VS</div>
+                                <input type="number" min="0" step="1" inputmode="numeric" 
+                                    class="score-input" value="${awayVal}" 
+                                    data-fixture-id="${fixture.id}" data-team="away" 
+                                    onchange="updateScore(this)" 
+                                    autocomplete="off" autocorrect="off" spellcheck="false" 
+                                    pattern="[0-9]*" enterkeyhint="done">
+                            </div>
+                            <div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div>
                         </div>
-                        <div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div>
-                    </div>
-                `;
+                    `;
                 container.appendChild(card);
             });
         }
@@ -1824,7 +1873,7 @@ Wolverhampton Wanderers</textarea>
             const league = leagues.find(l => l.id === currentLeagueId);
             if (!league) return;
             const newNames = document.getElementById('editTeamNames').value.split('\n').map(n => n.trim()).filter(n => n
-            .length > 0);
+                .length > 0);
             if (newNames.length !== league.teams.length) {
                 showNotification('Cannot change team count', 'error');
                 return;
@@ -1907,7 +1956,10 @@ Wolverhampton Wanderers</textarea>
         }
         window.restoreData = restoreData;
 
-        // ─── CLOUD OPERATIONS ──────────────────────────────────────────────
+        // ═══════════════════════════════════════════════════════════════════
+        //  2.  CLOUD OPERATIONS  —  Upload (needs username + access code)
+        //                          Load  (needs username only)
+        // ═══════════════════════════════════════════════════════════════════
 
         async function uploadToCloud(username, accessCode) {
             if (!supabaseClient) {
@@ -1918,38 +1970,67 @@ Wolverhampton Wanderers</textarea>
                 showNotification('Username and access code required', 'error');
                 return;
             }
-            // Verify user exists and code matches
-            const { data: user, error: userError } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('username', username)
-                .eq('access_code', accessCode)
-                .maybeSingle();
-
-            if (userError || !user) {
-                showNotification('Invalid username or access code', 'error');
+            if (leagues.length === 0) {
+                showNotification('No leagues to upload. Create a league first.', 'error');
                 return;
             }
 
-            // For each league, upsert into leagues table
-            const promises = leagues.map(league => {
-                return supabaseClient
-                    .from('leagues')
-                    .upsert({
-                        id: league.id,
-                        username: username,
-                        data: league,
-                        created_at: new Date().toISOString()
-                    }, { onConflict: 'id,username' });
-            });
+            try {
+                // 1) Verify user exists AND access_code matches
+                const { data: user, error: userError } = await supabaseClient
+                    .from('users')
+                    .select('username, access_code')
+                    .eq('username', username)
+                    .eq('access_code', accessCode)
+                    .maybeSingle();
 
-            const results = await Promise.all(promises);
-            const errors = results.filter(r => r.error);
-            if (errors.length === 0) {
-                showNotification(`Uploaded ${leagues.length} leagues to cloud`);
-            } else {
-                showNotification('Error uploading some leagues', 'error');
-                console.error(errors);
+                if (userError || !user) {
+                    showNotification('❌ Invalid username or access code', 'error');
+                    console.error('User lookup error:', userError);
+                    return;
+                }
+
+                // 2) Upsert each league with detailed error logging
+                let successCount = 0;
+                let errorDetails = [];
+
+                for (const league of leagues) {
+                    // We no longer send 'updated_at' to avoid schema mismatch
+                    const { error } = await supabaseClient
+                        .from('leagues')
+                        .upsert({
+                            id: league.id,
+                            username: username,
+                            data: league
+                        }, { onConflict: 'id,username' });
+
+                    if (error) {
+                        errorDetails.push({
+                            leagueId: league.id,
+                            leagueName: league.name,
+                            message: error.message,
+                            details: error.details,
+                            hint: error.hint
+                        });
+                        console.error(`❌ Failed to upload league "${league.name}" (ID: ${league.id}):`, error);
+                    } else {
+                        successCount++;
+                    }
+                }
+
+                if (errorDetails.length === 0) {
+                    showNotification(`✅ Uploaded all ${leagues.length} leagues to cloud for user "${username}"`);
+                } else {
+                    const firstErr = errorDetails[0];
+                    let msg = `⚠️ Uploaded ${successCount}/${leagues.length} leagues. `;
+                    msg += `First error: ${firstErr.message}`;
+                    if (firstErr.hint) msg += ` (Hint: ${firstErr.hint})`;
+                    showNotification(msg, 'error');
+                    console.error('❌ Upload errors:', errorDetails);
+                }
+            } catch (err) {
+                showNotification('❌ Upload error: ' + err.message, 'error');
+                console.error(err);
             }
         }
         window.uploadToCloud = uploadToCloud;
@@ -1963,45 +2044,53 @@ Wolverhampton Wanderers</textarea>
                 showNotification('Username required', 'error');
                 return;
             }
-            // Check if user exists (no code check)
-            const { data: user, error: userError } = await supabaseClient
-                .from('users')
-                .select('username')
-                .eq('username', username)
-                .maybeSingle();
 
-            if (userError || !user) {
-                showNotification('Username not found', 'error');
-                return;
-            }
+            try {
+                // 1) Check if user exists (no access code check — anyone can load)
+                const { data: user, error: userError } = await supabaseClient
+                    .from('users')
+                    .select('username')
+                    .eq('username', username)
+                    .maybeSingle();
 
-            const { data: cloudLeagues, error } = await supabaseClient
-                .from('leagues')
-                .select('data')
-                .eq('username', username);
+                if (userError || !user) {
+                    showNotification(`Username "${username}" not found`, 'error');
+                    return;
+                }
 
-            if (error) {
-                showNotification('Error loading from cloud', 'error');
-                console.error(error);
-                return;
-            }
+                // 2) Fetch leagues for this user
+                const { data: cloudLeagues, error } = await supabaseClient
+                    .from('leagues')
+                    .select('data')
+                    .eq('username', username);
 
-            if (!cloudLeagues || cloudLeagues.length === 0) {
-                showNotification('No leagues found for this user', 'error');
-                return;
-            }
+                if (error) {
+                    showNotification('Error loading from cloud', 'error');
+                    console.error(error);
+                    return;
+                }
 
-            const loaded = cloudLeagues.map(item => item.data);
-            // Replace current leagues
-            leagues = loaded;
-            saveLeagues();
-            renderLeagues();
-            showNotification(`Loaded ${leagues.length} leagues`);
-            // If currently viewing a league, refresh
-            if (currentLeagueId) {
-                const stillExists = leagues.some(l => l.id === currentLeagueId);
-                if (stillExists) showLeagueDetails(currentLeagueId);
-                else showSection('leagues');
+                if (!cloudLeagues || cloudLeagues.length === 0) {
+                    showNotification(`No leagues found for "${username}"`, 'error');
+                    return;
+                }
+
+                const loaded = cloudLeagues.map(item => item.data);
+                // Replace local leagues
+                leagues = loaded;
+                saveLeagues();
+                renderLeagues();
+                showNotification(`✅ Loaded ${leagues.length} leagues from "${username}"`);
+
+                // If currently viewing a league, refresh
+                if (currentLeagueId) {
+                    const stillExists = leagues.some(l => l.id === currentLeagueId);
+                    if (stillExists) showLeagueDetails(currentLeagueId);
+                    else showSection('leagues');
+                }
+            } catch (err) {
+                showNotification('❌ Load error: ' + err.message, 'error');
+                console.error(err);
             }
         }
         window.loadFromCloud = loadFromCloud;
@@ -2027,8 +2116,16 @@ Wolverhampton Wanderers</textarea>
                 showNotification('Please fill all fields', 'error');
                 return;
             }
-            uploadToCloud(username, accessCode);
-            closeModal('uploadModal');
+            // show spinner
+            const btn = document.querySelector('#uploadModal .btn-primary');
+            btn.innerHTML = '<span class="spinner"></span> Uploading...';
+            btn.disabled = true;
+            uploadToCloud(username, accessCode)
+                .finally(() => {
+                    btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload';
+                    btn.disabled = false;
+                    closeModal('uploadModal');
+                });
         }
         window.handleUpload = handleUpload;
 
@@ -2038,8 +2135,15 @@ Wolverhampton Wanderers</textarea>
                 showNotification('Please enter username', 'error');
                 return;
             }
-            loadFromCloud(username);
-            closeModal('loadModal');
+            const btn = document.querySelector('#loadModal .btn-secondary');
+            btn.innerHTML = '<span class="spinner"></span> Loading...';
+            btn.disabled = true;
+            loadFromCloud(username)
+                .finally(() => {
+                    btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Load';
+                    btn.disabled = false;
+                    closeModal('loadModal');
+                });
         }
         window.handleLoad = handleLoad;
 
