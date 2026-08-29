@@ -1717,6 +1717,11 @@ Wolverhampton Wanderers</textarea>
          *
          * ALTER TABLE users DISABLE ROW LEVEL SECURITY;
          * ALTER TABLE leagues DISABLE ROW LEVEL SECURITY;
+         *
+         * PRIMARY FIX: If you get the "Could not find the 'updated_at' column" error,
+         * run these two commands in the SQL Editor:
+         * ALTER TABLE leagues ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+         * NOTIFY pgrst, 'reload schema';
          */
 
         // ═══════════════════════════════════════════════════════════════════
@@ -2684,7 +2689,7 @@ Wolverhampton Wanderers</textarea>
         window.restoreData = restoreData;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  12. CLOUD OPERATIONS – unchanged
+        //  12. CLOUD OPERATIONS (PRIMARY FIX APPLIED - updated_at is back)
         // ═══════════════════════════════════════════════════════════════════
         async function uploadToCloud(username, accessCode) {
             if (!isAdmin) {
@@ -2722,13 +2727,14 @@ Wolverhampton Wanderers</textarea>
                 let errorDetails = [];
 
                 for (const league of leagues) {
+                    // ✅ updated_at is included here (Primary Fix)
                     const { error } = await supabaseClient
                         .from('leagues')
                         .upsert({
                             id: league.id,
                             username: username,
                             data: league,
-                            updated_at: new Date().toISOString()
+                            updated_at: new Date().toISOString() 
                         }, { onConflict: 'id,username' });
 
                     if (error) {
