@@ -11,6 +11,8 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Chart.js for the Admin Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         /* ── all styles unchanged ── */
@@ -301,6 +303,34 @@
             font-size: 0.82rem;
             color: #94a3b8;
             line-height: 1.4;
+        }
+
+        /* ── NEW ADMIN CHART STYLES ── */
+        .admin-stats-section {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #1a2332;
+            border: 1px solid #2a3445;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .stats-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stats-title i {
+            color: #60a5fa;
+        }
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
         }
 
         .form-container {
@@ -1233,6 +1263,9 @@
             .visible-week-setting .range-labels {
                 justify-content: center;
             }
+            .chart-container {
+                height: 220px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1353,6 +1386,15 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ═══ NEW ADMIN CHART SECTION ═══ -->
+            <div id="adminStatsSection" class="admin-stats-section hidden">
+                <h3 class="stats-title"><i class="fas fa-chart-line"></i> Cloud Load Activity (Last 7 Days)</h3>
+                <div class="chart-container">
+                    <canvas id="loadStatsChart"></canvas>
+                </div>
+            </div>
+
         </section>
 
         <!-- ═══ CREATE ═══ -->
@@ -1456,11 +1498,9 @@ Wolverhampton Wanderers</textarea>
             <h2 class="section-title"><i class="fas fa-list"></i> My Leagues</h2>
 
             <div id="cloudActionsContainer" class="cloud-actions">
-                <!-- Upload button: hidden for non-admin -->
                 <button id="uploadCloudBtn" class="btn btn-primary" onclick="showUploadModal()">
                     <i class="fas fa-cloud-upload-alt"></i> Upload to Cloud
                 </button>
-                <!-- Load button: visible to everyone -->
                 <button id="loadCloudBtn" class="btn btn-secondary" onclick="showLoadModal()">
                     <i class="fas fa-cloud-download-alt"></i> Load from Cloud
                 </button>
@@ -1487,7 +1527,6 @@ Wolverhampton Wanderers</textarea>
 
             <h2 class="section-title"><i class="fas fa-trophy"></i> <span id="leagueTitle">Premier League</span></h2>
 
-            <!-- Admin action buttons -->
             <div id="adminActions" class="action-buttons hidden">
                 <button class="btn btn-secondary" onclick="showEditTeamsModal()">
                     <i class="fas fa-edit"></i> Edit Teams
@@ -1500,7 +1539,6 @@ Wolverhampton Wanderers</textarea>
                 </button>
             </div>
 
-            <!-- Visible Week Range Setting (admin only) -->
             <div id="visibleWeekSetting" class="visible-week-setting hidden">
                 <label><i class="fas fa-eye"></i> Public Visible Weeks</label>
                 <div class="range-labels">
@@ -1718,14 +1756,17 @@ Wolverhampton Wanderers</textarea>
          * ALTER TABLE users DISABLE ROW LEVEL SECURITY;
          * ALTER TABLE leagues DISABLE ROW LEVEL SECURITY;
          *
-         * PRIMARY FIX: If you get the "Could not find the 'updated_at' column" error,
-         * run these two commands in the SQL Editor:
-         * ALTER TABLE leagues ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
-         * NOTIFY pgrst, 'reload schema';
+         * NEW TABLE FOR CHART:
+         * CREATE TABLE IF NOT EXISTS load_events (
+         *     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+         *     username TEXT NOT NULL,
+         *     timestamp TIMESTAMPTZ DEFAULT NOW()
+         * );
+         * ALTER TABLE load_events DISABLE ROW LEVEL SECURITY;
          */
 
         // ═══════════════════════════════════════════════════════════════════
-        //  1.  SUPABASE CONFIG — REPLACE WITH YOUR PROJECT DETAILS
+        //  1.  SUPABASE CONFIG
         // ═══════════════════════════════════════════════════════════════════
         const SUPABASE_URL = 'https://hbvpnslzoulogjivoipv.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_UTf_89tttlvxQ0N4JAqQaw_iXl7ocpm';
@@ -1743,10 +1784,11 @@ Wolverhampton Wanderers</textarea>
         }
 
         // ═══════════════════════════════════════════════════════════════════
-        //  2.  ADMIN STATE – now based on cloud credentials
+        //  2.  ADMIN STATE
         // ═══════════════════════════════════════════════════════════════════
         let isAdmin = false;
         let currentUsername = '';
+        let loadStatsChart = null; // Chart.js instance
 
         function loadAdminState() {
             try {
@@ -1769,7 +1811,7 @@ Wolverhampton Wanderers</textarea>
             }));
         }
 
-        // Login using the users table – same credentials as cloud upload
+        // Login
         async function login(username, password) {
             if (!supabaseClient) {
                 showNotification('Supabase not available. Check your connection.', 'error');
@@ -1787,7 +1829,6 @@ Wolverhampton Wanderers</textarea>
                     showNotification('❌ Invalid username or access code', 'error');
                     return false;
                 }
-                // Success
                 isAdmin = true;
                 currentUsername = username;
                 saveAdminState();
@@ -1820,7 +1861,7 @@ Wolverhampton Wanderers</textarea>
             document.getElementById('userMenuDropdown').classList.remove('open');
         }
 
-        // Change password – update the users table
+        // Change password
         async function changePassword(oldPw, newPw, confirmPw) {
             if (newPw !== confirmPw) {
                 showNotification('New passwords do not match', 'error');
@@ -1839,7 +1880,6 @@ Wolverhampton Wanderers</textarea>
                 return false;
             }
             try {
-                // Verify old password
                 const { data: user, error: userError } = await supabaseClient
                     .from('users')
                     .select('username')
@@ -1852,7 +1892,6 @@ Wolverhampton Wanderers</textarea>
                     return false;
                 }
 
-                // Update to new password
                 const { error: updateError } = await supabaseClient
                     .from('users')
                     .update({ access_code: newPw })
@@ -1880,6 +1919,7 @@ Wolverhampton Wanderers</textarea>
             const userNameSpan = document.getElementById('userMenuName');
             const uploadBtn = document.getElementById('uploadCloudBtn');
             const loadBtn = document.getElementById('loadCloudBtn');
+            const statsSection = document.getElementById('adminStatsSection');
 
             if (isAdmin) {
                 badge.classList.remove('hidden');
@@ -1891,6 +1931,10 @@ Wolverhampton Wanderers</textarea>
                 document.getElementById('createLeagueCard')?.classList.remove('disabled');
                 if (uploadBtn) uploadBtn.style.display = 'inline-flex';
                 if (loadBtn) loadBtn.style.display = 'inline-flex';
+                
+                // Show Chart & Load Data
+                if (statsSection) statsSection.classList.remove('hidden');
+                fetchLoadStats();
             } else {
                 badge.classList.add('hidden');
                 loginBtn.classList.remove('hidden');
@@ -1900,6 +1944,9 @@ Wolverhampton Wanderers</textarea>
                 document.getElementById('createLeagueCard')?.classList.add('disabled');
                 if (uploadBtn) uploadBtn.style.display = 'none';
                 if (loadBtn) loadBtn.style.display = 'inline-flex';
+                
+                // Hide Chart
+                if (statsSection) statsSection.classList.add('hidden');
             }
             if (document.getElementById('leagues').style.display !== 'none') {
                 renderLeagues();
@@ -1922,7 +1969,6 @@ Wolverhampton Wanderers</textarea>
                 showNotification('Please enter both username and access code', 'error');
                 return;
             }
-            // Call async login
             login(username, password).then(success => {
                 if (success && currentLeagueId) {
                     const league = leagues.find(l => l.id === currentLeagueId);
@@ -1981,7 +2027,6 @@ Wolverhampton Wanderers</textarea>
             }
         });
 
-        // ─── Handle Create League click ──────────────────────────────────
         function handleCreateLeagueClick() {
             if (!isAdmin) {
                 showNotification('Please login as admin to create leagues', 'error');
@@ -1993,7 +2038,7 @@ Wolverhampton Wanderers</textarea>
         window.handleCreateLeagueClick = handleCreateLeagueClick;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  3.  DATA LAYER (leagues) – unchanged
+        //  3.  DATA LAYER (leagues)
         // ═══════════════════════════════════════════════════════════════════
         let leagues = [];
         let currentLeagueId = null;
@@ -2023,7 +2068,7 @@ Wolverhampton Wanderers</textarea>
         }
 
         // ═══════════════════════════════════════════════════════════════════
-        //  4.  NAVIGATION – unchanged
+        //  4.  NAVIGATION & NOTIFICATIONS
         // ═══════════════════════════════════════════════════════════════════
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
@@ -2040,9 +2085,6 @@ Wolverhampton Wanderers</textarea>
         }
         window.showSection = showSection;
 
-        // ═══════════════════════════════════════════════════════════════════
-        //  5.  NOTIFICATION – unchanged
-        // ═══════════════════════════════════════════════════════════════════
         function showNotification(msg, type = 'success') {
             const n = document.getElementById('notification');
             document.getElementById('notifMsg').textContent = msg;
@@ -2052,16 +2094,13 @@ Wolverhampton Wanderers</textarea>
         }
         window.showNotification = showNotification;
 
-        // ═══════════════════════════════════════════════════════════════════
-        //  6.  MODALS – unchanged
-        // ═══════════════════════════════════════════════════════════════════
         function closeModal(id) {
             document.getElementById(id).style.display = 'none';
         }
         window.closeModal = closeModal;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  7.  CREATE LEAGUE – unchanged (uses admin check)
+        //  5.  CREATE LEAGUE, TABLE, & FIXTURES
         // ═══════════════════════════════════════════════════════════════════
         function createLeague() {
             if (!isAdmin) {
@@ -2099,8 +2138,7 @@ Wolverhampton Wanderers</textarea>
                 name: leagueName,
                 teams: teamNames,
                 fixtures: generateFixtures(teamNames),
-                distribution: document.querySelector('.distribution-option.selected').id.includes('custom') ? 'custom' :
-                    'random',
+                distribution: document.querySelector('.distribution-option.selected').id.includes('custom') ? 'custom' : 'random',
                 winnersCount: winnersCount,
                 relegationCount: relegationCount,
                 publicVisibleWeekStart: 1,
@@ -2117,16 +2155,7 @@ Wolverhampton Wanderers</textarea>
 
         function generateInitialTable(teams) {
             return teams.map(t => ({
-                name: t,
-                played: 0,
-                wins: 0,
-                draws: 0,
-                losses: 0,
-                gf: 0,
-                ga: 0,
-                gd: 0,
-                points: 0,
-                form: []
+                name: t, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0, form: []
             }));
         }
 
@@ -2147,11 +2176,8 @@ Wolverhampton Wanderers</textarea>
                 for (let i = 0; i < matchesPerWeek; i++) {
                     fixtures.push({
                         id: Date.now() + Math.floor(Math.random() * 100000) + i,
-                        home: copy[i],
-                        away: copy[n - 1 - i],
-                        homeScore: null,
-                        awayScore: null,
-                        week: week
+                        home: copy[i], away: copy[n - 1 - i],
+                        homeScore: null, awayScore: null, week: week
                     });
                 }
             }
@@ -2160,11 +2186,8 @@ Wolverhampton Wanderers</textarea>
             firstHalf.forEach(f => {
                 fixtures.push({
                     id: Date.now() + Math.floor(Math.random() * 100000) + 999,
-                    home: f.away,
-                    away: f.home,
-                    homeScore: null,
-                    awayScore: null,
-                    week: f.week + totalWeeks / 2
+                    home: f.away, away: f.home,
+                    homeScore: null, awayScore: null, week: f.week + totalWeeks / 2
                 });
             });
 
@@ -2181,32 +2204,19 @@ Wolverhampton Wanderers</textarea>
                     const away = table.find(t => t.name === fix.away);
                     if (!home || !away) return;
 
-                    home.played++;
-                    away.played++;
-                    home.gf += fix.homeScore;
-                    home.ga += fix.awayScore;
-                    away.gf += fix.awayScore;
-                    away.ga += fix.homeScore;
+                    home.played++; away.played++;
+                    home.gf += fix.homeScore; home.ga += fix.awayScore;
+                    away.gf += fix.awayScore; away.ga += fix.homeScore;
 
                     if (fix.homeScore > fix.awayScore) {
-                        home.wins++;
-                        home.points += 3;
-                        home.form.push('W');
-                        away.losses++;
-                        away.form.push('L');
+                        home.wins++; home.points += 3; home.form.push('W');
+                        away.losses++; away.form.push('L');
                     } else if (fix.homeScore < fix.awayScore) {
-                        away.wins++;
-                        away.points += 3;
-                        away.form.push('W');
-                        home.losses++;
-                        home.form.push('L');
+                        away.wins++; away.points += 3; away.form.push('W');
+                        home.losses++; home.form.push('L');
                     } else {
-                        home.draws++;
-                        home.points += 1;
-                        home.form.push('D');
-                        away.draws++;
-                        away.points += 1;
-                        away.form.push('D');
+                        home.draws++; home.points += 1; home.form.push('D');
+                        away.draws++; away.points += 1; away.form.push('D');
                     }
                 }
             });
@@ -2245,7 +2255,7 @@ Wolverhampton Wanderers</textarea>
         window.updateScore = updateScore;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  8.  RENDER LEAGUES – unchanged
+        //  6.  RENDER LEAGUES
         // ═══════════════════════════════════════════════════════════════════
         function renderLeagues() {
             const container = document.getElementById('leaguesContainer');
@@ -2266,20 +2276,11 @@ Wolverhampton Wanderers</textarea>
             const sortKey = document.getElementById('sortLeagues').value;
             const sorted = [...leagues];
             switch (sortKey) {
-                case 'newest':
-                    sorted.sort((a, b) => b.id - a.id);
-                    break;
-                case 'oldest':
-                    sorted.sort((a, b) => a.id - b.id);
-                    break;
-                case 'name-asc':
-                    sorted.sort((a, b) => a.name.localeCompare(b.name));
-                    break;
-                case 'name-desc':
-                    sorted.sort((a, b) => b.name.localeCompare(a.name));
-                    break;
-                default:
-                    sorted.sort((a, b) => b.id - a.id);
+                case 'newest': sorted.sort((a, b) => b.id - a.id); break;
+                case 'oldest': sorted.sort((a, b) => a.id - b.id); break;
+                case 'name-asc': sorted.sort((a, b) => a.name.localeCompare(b.name)); break;
+                case 'name-desc': sorted.sort((a, b) => b.name.localeCompare(a.name)); break;
+                default: sorted.sort((a, b) => b.id - a.id);
             }
 
             sorted.forEach(league => {
@@ -2312,7 +2313,7 @@ Wolverhampton Wanderers</textarea>
         window.renderLeagues = renderLeagues;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  9.  LEAGUE DETAILS – unchanged
+        //  7.  LEAGUE DETAILS
         // ═══════════════════════════════════════════════════════════════════
         function showLeagueDetails(leagueId) {
             const league = leagues.find(l => l.id === leagueId);
@@ -2382,13 +2383,6 @@ Wolverhampton Wanderers</textarea>
             league.publicVisibleWeekEnd = end;
             saveLeagues();
             generateWeekSelector(league);
-            if (!isAdmin) {
-                if (currentWeek < start || currentWeek > end) {
-                    currentWeek = start;
-                    document.getElementById('currentWeek').textContent = start;
-                    populateFixtures(league.fixtures, start);
-                }
-            }
             showNotification(`Public visible weeks set to ${start} – ${end}`);
         }
         window.setPublicVisibleWeekRange = setPublicVisibleWeekRange;
@@ -2425,16 +2419,6 @@ Wolverhampton Wanderers</textarea>
                     };
                 }
                 container.appendChild(btn);
-            }
-
-            if (!isAdmin && (currentWeek < start || currentWeek > end)) {
-                currentWeek = start;
-                document.getElementById('currentWeek').textContent = start;
-                populateFixtures(league.fixtures, start);
-                const btns = container.querySelectorAll('.week-btn');
-                btns.forEach(b => {
-                    if (parseInt(b.textContent) === start) b.classList.add('active');
-                });
             }
         }
 
@@ -2479,12 +2463,8 @@ Wolverhampton Wanderers</textarea>
                 row.innerHTML = `
                         <td>${pos}</td>
                         <td><span class="team-cell">${move} ${team.name}</span></td>
-                        <td>${team.played}</td>
-                        <td>${team.wins}</td>
-                        <td>${team.draws}</td>
-                        <td>${team.losses}</td>
-                        <td>${team.gf}</td>
-                        <td>${team.ga}</td>
+                        <td>${team.played}</td><td>${team.wins}</td><td>${team.draws}</td>
+                        <td>${team.losses}</td><td>${team.gf}</td><td>${team.ga}</td>
                         <td>${team.gd >= 0 ? '+' : ''}${team.gd}</td>
                         <td><strong>${team.points}</strong></td>
                         <td>${formInd}${emptyInd}</td>
@@ -2536,15 +2516,13 @@ Wolverhampton Wanderers</textarea>
                             </div>
                         `;
                 } else {
-                    const homeDisplay = homeVal !== '' ? homeVal : '';
-                    const awayDisplay = awayVal !== '' ? awayVal : '';
                     card.innerHTML = `
                             <div class="fixture-teams">
                                 <div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div>
                                 <div class="vs-container">
-                                    <span class="score-readonly">${homeDisplay}</span>
+                                    <span class="score-readonly">${homeVal}</span>
                                     <span class="score-readonly vs-sep">VS</span>
-                                    <span class="score-readonly">${awayDisplay}</span>
+                                    <span class="score-readonly">${awayVal}</span>
                                 </div>
                                 <div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div>
                             </div>
@@ -2555,7 +2533,7 @@ Wolverhampton Wanderers</textarea>
         }
 
         // ═══════════════════════════════════════════════════════════════════
-        //  10. LEAGUE ACTIONS – unchanged
+        //  8.  LEAGUE ACTIONS
         // ═══════════════════════════════════════════════════════════════════
         function deleteLeague(leagueId) {
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
@@ -2593,8 +2571,7 @@ Wolverhampton Wanderers</textarea>
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
             const league = leagues.find(l => l.id === currentLeagueId);
             if (!league) return;
-            const newNames = document.getElementById('editTeamNames').value.split('\n').map(n => n.trim()).filter(n => n
-                .length > 0);
+            const newNames = document.getElementById('editTeamNames').value.split('\n').map(n => n.trim()).filter(n => n.length > 0);
             if (newNames.length !== league.teams.length) {
                 showNotification('Cannot change team count', 'error');
                 return;
@@ -2616,7 +2593,7 @@ Wolverhampton Wanderers</textarea>
         window.saveTeamEdits = saveTeamEdits;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  11. BACKUP & RESTORE – unchanged
+        //  9.  BACKUP & RESTORE
         // ═══════════════════════════════════════════════════════════════════
         function showBackupModal() {
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
@@ -2689,8 +2666,117 @@ Wolverhampton Wanderers</textarea>
         window.restoreData = restoreData;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  12. CLOUD OPERATIONS (PRIMARY FIX APPLIED - updated_at is back)
+        //  10. CLOUD OPERATIONS (With Tracking)
         // ═══════════════════════════════════════════════════════════════════
+        
+        // Function to log a load event to the database
+        async function logCloudLoadEvent(username) {
+            if (!supabaseClient || !username) return;
+            try {
+                await supabaseClient
+                    .from('load_events')
+                    .insert({ username: username });
+                console.log('Load event logged.');
+            } catch (e) {
+                console.warn('Failed to log load event:', e);
+            }
+        }
+
+        // Fetch stats for the last 7 days and render the chart
+        async function fetchLoadStats() {
+            if (!supabaseClient) return;
+
+            const now = new Date();
+            const startDate = new Date(now);
+            startDate.setDate(now.getDate() - 6); // 6 days ago (7 days total)
+            startDate.setHours(0, 0, 0, 0);
+
+            const { data, error } = await supabaseClient
+                .from('load_events')
+                .select('timestamp')
+                .gte('timestamp', startDate.toISOString());
+
+            if (error) {
+                console.error('Error fetching stats:', error);
+                return;
+            }
+
+            // Prepare labels and data arrays
+            const labels = [];
+            const counts = {};
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(now.getDate() - i);
+                const key = d.toISOString().split('T')[0]; // YYYY-MM-DD
+                const label = d.toLocaleDateString('en-US', { weekday: 'short' });
+                labels.push(label);
+                counts[key] = 0;
+            }
+
+            // Count events per day
+            (data || []).forEach(row => {
+                const key = new Date(row.timestamp).toISOString().split('T')[0];
+                if (counts[key] !== undefined) counts[key]++;
+            });
+
+            const chartData = Object.values(counts);
+
+            // Render Chart.js
+            const ctx = document.getElementById('loadStatsChart').getContext('2d');
+            
+            // Destroy previous chart if it exists
+            if (loadStatsChart) {
+                loadStatsChart.destroy();
+            }
+
+            loadStatsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cloud Loads',
+                        data: chartData,
+                        backgroundColor: 'rgba(96, 165, 250, 0.7)', // #60a5fa
+                        borderColor: '#60a5fa',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        hoverBackgroundColor: '#f1f5f9'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            titleColor: '#fff',
+                            bodyColor: '#94a3b8',
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' loads';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#2a3445' },
+                            ticks: { color: '#94a3b8', stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
         async function uploadToCloud(username, accessCode) {
             if (!isAdmin) {
                 showNotification('Admin required to upload', 'error');
@@ -2727,14 +2813,13 @@ Wolverhampton Wanderers</textarea>
                 let errorDetails = [];
 
                 for (const league of leagues) {
-                    // ✅ updated_at is included here (Primary Fix)
                     const { error } = await supabaseClient
                         .from('leagues')
                         .upsert({
                             id: league.id,
                             username: username,
                             data: league,
-                            updated_at: new Date().toISOString() 
+                            updated_at: new Date().toISOString()
                         }, { onConflict: 'id,username' });
 
                     if (error) {
@@ -2799,6 +2884,9 @@ Wolverhampton Wanderers</textarea>
                     showNotification(`No leagues found for "${username}"`, 'error');
                     return;
                 }
+
+                // ✅ LOG THE EVENT HERE (For Admin Chart)
+                await logCloudLoadEvent(username);
 
                 const loaded = cloudLeagues.map(item => item.data);
                 loaded.forEach(l => {
@@ -2877,7 +2965,7 @@ Wolverhampton Wanderers</textarea>
         window.handleLoad = handleLoad;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  13. CREATE HELPERS – unchanged
+        //  11. CREATE HELPERS
         // ═══════════════════════════════════════════════════════════════════
         function updateTeamNamesPreview() {
             const count = parseInt(document.getElementById('teams').value);
@@ -2928,7 +3016,7 @@ Wolverhampton Wanderers</textarea>
         window.shuffleTeamNames = shuffleTeamNames;
 
         // ═══════════════════════════════════════════════════════════════════
-        //  14. TABS & INIT
+        //  12. TABS & INIT
         // ═══════════════════════════════════════════════════════════════════
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, initializing...');
@@ -2963,7 +3051,7 @@ Wolverhampton Wanderers</textarea>
         });
 
         // ═══════════════════════════════════════════════════════════════════
-        //  15. SERVICE WORKER
+        //  13. SERVICE WORKER
         // ═══════════════════════════════════════════════════════════════════
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
