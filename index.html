@@ -11,33 +11,144 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Chart.js for the Admin Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background: #0b1120; color: #e8edf5; min-height: 100vh; padding: 0; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px 24px; }
-        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: #0f172a; border-bottom: 1px solid #1e2a3a; position: sticky; top: 0; z-index: 500; backdrop-filter: blur(8px); flex-wrap: wrap; gap: 12px; transition: opacity 0.25s ease, transform 0.25s ease; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+        body {
+            background: #0b1120;
+            color: #e8edf5;
+            min-height: 100vh;
+            padding: 0;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px 24px;
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: #0f172a;
+            border-bottom: 1px solid #1e2a3a;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            backdrop-filter: blur(8px);
+            flex-wrap: wrap;
+            gap: 12px;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
         .navbar.hidden-nav { display: none; }
-        .navbar-brand { font-size: 1.3rem; font-weight: 700; color: #f1f5f9; display: flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; }
+        .navbar-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
         .navbar-brand span { color: #60a5fa; }
         .navbar-brand i { color: #60a5fa; font-size: 1.4rem; }
-        .navbar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .navbar-actions .btn { padding: 8px 18px; font-size: 0.85rem; border-radius: 30px; }
-        .admin-badge { background: #1a3a2a; color: #86efac; padding: 4px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; display: flex; align-items: center; gap: 6px; }
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .navbar-actions .btn {
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            border-radius: 30px;
+        }
+        .admin-badge {
+            background: #1a3a2a;
+            color: #86efac;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
         .admin-badge i { font-size: 0.7rem; }
         .user-menu { position: relative; display: inline-block; }
-        .user-menu-toggle { background: #1e293b; border: 1px solid #334155; color: #f1f5f9; padding: 6px 14px 6px 10px; border-radius: 30px; cursor: pointer; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .user-menu-toggle {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #f1f5f9;
+            padding: 6px 14px 6px 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
         .user-menu-toggle:hover { border-color: #60a5fa; background: #2a3445; }
-        .user-menu-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #1a2332; border: 1px solid #2a3445; border-radius: 12px; min-width: 180px; padding: 6px 0; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); z-index: 600; }
+        .user-menu-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            background: #1a2332;
+            border: 1px solid #2a3445;
+            border-radius: 12px;
+            min-width: 180px;
+            padding: 6px 0;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            z-index: 600;
+        }
         .user-menu-dropdown.open { display: block; }
-        .user-menu-dropdown button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 18px; background: none; border: none; color: #e8edf5; font-size: 0.85rem; cursor: pointer; transition: background 0.15s; text-align: left; }
+        .user-menu-dropdown button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 18px;
+            background: none;
+            border: none;
+            color: #e8edf5;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.15s;
+            text-align: left;
+        }
         .user-menu-dropdown button:hover { background: #2a3445; }
         .user-menu-dropdown button i { width: 18px; color: #94a3b8; }
         .user-menu-dropdown .logout-btn i { color: #f87171; }
 
-        .content-section { display: none; animation: fadeIn 0.3s ease; padding: 12px 0 40px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .section-title { font-size: 1.6rem; font-weight: 600; margin-bottom: 28px; color: #f1f5f9; letter-spacing: -0.3px; text-align: center; }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+            padding: 12px 0 40px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 28px;
+            color: #f1f5f9;
+            letter-spacing: -0.3px;
+            text-align: center;
+        }
         .section-title i { color: #60a5fa; margin-right: 10px; }
         .hero { text-align: center; padding: 20px 20px 10px; max-width: 720px; margin: 0 auto; }
         .hero .app-title { font-size: 3.4rem; font-weight: 700; letter-spacing: -1.5px; color: #f1f5f9; margin-bottom: 8px; }
@@ -57,13 +168,11 @@
         .feature-item h4 { font-size: 0.95rem; font-weight: 600; color: #f1f5f9; margin-bottom: 2px; }
         .feature-item p { font-size: 0.82rem; color: #94a3b8; line-height: 1.4; }
 
-        /* ── NEW LOAD COUNT STYLES (replaces chart) ── */
-        .admin-stats-section { max-width: 600px; margin: 40px auto; background: #1a2332; border: 1px solid #2a3445; border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+        /* ── NEW ADMIN CHART STYLES ── */
+        .admin-stats-section { max-width: 800px; margin: 40px auto; background: #1a2332; border: 1px solid #2a3445; border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
         .stats-title { font-size: 1.2rem; font-weight: 600; color: #f1f5f9; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .stats-title i { color: #60a5fa; }
-        .stat-box { background: #0f172a; border: 1px solid #2a3445; border-radius: 12px; padding: 24px; text-align: center; }
-        .stat-number { font-size: 3rem; font-weight: 700; color: #60a5fa; line-height: 1; margin-bottom: 8px; }
-        .stat-label { color: #94a3b8; font-size: 0.9rem; font-weight: 500; }
+        .chart-container { position: relative; height: 280px; width: 100%; }
 
         .form-container { max-width: 540px; margin: 0 auto; background: #1a2332; padding: 32px 36px; border-radius: 18px; border: 1px solid #2a3445; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
         .form-group { margin-bottom: 22px; }
@@ -216,7 +325,7 @@
             .btn-icon-only { padding: 6px 10px; font-size: 1rem; min-width: 34px; }
             .visible-week-setting { flex-direction: column; align-items: stretch; gap: 8px; }
             .visible-week-setting .range-labels { justify-content: center; }
-            .stat-number { font-size: 2.5rem; }
+            .chart-container { height: 220px; }
         }
         @media (max-width: 480px) {
             .score-input, .score-readonly { width: 42px; font-size: 16px !important; padding: 6px 2px; min-height: 40px; }
@@ -298,12 +407,11 @@
                 </div>
             </div>
 
-            <!-- ═══ NEW LOAD COUNT DISPLAY (replaces chart) ═══ -->
+            <!-- ═══ NEW ADMIN CHART SECTION ═══ -->
             <div id="adminStatsSection" class="admin-stats-section hidden">
-                <h3 class="stats-title"><i class="fas fa-cloud-download-alt"></i> Cloud Load Activity</h3>
-                <div class="stat-box">
-                    <div id="loadCountDisplay" class="stat-number">0</div>
-                    <p class="stat-label">Total Loads (Last 7 Days)</p>
+                <h3 class="stats-title"><i class="fas fa-chart-line"></i> Cloud Load Activity (Last 7 Days)</h3>
+                <div class="chart-container">
+                    <canvas id="loadStatsChart"></canvas>
                 </div>
             </div>
 
@@ -311,8 +419,12 @@
 
         <!-- ═══ CREATE ═══ -->
         <section id="create" class="content-section" style="display:none;">
-            <button class="back-btn" onclick="showSection('home')"><i class="fas fa-arrow-left"></i> Home</button>
+            <button class="back-btn" onclick="showSection('home')">
+                <i class="fas fa-arrow-left"></i> Home
+            </button>
+
             <h2 class="section-title"><i class="fas fa-plus-circle"></i> Create League</h2>
+
             <div class="form-container">
                 <div class="form-group">
                     <label for="leagueName">League Name</label>
@@ -336,13 +448,18 @@
                     <label>Team Distribution</label>
                     <div class="distribution-options">
                         <div class="distribution-option selected" onclick="selectDistribution('custom')" id="custom-distribution">
-                            <i class="fas fa-edit"></i><h3>Custom</h3><p>Enter your own names</p>
+                            <i class="fas fa-edit"></i>
+                            <h3>Custom</h3>
+                            <p>Enter your own names</p>
                         </div>
                         <div class="distribution-option" onclick="selectDistribution('random')" id="random-distribution">
-                            <i class="fas fa-random"></i><h3>Randomize</h3><p>Shuffle the list</p>
+                            <i class="fas fa-random"></i>
+                            <h3>Randomize</h3>
+                            <p>Shuffle the list</p>
                         </div>
                     </div>
                 </div>
+
                 <div id="custom-team-section">
                     <div class="form-group">
                         <label for="teamNames">Team Names (one per line)</label>
@@ -369,25 +486,42 @@ Wolverhampton Wanderers</textarea>
                         <p class="info-text">Must match the number of teams above.</p>
                     </div>
                 </div>
+
                 <div id="random-team-section" class="hidden">
                     <div class="form-group">
                         <label>Shuffled Teams</label>
-                        <div class="team-names-box"><div class="team-list" id="randomTeamsPreview"></div></div>
-                        <button class="btn btn-secondary" style="width:100%;margin-top:12px;" onclick="shuffleTeamNames()"><i class="fas fa-sync-alt"></i> Shuffle Again</button>
+                        <div class="team-names-box">
+                            <div class="team-list" id="randomTeamsPreview"></div>
+                        </div>
+                        <button class="btn btn-secondary" style="width:100%;margin-top:12px;" onclick="shuffleTeamNames()">
+                            <i class="fas fa-sync-alt"></i> Shuffle Again
+                        </button>
                     </div>
                 </div>
-                <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="createLeague()"><i class="fas fa-check-circle"></i> Create League</button>
+
+                <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="createLeague()">
+                    <i class="fas fa-check-circle"></i> Create League
+                </button>
             </div>
         </section>
 
         <!-- ═══ MY LEAGUES ═══ -->
         <section id="leagues" class="content-section" style="display:none;">
-            <button class="back-btn" onclick="showSection('home')"><i class="fas fa-arrow-left"></i> Home</button>
+            <button class="back-btn" onclick="showSection('home')">
+                <i class="fas fa-arrow-left"></i> Home
+            </button>
+
             <h2 class="section-title"><i class="fas fa-list"></i> My Leagues</h2>
+
             <div id="cloudActionsContainer" class="cloud-actions">
-                <button id="uploadCloudBtn" class="btn btn-primary" onclick="showUploadModal()"><i class="fas fa-cloud-upload-alt"></i> Upload to Cloud</button>
-                <button id="loadCloudBtn" class="btn btn-secondary" onclick="showLoadModal()"><i class="fas fa-cloud-download-alt"></i> Load from Cloud</button>
+                <button id="uploadCloudBtn" class="btn btn-primary" onclick="showUploadModal()">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload to Cloud
+                </button>
+                <button id="loadCloudBtn" class="btn btn-secondary" onclick="showLoadModal()">
+                    <i class="fas fa-cloud-download-alt"></i> Load from Cloud
+                </button>
             </div>
+
             <div class="sort-control">
                 <label><i class="fas fa-sort"></i> Sort</label>
                 <select class="sort-select" id="sortLeagues" onchange="renderLeagues()">
@@ -397,18 +531,30 @@ Wolverhampton Wanderers</textarea>
                     <option value="name-desc">Z → A</option>
                 </select>
             </div>
+
             <div class="leagues-container" id="leaguesContainer"></div>
         </section>
 
         <!-- ═══ LEAGUE DETAILS ═══ -->
         <section id="league-details" class="content-section" style="display:none;">
-            <button class="back-btn" onclick="showSection('leagues')"><i class="fas fa-arrow-left"></i> Back</button>
+            <button class="back-btn" onclick="showSection('leagues')">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+
             <h2 class="section-title"><i class="fas fa-trophy"></i> <span id="leagueTitle">Premier League</span></h2>
+
             <div id="adminActions" class="action-buttons hidden">
-                <button class="btn btn-secondary" onclick="showEditTeamsModal()"><i class="fas fa-edit"></i> Edit Teams</button>
-                <button class="btn btn-secondary" onclick="showBackupModal()"><i class="fas fa-database"></i> Backup</button>
-                <button class="btn btn-danger-outline" onclick="deleteCurrentLeague()"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn btn-secondary" onclick="showEditTeamsModal()">
+                    <i class="fas fa-edit"></i> Edit Teams
+                </button>
+                <button class="btn btn-secondary" onclick="showBackupModal()">
+                    <i class="fas fa-database"></i> Backup
+                </button>
+                <button class="btn btn-danger-outline" onclick="deleteCurrentLeague()">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
             </div>
+
             <div id="visibleWeekSetting" class="visible-week-setting hidden">
                 <label><i class="fas fa-eye"></i> Public Visible Weeks</label>
                 <div class="range-labels">
@@ -419,95 +565,191 @@ Wolverhampton Wanderers</textarea>
                     <span class="hint">(non‑logged‑in users see all tabs, but only this range is clickable)</span>
                 </div>
             </div>
+
             <div class="tabs">
                 <button class="tab-btn active" data-tab="table">Table</button>
                 <button class="tab-btn" data-tab="fixtures">Fixtures</button>
             </div>
+
             <div class="tab-content active" id="table-tab">
                 <div class="table-container">
                     <table id="leagueTable">
-                        <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>Form</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Team</th>
+                                <th>P</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>GF</th>
+                                <th>GA</th>
+                                <th>GD</th>
+                                <th>Pts</th>
+                                <th>Form</th>
+                            </tr>
+                        </thead>
                         <tbody></tbody>
                     </table>
                 </div>
             </div>
+
             <div class="tab-content" id="fixtures-tab">
-                <div class="fixture-counter">Matchweek <span id="currentWeek">1</span></div>
+                <div class="fixture-counter">
+                    Matchweek <span id="currentWeek">1</span>
+                </div>
                 <div class="week-selector" id="weekSelector"></div>
                 <div class="fixtures-container" id="fixturesContainer"></div>
             </div>
         </section>
 
         <!-- ═══ MODALS ═══ -->
+        <!-- Login Modal -->
         <div class="modal" id="loginModal">
             <div class="modal-content" style="max-width:400px;">
-                <div class="modal-header"><h3 class="modal-title"><i class="fas fa-lock"></i> Admin Login</h3><button class="close-modal" onclick="closeModal('loginModal')">&times;</button></div>
-                <div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="Enter your cloud username" /></div>
-                <div class="form-group"><label>Password (Access Code)</label><input type="password" id="loginPassword" placeholder="Enter your cloud access code" /></div>
-                <button class="btn btn-primary" onclick="handleLogin()"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-lock"></i> Admin Login</h3>
+                    <button class="close-modal" onclick="closeModal('loginModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter your cloud username" />
+                </div>
+                <div class="form-group">
+                    <label>Password (Access Code)</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your cloud access code" />
+                </div>
+                <button class="btn btn-primary" onclick="handleLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
             </div>
         </div>
 
+        <!-- Change Password Modal -->
         <div class="modal" id="changePasswordModal">
             <div class="modal-content" style="max-width:400px;">
-                <div class="modal-header"><h3 class="modal-title"><i class="fas fa-key"></i> Change Password</h3><button class="close-modal" onclick="closeModal('changePasswordModal')">&times;</button></div>
-                <div class="form-group"><label>Current Password (Access Code)</label><input type="password" id="oldPassword" placeholder="Enter current access code" /></div>
-                <div class="form-group"><label>New Password (Access Code)</label><input type="password" id="newPassword" placeholder="Enter new access code" /></div>
-                <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword" placeholder="Confirm new access code" /></div>
-                <button class="btn btn-primary" onclick="handleChangePassword()"><i class="fas fa-save"></i> Update Password</button>
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-key"></i> Change Password</h3>
+                    <button class="close-modal" onclick="closeModal('changePasswordModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label>Current Password (Access Code)</label>
+                    <input type="password" id="oldPassword" placeholder="Enter current access code" />
+                </div>
+                <div class="form-group">
+                    <label>New Password (Access Code)</label>
+                    <input type="password" id="newPassword" placeholder="Enter new access code" />
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm new access code" />
+                </div>
+                <button class="btn btn-primary" onclick="handleChangePassword()">
+                    <i class="fas fa-save"></i> Update Password
+                </button>
             </div>
         </div>
 
+        <!-- Edit Teams Modal -->
         <div class="modal" id="editTeamsModal">
             <div class="modal-content">
-                <div class="modal-header"><h3 class="modal-title"><i class="fas fa-edit"></i> Edit Teams</h3><button class="close-modal" onclick="closeModal('editTeamsModal')">&times;</button></div>
-                <div class="form-group"><label for="editTeamNames">Team Names (one per line)</label><textarea id="editTeamNames" style="min-height:280px;"></textarea></div>
-                <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="saveTeamEdits()"><i class="fas fa-save"></i> Save Changes</button>
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-edit"></i> Edit Teams</h3>
+                    <button class="close-modal" onclick="closeModal('editTeamsModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label for="editTeamNames">Team Names (one per line)</label>
+                    <textarea id="editTeamNames" style="min-height:280px;"></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="saveTeamEdits()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
             </div>
         </div>
 
+        <!-- Backup Modal -->
         <div class="modal" id="backupModal">
             <div class="modal-content">
-                <div class="modal-header"><h3 class="modal-title"><i class="fas fa-database"></i> Backup &amp; Restore</h3><button class="close-modal" onclick="closeModal('backupModal')">&times;</button></div>
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-database"></i> Backup &amp; Restore</h3>
+                    <button class="close-modal" onclick="closeModal('backupModal')">&times;</button>
+                </div>
                 <div class="form-group">
-                    <label>Download / Copy Backup</label><textarea id="backupData" readonly style="min-height:70px;background:#0f172a;font-size:0.8rem;border-color:#2a3445;"></textarea>
+                    <label>Download / Copy Backup</label>
+                    <textarea id="backupData" readonly style="min-height:70px;background:#0f172a;font-size:0.8rem;border-color:#2a3445;"></textarea>
                     <div style="display:flex;gap:10px;margin-top:8px;">
-                        <button class="btn btn-secondary" style="flex:1;min-width:auto;padding:10px;" onclick="copyBackupData()"><i class="fas fa-copy"></i> Copy</button>
-                        <button class="btn btn-primary" style="flex:1;min-width:auto;padding:10px;" onclick="downloadBackupFile()"><i class="fas fa-download"></i> Download</button>
+                        <button class="btn btn-secondary" style="flex:1;min-width:auto;padding:10px;" onclick="copyBackupData()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button class="btn btn-primary" style="flex:1;min-width:auto;padding:10px;" onclick="downloadBackupFile()">
+                            <i class="fas fa-download"></i> Download
+                        </button>
                     </div>
                 </div>
+
                 <div class="form-group" style="border-top:1px solid #2a3445;padding-top:20px;">
-                    <label>Upload / Restore</label><input type="file" id="uploadFile" accept=".json" style="margin-bottom:8px;padding:8px;background:#0f172a;border-color:#2a3445;" />
+                    <label>Upload / Restore</label>
+                    <input type="file" id="uploadFile" accept=".json" style="margin-bottom:8px;padding:8px;background:#0f172a;border-color:#2a3445;" />
                     <textarea id="restoreData" placeholder="Or paste backup data here" style="min-height:70px;font-size:0.8rem;background:#0f172a;border-color:#2a3445;"></textarea>
-                    <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="restoreData()"><i class="fas fa-history"></i> Restore</button>
+                    <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="restoreData()">
+                        <i class="fas fa-history"></i> Restore
+                    </button>
                 </div>
             </div>
         </div>
 
+        <!-- Upload Modal -->
         <div class="modal" id="uploadModal">
             <div class="modal-content" style="max-width:400px;">
-                <div class="modal-header"><h3 class="modal-title"><i class="fas fa-cloud-upload-alt"></i> Upload to Cloud</h3><button class="close-modal" onclick="closeModal('uploadModal')">&times;</button></div>
-                <div class="form-group"><label>Username</label><input type="text" id="uploadUsername" placeholder="Enter username" /></div>
-                <div class="form-group"><label>Access Code</label><input type="password" id="uploadAccessCode" placeholder="Enter access code" /></div>
-                <button class="btn btn-primary" style="width:100%;" onclick="handleUpload()"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-cloud-upload-alt"></i> Upload to Cloud</h3>
+                    <button class="close-modal" onclick="closeModal('uploadModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="uploadUsername" placeholder="Enter username" />
+                </div>
+                <div class="form-group">
+                    <label>Access Code</label>
+                    <input type="password" id="uploadAccessCode" placeholder="Enter access code" />
+                </div>
+                <button class="btn btn-primary" style="width:100%;" onclick="handleUpload()">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                </button>
             </div>
         </div>
 
+        <!-- Load Modal -->
         <div class="modal" id="loadModal">
             <div class="modal-content" style="max-width:400px;">
-                <div class="modal-header"><h3 class="modal-title"><i class="fas fa-cloud-download-alt"></i> Load from Cloud</h3><button class="close-modal" onclick="closeModal('loadModal')">&times;</button></div>
-                <div class="form-group"><label>Username</label><input type="text" id="loadUsername" placeholder="Enter username" /></div>
-                <button class="btn btn-secondary" style="width:100%;" onclick="handleLoad()"><i class="fas fa-cloud-download-alt"></i> Load</button>
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-cloud-download-alt"></i> Load from Cloud</h3>
+                    <button class="close-modal" onclick="closeModal('loadModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loadUsername" placeholder="Enter username" />
+                </div>
+                <button class="btn btn-secondary" style="width:100%;" onclick="handleLoad()">
+                    <i class="fas fa-cloud-download-alt"></i> Load
+                </button>
             </div>
         </div>
 
-        <footer>League Arena &middot; A clean league manager</footer>
+        <footer>
+            League Arena &middot; A clean league manager
+        </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+
     <script>
-        /* 
-         * SETUP: Ensure you have run the SQL that creates the load_events table!
+        /*
+         * ═══════════════════════════════════════════════════════════════════
+         *  SUPABASE SETUP
+         * ═══════════════════════════════════════════════════════════════════
          */
 
         const SUPABASE_URL = 'https://hbvpnslzoulogjivoipv.supabase.co';
@@ -517,74 +759,160 @@ Wolverhampton Wanderers</textarea>
         try {
             if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase client ready.');
+            } else {
+                console.warn('⚠️ Supabase library not loaded.');
             }
-        } catch (e) { console.warn('Supabase init error:', e); }
+        } catch (e) {
+            console.warn('⚠️ Failed to init Supabase:', e);
+        }
 
         let isAdmin = false;
         let currentUsername = '';
-        let leagues = [];
-        let currentLeagueId = null;
-        let currentWeek = 1;
-        let previousRankings = {};
+        let loadStatsChart = null; // Chart.js instance
 
         function loadAdminState() {
             try {
                 const saved = localStorage.getItem('leagueArenaAdmin');
                 if (saved) {
                     const data = JSON.parse(saved);
-                    if (data && data.isAdmin && data.username) { isAdmin = true; currentUsername = data.username; }
+                    if (data && data.isAdmin && data.username) {
+                        isAdmin = true;
+                        currentUsername = data.username;
+                    }
                 }
-            } catch {}
+            } catch { /* ignore */ }
             updateUIForAdminState();
         }
 
         function saveAdminState() {
-            localStorage.setItem('leagueArenaAdmin', JSON.stringify({ isAdmin: isAdmin, username: currentUsername }));
+            localStorage.setItem('leagueArenaAdmin', JSON.stringify({
+                isAdmin: isAdmin,
+                username: currentUsername
+            }));
         }
 
         async function login(username, password) {
-            if (!supabaseClient) return false;
-            const { data, error } = await supabaseClient.from('users').select('username').eq('username', username).eq('access_code', password).maybeSingle();
-            if (error || !data) { showNotification('❌ Invalid username or access code', 'error'); return false; }
-            isAdmin = true; currentUsername = username; saveAdminState(); updateUIForAdminState();
-            closeModal('loginModal'); showNotification(`✅ Logged in as ${username}`); return true;
+            if (!supabaseClient) {
+                showNotification('Supabase not available. Check your connection.', 'error');
+                return false;
+            }
+            try {
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .select('username')
+                    .eq('username', username)
+                    .eq('access_code', password)
+                    .maybeSingle();
+
+                if (error || !data) {
+                    showNotification('❌ Invalid username or access code', 'error');
+                    return false;
+                }
+                isAdmin = true;
+                currentUsername = username;
+                saveAdminState();
+                updateUIForAdminState();
+                closeModal('loginModal');
+                showNotification(`✅ Logged in as ${username}`);
+                return true;
+            } catch (err) {
+                showNotification('❌ Login error: ' + err.message, 'error');
+                return false;
+            }
         }
 
         function logout() {
-            isAdmin = false; currentUsername = '';
-            localStorage.removeItem('leagueArenaAdmin'); updateUIForAdminState();
-            closeModal('changePasswordModal'); showNotification('Logged out');
+            isAdmin = false;
+            currentUsername = '';
+            localStorage.removeItem('leagueArenaAdmin');
+            updateUIForAdminState();
+            closeModal('changePasswordModal');
+            if (currentLeagueId) {
+                const league = leagues.find(l => l.id === currentLeagueId);
+                if (league) {
+                    populateLeagueTable(league);
+                    generateWeekSelector(league);
+                    populateFixtures(league.fixtures, currentWeek);
+                }
+            }
+            showNotification('Logged out');
             showSection('home');
+            document.getElementById('userMenuDropdown').classList.remove('open');
         }
 
         async function changePassword(oldPw, newPw, confirmPw) {
-            if (newPw !== confirmPw) return false;
-            if (newPw.length < 4) return false;
-            if (!isAdmin || !currentUsername) return false;
-            const { data: user, error: userError } = await supabaseClient.from('users').select('username').eq('username', currentUsername).eq('access_code', oldPw).maybeSingle();
-            if (userError || !user) { showNotification('Current password is incorrect', 'error'); return false; }
-            const { error: updateError } = await supabaseClient.from('users').update({ access_code: newPw }).eq('username', currentUsername);
-            if (updateError) { showNotification('Failed to update password: ' + updateError.message, 'error'); return false; }
-            showNotification('✅ Password changed successfully'); closeModal('changePasswordModal'); return true;
+            if (newPw !== confirmPw) {
+                showNotification('New passwords do not match', 'error');
+                return false;
+            }
+            if (newPw.length < 4) {
+                showNotification('Password must be at least 4 characters', 'error');
+                return false;
+            }
+            if (!isAdmin || !currentUsername) {
+                showNotification('You must be logged in to change password', 'error');
+                return false;
+            }
+            if (!supabaseClient) {
+                showNotification('Supabase not available.', 'error');
+                return false;
+            }
+            try {
+                const { data: user, error: userError } = await supabaseClient
+                    .from('users')
+                    .select('username')
+                    .eq('username', currentUsername)
+                    .eq('access_code', oldPw)
+                    .maybeSingle();
+
+                if (userError || !user) {
+                    showNotification('Current password is incorrect', 'error');
+                    return false;
+                }
+
+                const { error: updateError } = await supabaseClient
+                    .from('users')
+                    .update({ access_code: newPw })
+                    .eq('username', currentUsername);
+
+                if (updateError) {
+                    showNotification('Failed to update password: ' + updateError.message, 'error');
+                    return false;
+                }
+
+                showNotification('✅ Password changed successfully');
+                closeModal('changePasswordModal');
+                return true;
+            } catch (err) {
+                showNotification('❌ Error: ' + err.message, 'error');
+                return false;
+            }
         }
 
         function updateUIForAdminState() {
             const badge = document.getElementById('adminBadge');
             const loginBtn = document.getElementById('loginNavBtn');
             const userMenu = document.getElementById('userMenu');
-            const statsSection = document.getElementById('adminStatsSection');
+            const userNameSpan = document.getElementById('userMenuName');
             const uploadBtn = document.getElementById('uploadCloudBtn');
+            const loadBtn = document.getElementById('loadCloudBtn');
+            const statsSection = document.getElementById('adminStatsSection');
 
             if (isAdmin) {
                 badge.classList.remove('hidden');
                 loginBtn.classList.add('hidden');
                 userMenu.classList.remove('hidden');
+                userNameSpan.textContent = currentUsername || 'admin';
                 document.getElementById('adminActions')?.classList.remove('hidden');
                 document.getElementById('visibleWeekSetting')?.classList.remove('hidden');
                 document.getElementById('createLeagueCard')?.classList.remove('disabled');
                 if (uploadBtn) uploadBtn.style.display = 'inline-flex';
+                if (loadBtn) loadBtn.style.display = 'inline-flex';
+                
+                // Show Chart & Load Data
                 if (statsSection) statsSection.classList.remove('hidden');
-                fetchLoadCount(); // Update count when admin logs in
+                fetchLoadStats();
             } else {
                 badge.classList.add('hidden');
                 loginBtn.classList.remove('hidden');
@@ -593,38 +921,127 @@ Wolverhampton Wanderers</textarea>
                 document.getElementById('visibleWeekSetting')?.classList.add('hidden');
                 document.getElementById('createLeagueCard')?.classList.add('disabled');
                 if (uploadBtn) uploadBtn.style.display = 'none';
+                if (loadBtn) loadBtn.style.display = 'inline-flex';
+                
+                // Hide Chart
                 if (statsSection) statsSection.classList.add('hidden');
+            }
+            if (document.getElementById('leagues').style.display !== 'none') {
+                renderLeagues();
             }
         }
 
-        // ─── LOAD COUNT FUNCTIONS (Replaced Chart.js) ───
-        async function logCloudLoadEvent(username) {
-            if (!supabaseClient || !username) return;
-            try {
-                const { error } = await supabaseClient.from('load_events').insert({ username: username });
-                if (error) console.error('Log error (Check SQL):', error.message);
-                else console.log('Load event logged.');
-            } catch (e) { console.error('Error logging:', e); }
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginPassword').focus();
+        }
+        window.openLoginModal = openLoginModal;
+
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            if (!username || !password) {
+                showNotification('Please enter both username and access code', 'error');
+                return;
+            }
+            login(username, password).then(success => {
+                if (success && currentLeagueId) {
+                    const league = leagues.find(l => l.id === currentLeagueId);
+                    if (league) {
+                        populateLeagueTable(league);
+                        generateWeekSelector(league);
+                        populateFixtures(league.fixtures, currentWeek);
+                    }
+                }
+                renderLeagues();
+            });
+        }
+        window.handleLogin = handleLogin;
+
+        function openChangePasswordModal() {
+            if (!isAdmin) {
+                showNotification('Please login first', 'error');
+                return;
+            }
+            document.getElementById('changePasswordModal').style.display = 'flex';
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+        window.openChangePasswordModal = openChangePasswordModal;
+
+        function handleChangePassword() {
+            const oldPw = document.getElementById('oldPassword').value.trim();
+            const newPw = document.getElementById('newPassword').value.trim();
+            const confirmPw = document.getElementById('confirmPassword').value.trim();
+            changePassword(oldPw, newPw, confirmPw);
+        }
+        window.handleChangePassword = handleChangePassword;
+
+        function toggleUserMenu() {
+            const dd = document.getElementById('userMenuDropdown');
+            dd.classList.toggle('open');
+        }
+        window.toggleUserMenu = toggleUserMenu;
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('userMenu');
+            if (menu && !menu.contains(e.target)) {
+                document.getElementById('userMenuDropdown').classList.remove('open');
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('loginModal').style.display === 'flex') {
+                    handleLogin();
+                }
+                if (document.getElementById('changePasswordModal').style.display === 'flex') {
+                    handleChangePassword();
+                }
+            }
+        });
+
+        function handleCreateLeagueClick() {
+            if (!isAdmin) {
+                showNotification('Please login as admin to create leagues', 'error');
+                openLoginModal();
+                return;
+            }
+            showSection('create');
+        }
+        window.handleCreateLeagueClick = handleCreateLeagueClick;
+
+        let leagues = [];
+        let currentLeagueId = null;
+        let currentWeek = 1;
+        let previousRankings = {};
+
+        function loadLeagues() {
+            const saved = localStorage.getItem('leagueArenaData');
+            if (saved) {
+                try {
+                    leagues = JSON.parse(saved);
+                    leagues.forEach(l => {
+                        if (l.winnersCount === undefined) l.winnersCount = 1;
+                        if (l.relegationCount === undefined) l.relegationCount = 3;
+                        if (l.publicVisibleWeekStart === undefined) l.publicVisibleWeekStart = 1;
+                        if (l.publicVisibleWeekEnd === undefined) {
+                            const totalWeeks = (l.teams.length - 1) * 2;
+                            l.publicVisibleWeekEnd = totalWeeks;
+                        }
+                    });
+                } catch { leagues = []; }
+            }
         }
 
-        async function fetchLoadCount() {
-            if (!supabaseClient) return;
-            const now = new Date();
-            const startDate = new Date(now);
-            startDate.setDate(now.getDate() - 6);
-            startDate.setHours(0,0,0,0);
-
-            const { data, error } = await supabaseClient
-                .from('load_events')
-                .select('id')
-                .gte('timestamp', startDate.toISOString());
-
-            if (error) { console.error('Fetch error:', error.message); return; }
-
-            const count = data ? data.length : 0;
-            document.getElementById('loadCountDisplay').textContent = count;
+        function saveLeagues() {
+            localStorage.setItem('leagueArenaData', JSON.stringify(leagues));
         }
 
+        // NEW: Refresh chart when going to Home
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
             const el = document.getElementById(sectionId);
@@ -632,7 +1049,8 @@ Wolverhampton Wanderers</textarea>
             const navbar = document.getElementById('mainNavbar');
             if (sectionId === 'home') {
                 navbar.classList.remove('hidden-nav');
-                if (isAdmin) fetchLoadCount(); // Refresh count when going home
+                // Refresh chart every time admin goes home
+                if (isAdmin) fetchLoadStats();
             } else {
                 navbar.classList.add('hidden-nav');
             }
@@ -655,92 +1073,33 @@ Wolverhampton Wanderers</textarea>
         }
         window.closeModal = closeModal;
 
-        function openLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('loginPassword').focus();
-        }
-        window.openLoginModal = openLoginModal;
-
-        function handleLogin() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-            if (!username || !password) { showNotification('Please enter both username and access code', 'error'); return; }
-            login(username, password).then(success => {
-                if (success && currentLeagueId) {
-                    const league = leagues.find(l => l.id === currentLeagueId);
-                    if (league) { populateLeagueTable(league); generateWeekSelector(league); populateFixtures(league.fixtures, currentWeek); }
-                }
-                renderLeagues();
-            });
-        }
-        window.handleLogin = handleLogin;
-
-        function openChangePasswordModal() {
-            if (!isAdmin) { showNotification('Please login first', 'error'); return; }
-            document.getElementById('changePasswordModal').style.display = 'flex';
-            document.getElementById('oldPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-        }
-        window.openChangePasswordModal = openChangePasswordModal;
-
-        function handleChangePassword() {
-            const oldPw = document.getElementById('oldPassword').value.trim();
-            const newPw = document.getElementById('newPassword').value.trim();
-            const confirmPw = document.getElementById('confirmPassword').value.trim();
-            changePassword(oldPw, newPw, confirmPw);
-        }
-        window.handleChangePassword = handleChangePassword;
-
-        function toggleUserMenu() {
-            const dd = document.getElementById('userMenuDropdown');
-            dd.classList.toggle('open');
-        }
-        window.toggleUserMenu = toggleUserMenu;
-
-        function handleCreateLeagueClick() {
-            if (!isAdmin) { showNotification('Please login as admin to create leagues', 'error'); openLoginModal(); return; }
-            showSection('create');
-        }
-        window.handleCreateLeagueClick = handleCreateLeagueClick;
-
-        function loadLeagues() {
-            const saved = localStorage.getItem('leagueArenaData');
-            if (saved) {
-                try {
-                    leagues = JSON.parse(saved);
-                    leagues.forEach(l => {
-                        if (l.winnersCount === undefined) l.winnersCount = 1;
-                        if (l.relegationCount === undefined) l.relegationCount = 3;
-                        if (l.publicVisibleWeekStart === undefined) l.publicVisibleWeekStart = 1;
-                        if (l.publicVisibleWeekEnd === undefined) { const totalWeeks = (l.teams.length - 1) * 2; l.publicVisibleWeekEnd = totalWeeks; }
-                    });
-                } catch { leagues = []; }
-            }
-        }
-
-        function saveLeagues() {
-            localStorage.setItem('leagueArenaData', JSON.stringify(leagues));
-        }
-
         function createLeague() {
-            if (!isAdmin) { showNotification('Please login as admin to create leagues', 'error'); openLoginModal(); return; }
+            if (!isAdmin) {
+                showNotification('Please login as admin to create leagues', 'error');
+                openLoginModal();
+                return;
+            }
             const leagueName = document.getElementById('leagueName').value.trim();
             if (!leagueName) { showNotification('Please enter a league name', 'error'); return; }
             const teamCount = parseInt(document.getElementById('teams').value);
             const winnersCount = parseInt(document.getElementById('winnersCount').value) || 0;
             const relegationCount = parseInt(document.getElementById('relegationCount').value) || 0;
-            if (winnersCount + relegationCount > teamCount) { showNotification(`Winners + Relegation exceeds ${teamCount} teams`, 'error'); return; }
+
+            if (winnersCount + relegationCount > teamCount) {
+                showNotification(`Winners + Relegation exceeds ${teamCount} teams`, 'error');
+                return;
+            }
+
             let teamNames = [];
             if (document.getElementById('custom-distribution').classList.contains('selected')) {
                 teamNames = document.getElementById('teamNames').value.split('\n').map(n => n.trim()).filter(n => n.length > 0);
             } else {
                 document.querySelectorAll('#randomTeamsPreview div').forEach(d => teamNames.push(d.textContent));
             }
+
             while (teamNames.length < teamCount) teamNames.push(`Team ${teamNames.length + 1}`);
             teamNames = teamNames.slice(0, teamCount);
+
             const leagueId = Date.now();
             const totalWeeks = (teamCount - 1) * 2;
             const newLeague = {
@@ -750,6 +1109,7 @@ Wolverhampton Wanderers</textarea>
                 publicVisibleWeekStart: 1, publicVisibleWeekEnd: totalWeeks
             };
             newLeague.table = recalculateTable(newLeague);
+
             leagues.push(newLeague);
             saveLeagues();
             showNotification('League created!');
@@ -767,33 +1127,54 @@ Wolverhampton Wanderers</textarea>
             const matchesPerWeek = n / 2;
             let fixtures = [];
             let copy = [...teams];
+
             for (let week = 1; week <= totalWeeks / 2; week++) {
-                if (week > 1) { const first = copy[0]; const last = copy[copy.length - 1]; const middle = copy.slice(1, copy.length - 1); copy = [first, last, ...middle]; }
+                if (week > 1) {
+                    const first = copy[0];
+                    const last = copy[copy.length - 1];
+                    const middle = copy.slice(1, copy.length - 1);
+                    copy = [first, last, ...middle];
+                }
                 for (let i = 0; i < matchesPerWeek; i++) {
                     fixtures.push({ id: Date.now() + Math.floor(Math.random() * 100000) + i, home: copy[i], away: copy[n - 1 - i], homeScore: null, awayScore: null, week: week });
                 }
             }
+
             const firstHalf = [...fixtures];
-            firstHalf.forEach(f => { fixtures.push({ id: Date.now() + Math.floor(Math.random() * 100000) + 999, home: f.away, away: f.home, homeScore: null, awayScore: null, week: f.week + totalWeeks / 2 }); });
+            firstHalf.forEach(f => {
+                fixtures.push({ id: Date.now() + Math.floor(Math.random() * 100000) + 999, home: f.away, away: f.home, homeScore: null, awayScore: null, week: f.week + totalWeeks / 2 });
+            });
+
             return fixtures;
         }
 
         function recalculateTable(league) {
             const table = generateInitialTable(league.teams);
             const sortedFixtures = [...league.fixtures].sort((a, b) => a.week - b.week);
+
             sortedFixtures.forEach(fix => {
                 if (fix.homeScore !== null && fix.awayScore !== null) {
                     const home = table.find(t => t.name === fix.home);
                     const away = table.find(t => t.name === fix.away);
                     if (!home || !away) return;
+
                     home.played++; away.played++;
                     home.gf += fix.homeScore; home.ga += fix.awayScore;
                     away.gf += fix.awayScore; away.ga += fix.homeScore;
-                    if (fix.homeScore > fix.awayScore) { home.wins++; home.points += 3; home.form.push('W'); away.losses++; away.form.push('L'); }
-                    else if (fix.homeScore < fix.awayScore) { away.wins++; away.points += 3; away.form.push('W'); home.losses++; home.form.push('L'); }
-                    else { home.draws++; home.points += 1; home.form.push('D'); away.draws++; away.points += 1; away.form.push('D'); }
+
+                    if (fix.homeScore > fix.awayScore) {
+                        home.wins++; home.points += 3; home.form.push('W');
+                        away.losses++; away.form.push('L');
+                    } else if (fix.homeScore < fix.awayScore) {
+                        away.wins++; away.points += 3; away.form.push('W');
+                        home.losses++; home.form.push('L');
+                    } else {
+                        home.draws++; home.points += 1; home.form.push('D');
+                        away.draws++; away.points += 1; away.form.push('D');
+                    }
                 }
             });
+
             table.forEach(t => { t.gd = t.gf - t.ga; t.form = t.form.slice(-5); });
             return table;
         }
@@ -804,12 +1185,16 @@ Wolverhampton Wanderers</textarea>
             const teamType = input.dataset.team;
             const val = input.value.trim();
             const score = val === '' ? null : parseInt(val);
+
             const league = leagues.find(l => l.id === currentLeagueId);
             if (!league) return;
+
             const fixture = league.fixtures.find(f => f.id === fixtureId);
             if (!fixture) return;
+
             if (teamType === 'home') fixture.homeScore = score;
             else fixture.awayScore = score;
+
             league.table = recalculateTable(league);
             saveLeagues();
             populateLeagueTable(league);
@@ -819,10 +1204,19 @@ Wolverhampton Wanderers</textarea>
         function renderLeagues() {
             const container = document.getElementById('leaguesContainer');
             container.innerHTML = '';
+
             if (leagues.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-trophy"></i><h3>No leagues yet</h3><p>${isAdmin ? 'Create your first league and start managing.' : 'No leagues available.'}</p>${isAdmin ? `<button class="btn btn-primary" onclick="showSection('create')">Create League</button>` : ''}</div>`;
+                container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <h3>No leagues yet</h3>
+                            <p>${isAdmin ? 'Create your first league and start managing.' : 'No leagues available.'}</p>
+                            ${isAdmin ? `<button class="btn btn-primary" onclick="showSection('create')">Create League</button>` : ''}
+                        </div>
+                    `;
                 return;
             }
+
             const sortKey = document.getElementById('sortLeagues').value;
             const sorted = [...leagues];
             switch (sortKey) {
@@ -832,6 +1226,7 @@ Wolverhampton Wanderers</textarea>
                 case 'name-desc': sorted.sort((a, b) => b.name.localeCompare(a.name)); break;
                 default: sorted.sort((a, b) => b.id - a.id);
             }
+
             sorted.forEach(league => {
                 const card = document.createElement('div');
                 card.className = 'league-card';
@@ -840,7 +1235,22 @@ Wolverhampton Wanderers</textarea>
                 const isAdminUser = isAdmin;
                 const start = league.publicVisibleWeekStart || 1;
                 const end = league.publicVisibleWeekEnd || ((league.teams.length - 1) * 2);
-                card.innerHTML = `<h3>${league.name} <span class="status">Active</span></h3><div class="league-details"><p><i class="fas fa-users"></i> ${league.teams.length} teams</p><p><i class="fas fa-trophy" style="color:#4ade80;"></i> ${wc} winner${wc > 1 ? 's' : ''} &middot; <i class="fas fa-arrow-down" style="color:#f87171;"></i> ${rc} relegation${rc > 1 ? 's' : ''}</p><p style="font-size:0.8rem;color:#64748b;">${new Date(league.id).toLocaleDateString()}</p><p style="font-size:0.75rem;color:#60a5fa;"><i class="fas fa-eye"></i> Public weeks: ${start} – ${end}</p></div><div class="league-actions"><button class="action-btn view-btn" onclick="showLeagueDetails(${league.id})"><i class="fas fa-eye"></i> View</button>${isAdminUser ? `<button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})"><i class="fas fa-edit"></i> Edit</button><button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i></button>` : ''}</div>`;
+                card.innerHTML = `
+                        <h3>${league.name} <span class="status">Active</span></h3>
+                        <div class="league-details">
+                            <p><i class="fas fa-users"></i> ${league.teams.length} teams</p>
+                            <p><i class="fas fa-trophy" style="color:#4ade80;"></i> ${wc} winner${wc > 1 ? 's' : ''} &middot; <i class="fas fa-arrow-down" style="color:#f87171;"></i> ${rc} relegation${rc > 1 ? 's' : ''}</p>
+                            <p style="font-size:0.8rem;color:#64748b;">${new Date(league.id).toLocaleDateString()}</p>
+                            <p style="font-size:0.75rem;color:#60a5fa;"><i class="fas fa-eye"></i> Public weeks: ${start} – ${end}</p>
+                        </div>
+                        <div class="league-actions">
+                            <button class="action-btn view-btn" onclick="showLeagueDetails(${league.id})"><i class="fas fa-eye"></i> View</button>
+                            ${isAdminUser ? `
+                                <button class="action-btn edit-btn" onclick="showEditTeamsModal(${league.id})"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn delete-btn" onclick="deleteLeague(${league.id})"><i class="fas fa-trash"></i></button>
+                            ` : ''}
+                        </div>
+                    `;
                 container.appendChild(card);
             });
         }
@@ -852,14 +1262,22 @@ Wolverhampton Wanderers</textarea>
             currentLeagueId = leagueId;
             if (!isAdmin) { currentWeek = league.publicVisibleWeekStart || 1; } else { currentWeek = 1; }
             document.getElementById('leagueTitle').textContent = league.name;
+
             populateLeagueTable(league);
             populatePublicWeekSelects(league);
             generateWeekSelector(league);
             populateFixtures(league.fixtures, currentWeek);
             document.getElementById('league-details').style.display = 'block';
             document.querySelectorAll('.content-section').forEach(s => { if (s.id !== 'league-details') s.style.display = 'none'; });
-            if (isAdmin) { document.getElementById('adminActions').classList.remove('hidden'); document.getElementById('visibleWeekSetting').classList.remove('hidden'); }
-            else { document.getElementById('adminActions').classList.add('hidden'); document.getElementById('visibleWeekSetting').classList.add('hidden'); }
+
+            if (isAdmin) {
+                document.getElementById('adminActions').classList.remove('hidden');
+                document.getElementById('visibleWeekSetting').classList.remove('hidden');
+            } else {
+                document.getElementById('adminActions').classList.add('hidden');
+                document.getElementById('visibleWeekSetting').classList.add('hidden');
+            }
+
             document.getElementById('mainNavbar').classList.add('hidden-nav');
         }
         window.showLeagueDetails = showLeagueDetails;
@@ -868,11 +1286,19 @@ Wolverhampton Wanderers</textarea>
             const startSelect = document.getElementById('publicWeekStartSelect');
             const endSelect = document.getElementById('publicWeekEndSelect');
             const totalWeeks = (league.teams.length - 1) * 2;
+
             startSelect.innerHTML = '';
             endSelect.innerHTML = '';
             for (let w = 1; w <= totalWeeks; w++) {
-                const optStart = document.createElement('option'); optStart.value = w; optStart.textContent = w; if (w === (league.publicVisibleWeekStart || 1)) optStart.selected = true; startSelect.appendChild(optStart);
-                const optEnd = document.createElement('option'); optEnd.value = w; optEnd.textContent = w; if (w === (league.publicVisibleWeekEnd || totalWeeks)) optEnd.selected = true; endSelect.appendChild(optEnd);
+                const optStart = document.createElement('option');
+                optStart.value = w; optStart.textContent = w;
+                if (w === (league.publicVisibleWeekStart || 1)) optStart.selected = true;
+                startSelect.appendChild(optStart);
+
+                const optEnd = document.createElement('option');
+                optEnd.value = w; optEnd.textContent = w;
+                if (w === (league.publicVisibleWeekEnd || totalWeeks)) optEnd.selected = true;
+                endSelect.appendChild(optEnd);
             }
         }
 
@@ -881,8 +1307,15 @@ Wolverhampton Wanderers</textarea>
             if (!league || !isAdmin) return;
             const start = parseInt(document.getElementById('publicWeekStartSelect').value);
             const end = parseInt(document.getElementById('publicWeekEndSelect').value);
-            if (start > end) { showNotification('Start week cannot be greater than end week', 'error'); populatePublicWeekSelects(league); return; }
-            league.publicVisibleWeekStart = start; league.publicVisibleWeekEnd = end; saveLeagues(); generateWeekSelector(league);
+            if (start > end) {
+                showNotification('Start week cannot be greater than end week', 'error');
+                populatePublicWeekSelects(league);
+                return;
+            }
+            league.publicVisibleWeekStart = start;
+            league.publicVisibleWeekEnd = end;
+            saveLeagues();
+            generateWeekSelector(league);
             showNotification(`Public visible weeks set to ${start} – ${end}`);
         }
         window.setPublicVisibleWeekRange = setPublicVisibleWeekRange;
@@ -891,8 +1324,10 @@ Wolverhampton Wanderers</textarea>
             const totalWeeks = (league.teams.length - 1) * 2;
             const container = document.getElementById('weekSelector');
             container.innerHTML = '';
+
             const start = league.publicVisibleWeekStart || 1;
             const end = league.publicVisibleWeekEnd || totalWeeks;
+
             for (let w = 1; w <= totalWeeks; w++) {
                 const btn = document.createElement('button');
                 const isVisible = (w >= start && w <= end);
@@ -902,8 +1337,18 @@ Wolverhampton Wanderers</textarea>
                 if (!isAdmin && !isVisible) classes += ' week-btn-disabled';
                 btn.className = classes;
                 btn.textContent = w;
-                if (!isAdmin && !isVisible) { btn.onclick = () => { showNotification('This week is not publicly available', 'error'); }; }
-                else { btn.onclick = () => { currentWeek = w; document.getElementById('currentWeek').textContent = w; populateFixtures(league.fixtures, w); document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }; }
+
+                if (!isAdmin && !isVisible) {
+                    btn.onclick = () => { showNotification('This week is not publicly available', 'error'); };
+                } else {
+                    btn.onclick = () => {
+                        currentWeek = w;
+                        document.getElementById('currentWeek').textContent = w;
+                        populateFixtures(league.fixtures, w);
+                        document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    };
+                }
                 container.appendChild(btn);
             }
         }
@@ -911,20 +1356,45 @@ Wolverhampton Wanderers</textarea>
         function populateLeagueTable(league) {
             const tbody = document.querySelector('#leagueTable tbody');
             tbody.innerHTML = '';
+
             const tableData = league.table || [];
             const winnersCount = league.winnersCount ?? 1;
             const relegationCount = league.relegationCount ?? 3;
-            const sorted = [...tableData].sort((a, b) => { if (b.points !== a.points) return b.points - a.points; if (b.gd !== a.gd) return b.gd - a.gd; return b.gf - a.gf; });
+
+            const sorted = [...tableData].sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.gd !== a.gd) return b.gd - a.gd;
+                return b.gf - a.gf;
+            });
+
             sorted.forEach((team, index) => {
                 const row = document.createElement('tr');
                 const pos = index + 1;
+
                 if (winnersCount > 0 && pos <= winnersCount) row.className = 'winner-row';
                 else if (relegationCount > 0 && pos > sorted.length - relegationCount) row.className = 'relegation-row';
-                const formInd = team.form.map(r => { const cls = r === 'W' ? 'form-win' : r === 'D' ? 'form-draw' : 'form-loss'; return `<span class="form-indicator ${cls}">${r}</span>`; }).join('');
+
+                const formInd = team.form.map(r => {
+                    const cls = r === 'W' ? 'form-win' : r === 'D' ? 'form-draw' : 'form-loss';
+                    return `<span class="form-indicator ${cls}">${r}</span>`;
+                }).join('');
                 const emptyInd = Array(Math.max(0, 5 - team.form.length)).fill('<span class="form-indicator"></span>').join('');
+
                 let move = '<span class="movement movement-same">—</span>';
-                if (previousRankings[team.name]) { if (pos < previousRankings[team.name]) move = '<span class="movement movement-up">▲</span>'; else if (pos > previousRankings[team.name]) move = '<span class="movement movement-down">▼</span>'; }
-                row.innerHTML = `<td>${pos}</td><td><span class="team-cell">${move} ${team.name}</span></td><td>${team.played}</td><td>${team.wins}</td><td>${team.draws}</td><td>${team.losses}</td><td>${team.gf}</td><td>${team.ga}</td><td>${team.gd >= 0 ? '+' : ''}${team.gd}</td><td><strong>${team.points}</strong></td><td>${formInd}${emptyInd}</td>`;
+                if (previousRankings[team.name]) {
+                    if (pos < previousRankings[team.name]) move = '<span class="movement movement-up">▲</span>';
+                    else if (pos > previousRankings[team.name]) move = '<span class="movement movement-down">▼</span>';
+                }
+
+                row.innerHTML = `
+                        <td>${pos}</td>
+                        <td><span class="team-cell">${move} ${team.name}</span></td>
+                        <td>${team.played}</td><td>${team.wins}</td><td>${team.draws}</td>
+                        <td>${team.losses}</td><td>${team.gf}</td><td>${team.ga}</td>
+                        <td>${team.gd >= 0 ? '+' : ''}${team.gd}</td>
+                        <td><strong>${team.points}</strong></td>
+                        <td>${formInd}${emptyInd}</td>
+                    `;
                 tbody.appendChild(row);
             });
         }
@@ -933,17 +1403,55 @@ Wolverhampton Wanderers</textarea>
             const container = document.getElementById('fixturesContainer');
             container.innerHTML = '';
             const weekFixtures = fixtures.filter(f => f.week === week);
-            if (weekFixtures.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:32px;"><i class="fas fa-futbol"></i><h3>No fixtures for this week</h3></div>`; return; }
+
+            if (weekFixtures.length === 0) {
+                container.innerHTML = `<div class="empty-state" style="padding:32px;"><i class="fas fa-futbol"></i><h3>No fixtures for this week</h3></div>`;
+                return;
+            }
+
             const isEditable = isAdmin;
+
             weekFixtures.forEach(fixture => {
                 const card = document.createElement('div');
                 card.className = 'fixture-card';
+
                 const homeVal = fixture.homeScore !== null ? fixture.homeScore : '';
                 const awayVal = fixture.awayScore !== null ? fixture.awayScore : '';
+
                 if (isEditable) {
-                    card.innerHTML = `<div class="fixture-teams"><div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div><div class="vs-container"><input type="number" min="0" step="1" inputmode="numeric" class="score-input" value="${homeVal}" data-fixture-id="${fixture.id}" data-team="home" onchange="updateScore(this)" autocomplete="off" autocorrect="off" spellcheck="false" pattern="[0-9]*" enterkeyhint="done"><div class="vs">VS</div><input type="number" min="0" step="1" inputmode="numeric" class="score-input" value="${awayVal}" data-fixture-id="${fixture.id}" data-team="away" onchange="updateScore(this)" autocomplete="off" autocorrect="off" spellcheck="false" pattern="[0-9]*" enterkeyhint="done"></div><div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div></div>`;
+                    card.innerHTML = `
+                            <div class="fixture-teams">
+                                <div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div>
+                                <div class="vs-container">
+                                    <input type="number" min="0" step="1" inputmode="numeric" 
+                                        class="score-input" value="${homeVal}" 
+                                        data-fixture-id="${fixture.id}" data-team="home" 
+                                        onchange="updateScore(this)" 
+                                        autocomplete="off" autocorrect="off" spellcheck="false" 
+                                        pattern="[0-9]*" enterkeyhint="done">
+                                    <div class="vs">VS</div>
+                                    <input type="number" min="0" step="1" inputmode="numeric" 
+                                        class="score-input" value="${awayVal}" 
+                                        data-fixture-id="${fixture.id}" data-team="away" 
+                                        onchange="updateScore(this)" 
+                                        autocomplete="off" autocorrect="off" spellcheck="false" 
+                                        pattern="[0-9]*" enterkeyhint="done">
+                                </div>
+                                <div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div>
+                            </div>
+                        `;
                 } else {
-                    card.innerHTML = `<div class="fixture-teams"><div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div><div class="vs-container"><span class="score-readonly">${homeVal}</span><span class="score-readonly vs-sep">VS</span><span class="score-readonly">${awayVal}</span></div><div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div></div>`;
+                    card.innerHTML = `
+                            <div class="fixture-teams">
+                                <div class="team"><div class="team-name">${fixture.home}</div><div class="role">Home</div></div>
+                                <div class="vs-container">
+                                    <span class="score-readonly">${homeVal}</span>
+                                    <span class="score-readonly vs-sep">VS</span>
+                                    <span class="score-readonly">${awayVal}</span>
+                                </div>
+                                <div class="team"><div class="team-name">${fixture.away}</div><div class="role">Away</div></div>
+                            </div>
+                        `;
                 }
                 container.appendChild(card);
             });
@@ -951,13 +1459,23 @@ Wolverhampton Wanderers</textarea>
 
         function deleteLeague(leagueId) {
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
-            if (confirm('Delete this league permanently?')) { leagues = leagues.filter(l => l.id !== leagueId); saveLeagues(); renderLeagues(); showNotification('League deleted'); }
+            if (confirm('Delete this league permanently?')) {
+                leagues = leagues.filter(l => l.id !== leagueId);
+                saveLeagues();
+                renderLeagues();
+                showNotification('League deleted');
+            }
         }
         window.deleteLeague = deleteLeague;
 
         function deleteCurrentLeague() {
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
-            if (currentLeagueId && confirm('Delete this league?')) { leagues = leagues.filter(l => l.id !== currentLeagueId); saveLeagues(); showNotification('League deleted'); showSection('leagues'); }
+            if (currentLeagueId && confirm('Delete this league?')) {
+                leagues = leagues.filter(l => l.id !== currentLeagueId);
+                saveLeagues();
+                showNotification('League deleted');
+                showSection('leagues');
+            }
         }
         window.deleteCurrentLeague = deleteCurrentLeague;
 
@@ -976,7 +1494,10 @@ Wolverhampton Wanderers</textarea>
             const league = leagues.find(l => l.id === currentLeagueId);
             if (!league) return;
             const newNames = document.getElementById('editTeamNames').value.split('\n').map(n => n.trim()).filter(n => n.length > 0);
-            if (newNames.length !== league.teams.length) { showNotification('Cannot change team count', 'error'); return; }
+            if (newNames.length !== league.teams.length) {
+                showNotification('Cannot change team count', 'error');
+                return;
+            }
             const map = {};
             league.teams.forEach((old, i) => map[old] = newNames[i]);
             league.teams = newNames;
@@ -1000,13 +1521,22 @@ Wolverhampton Wanderers</textarea>
         function downloadBackupFile() {
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(leagues));
-            const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", "league_arena_backup.json"); document.body.appendChild(a); a.click(); a.remove(); showNotification('Backup downloaded');
+            const a = document.createElement('a');
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", "league_arena_backup.json");
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showNotification('Backup downloaded');
         }
         window.downloadBackupFile = downloadBackupFile;
 
         function copyBackupData() {
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
-            const el = document.getElementById('backupData'); el.select(); document.execCommand('copy'); showNotification('Copied to clipboard');
+            const el = document.getElementById('backupData');
+            el.select();
+            document.execCommand('copy');
+            showNotification('Copied to clipboard');
         }
         window.copyBackupData = copyBackupData;
 
@@ -1014,59 +1544,227 @@ Wolverhampton Wanderers</textarea>
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
             const fileInput = document.getElementById('uploadFile');
             const textArea = document.getElementById('restoreData');
+
             const handleRestore = (jsonString) => {
                 try {
                     const parsed = JSON.parse(jsonString);
                     if (!Array.isArray(parsed)) throw new Error('Invalid');
-                    parsed.forEach(l => { if (l.winnersCount === undefined) l.winnersCount = 1; if (l.relegationCount === undefined) l.relegationCount = 3; if (l.publicVisibleWeekStart === undefined) l.publicVisibleWeekStart = 1; if (l.publicVisibleWeekEnd === undefined) { const totalWeeks = (l.teams.length - 1) * 2; l.publicVisibleWeekEnd = totalWeeks; } });
-                    leagues = parsed; saveLeagues(); renderLeagues(); showNotification('Restored successfully'); closeModal('backupModal');
+                    parsed.forEach(l => {
+                        if (l.winnersCount === undefined) l.winnersCount = 1;
+                        if (l.relegationCount === undefined) l.relegationCount = 3;
+                        if (l.publicVisibleWeekStart === undefined) l.publicVisibleWeekStart = 1;
+                        if (l.publicVisibleWeekEnd === undefined) { const totalWeeks = (l.teams.length - 1) * 2; l.publicVisibleWeekEnd = totalWeeks; }
+                    });
+                    leagues = parsed;
+                    saveLeagues();
+                    renderLeagues();
+                    showNotification('Restored successfully');
+                    closeModal('backupModal');
                     if (currentLeagueId) showLeagueDetails(currentLeagueId);
                 } catch { showNotification('Invalid backup data', 'error'); }
             };
-            if (fileInput.files.length > 0) { const reader = new FileReader(); reader.onload = (e) => handleRestore(e.target.result); reader.readAsText(fileInput.files[0]); }
-            else if (textArea.value.trim() !== '') { handleRestore(textArea.value.trim()); }
-            else { showNotification('Select a file or paste data', 'error'); }
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => handleRestore(e.target.result);
+                reader.readAsText(fileInput.files[0]);
+            } else if (textArea.value.trim() !== '') {
+                handleRestore(textArea.value.trim());
+            } else { showNotification('Select a file or paste data', 'error'); }
         }
         window.restoreData = restoreData;
+
+        // ═══════════════════════════════════════════════════════════════════
+        //  CLOUD OPERATIONS & CHART TRACKING
+        // ═══════════════════════════════════════════════════════════════════
+
+        // Log the event successfully
+        async function logCloudLoadEvent(username) {
+            if (!supabaseClient || !username) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('load_events')
+                    .insert({ username: username });
+                
+                if (error) {
+                    console.error('❌ Failed to log load event (Check SQL / RLS):', error.message);
+                } else {
+                    console.log('✅ Load event successfully logged for', username);
+                }
+            } catch (e) {
+                console.error('❌ Error logging load event:', e);
+            }
+        }
+
+        async function fetchLoadStats() {
+            if (!supabaseClient) return;
+
+            const now = new Date();
+            const startDate = new Date(now);
+            startDate.setDate(now.getDate() - 6); // 7 days total
+            startDate.setHours(0, 0, 0, 0);
+
+            const { data, error } = await supabaseClient
+                .from('load_events')
+                .select('timestamp')
+                .gte('timestamp', startDate.toISOString());
+
+            if (error) {
+                console.error('❌ Error fetching stats:', error.message);
+                return;
+            }
+
+            const labels = [];
+            const counts = {};
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(now.getDate() - i);
+                const key = d.toISOString().split('T')[0];
+                const label = d.toLocaleDateString('en-US', { weekday: 'short' });
+                labels.push(label);
+                counts[key] = 0;
+            }
+
+            (data || []).forEach(row => {
+                const key = new Date(row.timestamp).toISOString().split('T')[0];
+                if (counts[key] !== undefined) counts[key]++;
+            });
+
+            const chartData = Object.values(counts);
+
+            const ctx = document.getElementById('loadStatsChart').getContext('2d');
+            if (loadStatsChart) loadStatsChart.destroy();
+
+            loadStatsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cloud Loads',
+                        data: chartData,
+                        backgroundColor: 'rgba(96, 165, 250, 0.7)',
+                        borderColor: '#60a5fa',
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { backgroundColor: '#1e293b', borderColor: '#334155', borderWidth: 1, titleColor: '#fff', bodyColor: '#94a3b8', displayColors: false }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                        y: { beginAtZero: true, grid: { color: '#2a3445' }, ticks: { color: '#94a3b8', stepSize: 1 } }
+                    }
+                }
+            });
+        }
 
         async function uploadToCloud(username, accessCode) {
             if (!isAdmin) { showNotification('Admin required to upload', 'error'); return; }
             if (!supabaseClient) { showNotification('Supabase not available', 'error'); return; }
             if (!username || !accessCode) { showNotification('Username and access code required', 'error'); return; }
             if (leagues.length === 0) { showNotification('No leagues to upload', 'error'); return; }
+
             try {
-                const { data: user, error: userError } = await supabaseClient.from('users').select('username, access_code').eq('username', username).eq('access_code', accessCode).maybeSingle();
-                if (userError || !user) { showNotification('❌ Invalid username or access code', 'error'); return; }
+                const { data: user, error: userError } = await supabaseClient
+                    .from('users')
+                    .select('username, access_code')
+                    .eq('username', username)
+                    .eq('access_code', accessCode)
+                    .maybeSingle();
+
+                if (userError || !user) {
+                    showNotification('❌ Invalid username or access code', 'error');
+                    return;
+                }
+
                 let successCount = 0;
                 let errorDetails = [];
+
                 for (const league of leagues) {
-                    const { error } = await supabaseClient.from('leagues').upsert({ id: league.id, username: username, data: league, updated_at: new Date().toISOString() }, { onConflict: 'id,username' });
-                    if (error) { errorDetails.push({ message: error.message }); } else { successCount++; }
+                    const { error } = await supabaseClient
+                        .from('leagues')
+                        .upsert({
+                            id: league.id,
+                            username: username,
+                            data: league,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'id,username' });
+
+                    if (error) {
+                        errorDetails.push({ leagueId: league.id, leagueName: league.name, message: error.message });
+                    } else {
+                        successCount++;
+                    }
                 }
-                if (errorDetails.length === 0) { showNotification(`✅ Uploaded all ${leagues.length} leagues`); }
-                else { showNotification(`⚠️ Uploaded ${successCount}/${leagues.length} leagues. First error: ${errorDetails[0].message}`, 'error'); }
-            } catch (err) { showNotification('❌ Upload error: ' + err.message, 'error'); }
+
+                if (errorDetails.length === 0) {
+                    showNotification(`✅ Uploaded all ${leagues.length} leagues`);
+                } else {
+                    showNotification(`⚠️ Uploaded ${successCount}/${leagues.length} leagues. First error: ${errorDetails[0].message}`, 'error');
+                }
+            } catch (err) {
+                showNotification('❌ Upload error: ' + err.message, 'error');
+            }
         }
         window.uploadToCloud = uploadToCloud;
 
         async function loadFromCloud(username) {
             if (!supabaseClient) { showNotification('Supabase not available', 'error'); return; }
             if (!username) { showNotification('Username required', 'error'); return; }
+
             try {
-                const { data: user, error: userError } = await supabaseClient.from('users').select('username').eq('username', username).maybeSingle();
-                if (userError || !user) { showNotification(`Username "${username}" not found`, 'error'); return; }
-                const { data: cloudLeagues, error } = await supabaseClient.from('leagues').select('data').eq('username', username);
-                if (error) { showNotification('Error loading from cloud', 'error'); return; }
-                if (!cloudLeagues || cloudLeagues.length === 0) { showNotification(`No leagues found for "${username}"`, 'error'); return; }
-                
+                const { data: user, error: userError } = await supabaseClient
+                    .from('users')
+                    .select('username')
+                    .eq('username', username)
+                    .maybeSingle();
+
+                if (userError || !user) {
+                    showNotification(`Username "${username}" not found`, 'error');
+                    return;
+                }
+
+                const { data: cloudLeagues, error } = await supabaseClient
+                    .from('leagues')
+                    .select('data')
+                    .eq('username', username);
+
+                if (error) {
+                    showNotification('Error loading from cloud', 'error');
+                    return;
+                }
+
+                if (!cloudLeagues || cloudLeagues.length === 0) {
+                    showNotification(`No leagues found for "${username}"`, 'error');
+                    return;
+                }
+
                 // ✅ LOG THE EVENT HERE after successful load
                 await logCloudLoadEvent(username);
 
                 const loaded = cloudLeagues.map(item => item.data);
-                loaded.forEach(l => { if (l.publicVisibleWeekStart === undefined) l.publicVisibleWeekStart = 1; if (l.publicVisibleWeekEnd === undefined) { const totalWeeks = (l.teams.length - 1) * 2; l.publicVisibleWeekEnd = totalWeeks; } });
-                leagues = loaded; saveLeagues(); renderLeagues(); showNotification(`✅ Loaded ${leagues.length} leagues from "${username}"`);
-                if (currentLeagueId) { const stillExists = leagues.some(l => l.id === currentLeagueId); if (stillExists) showLeagueDetails(currentLeagueId); else showSection('leagues'); }
-            } catch (err) { showNotification('❌ Load error: ' + err.message, 'error'); }
+                loaded.forEach(l => {
+                    if (l.publicVisibleWeekStart === undefined) l.publicVisibleWeekStart = 1;
+                    if (l.publicVisibleWeekEnd === undefined) { const totalWeeks = (l.teams.length - 1) * 2; l.publicVisibleWeekEnd = totalWeeks; }
+                });
+                leagues = loaded;
+                saveLeagues();
+                renderLeagues();
+                showNotification(`✅ Loaded ${leagues.length} leagues from "${username}"`);
+
+                if (currentLeagueId) {
+                    const stillExists = leagues.some(l => l.id === currentLeagueId);
+                    if (stillExists) showLeagueDetails(currentLeagueId);
+                    else showSection('leagues');
+                }
+            } catch (err) {
+                showNotification('❌ Load error: ' + err.message, 'error');
+            }
         }
         window.loadFromCloud = loadFromCloud;
 
@@ -1089,8 +1787,13 @@ Wolverhampton Wanderers</textarea>
             const accessCode = document.getElementById('uploadAccessCode').value.trim();
             if (!username || !accessCode) { showNotification('Please fill all fields', 'error'); return; }
             const btn = document.querySelector('#uploadModal .btn-primary');
-            btn.innerHTML = '<span class="spinner"></span> Uploading...'; btn.disabled = true;
-            uploadToCloud(username, accessCode).finally(() => { btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload'; btn.disabled = false; closeModal('uploadModal'); });
+            btn.innerHTML = '<span class="spinner"></span> Uploading...';
+            btn.disabled = true;
+            uploadToCloud(username, accessCode).finally(() => {
+                btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload';
+                btn.disabled = false;
+                closeModal('uploadModal');
+            });
         }
         window.handleUpload = handleUpload;
 
@@ -1098,8 +1801,13 @@ Wolverhampton Wanderers</textarea>
             const username = document.getElementById('loadUsername').value.trim();
             if (!username) { showNotification('Please enter username', 'error'); return; }
             const btn = document.querySelector('#loadModal .btn-secondary');
-            btn.innerHTML = '<span class="spinner"></span> Loading...'; btn.disabled = true;
-            loadFromCloud(username).finally(() => { btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Load'; btn.disabled = false; closeModal('loadModal'); });
+            btn.innerHTML = '<span class="spinner"></span> Loading...';
+            btn.disabled = true;
+            loadFromCloud(username).finally(() => {
+                btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Load';
+                btn.disabled = false;
+                closeModal('loadModal');
+            });
         }
         window.handleLoad = handleLoad;
 
@@ -1109,14 +1817,26 @@ Wolverhampton Wanderers</textarea>
             const container = document.getElementById('randomTeamsPreview');
             if (!container) return;
             container.innerHTML = '';
-            for (let i = 0; i < count; i++) { const d = document.createElement('div'); d.textContent = names[i]?.trim() || `Team ${i + 1}`; container.appendChild(d); }
+            for (let i = 0; i < count; i++) {
+                const d = document.createElement('div');
+                d.textContent = names[i]?.trim() || `Team ${i + 1}`;
+                container.appendChild(d);
+            }
         }
         window.updateTeamNamesPreview = updateTeamNamesPreview;
 
         function selectDistribution(type) {
             document.querySelectorAll('.distribution-option').forEach(o => o.classList.remove('selected'));
-            if (type === 'custom') { document.getElementById('custom-distribution').classList.add('selected'); document.getElementById('custom-team-section').classList.remove('hidden'); document.getElementById('random-team-section').classList.add('hidden'); }
-            else { document.getElementById('random-distribution').classList.add('selected'); document.getElementById('custom-team-section').classList.add('hidden'); document.getElementById('random-team-section').classList.remove('hidden'); shuffleTeamNames(); }
+            if (type === 'custom') {
+                document.getElementById('custom-distribution').classList.add('selected');
+                document.getElementById('custom-team-section').classList.remove('hidden');
+                document.getElementById('random-team-section').classList.add('hidden');
+            } else {
+                document.getElementById('random-distribution').classList.add('selected');
+                document.getElementById('custom-team-section').classList.add('hidden');
+                document.getElementById('random-team-section').classList.remove('hidden');
+                shuffleTeamNames();
+            }
         }
         window.selectDistribution = selectDistribution;
 
@@ -1125,17 +1845,26 @@ Wolverhampton Wanderers</textarea>
             let teams = document.getElementById('teamNames').value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             while (teams.length < count) teams.push(`Team ${teams.length + 1}`);
             teams = teams.slice(0, count);
-            for (let i = teams.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [teams[i], teams[j]] = [teams[j], teams[i]]; }
+            for (let i = teams.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [teams[i], teams[j]] = [teams[j], teams[i]];
+            }
             const container = document.getElementById('randomTeamsPreview');
             container.innerHTML = '';
-            teams.forEach(t => { const d = document.createElement('div'); d.textContent = t; container.appendChild(d); });
+            teams.forEach(t => {
+                const d = document.createElement('div');
+                d.textContent = t;
+                container.appendChild(d);
+            });
         }
         window.shuffleTeamNames = shuffleTeamNames;
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing...');
             loadAdminState();
             loadLeagues();
             showSection('home');
+
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const tab = this.getAttribute('data-tab');
@@ -1146,15 +1875,20 @@ Wolverhampton Wanderers</textarea>
                     if (target) target.classList.add('active');
                 });
             });
+
             updateTeamNamesPreview();
             if (leagues.length > 0) renderLeagues();
+
             if (!isAdmin) { document.getElementById('createLeagueCard')?.classList.add('disabled'); }
+
             document.getElementById('loginPassword').addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
             document.getElementById('loginUsername').addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').then(reg => console.log('✅ Service Worker registered', reg)).catch(err => console.warn('⚠️ Service Worker registration failed', err));
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('✅ Service Worker registered', reg))
+                .catch(err => console.warn('⚠️ Service Worker registration failed', err));
         }
     </script>
 </body>
