@@ -673,11 +673,91 @@ Wolverhampton Wanderers</textarea>
 
         let isAdmin = false;
         let currentUsername = '';
+        let currentAccessCode = ''; // stored in memory for auto-sync
         let loadStatsChart = null;
         let leagues = [];
         let currentLeagueId = null;
         let currentWeek = 1;
         let previousRankings = {};
+
+        // ─── AUTO-SYNC (debounced) ──────────────────────────────────────────
+
+        let autoSyncTimer = null;
+        let isSyncing = false;
+
+        function autoSyncToCloud() {
+            // Only if logged in and we have data
+            if (!isAdmin || !currentUsername || !currentAccessCode) return;
+            if (leagues.length === 0) return;
+
+            // Debounce: clear previous timer
+            if (autoSyncTimer) clearTimeout(autoSyncTimer);
+            autoSyncTimer = setTimeout(() => {
+                // Prevent overlapping syncs
+                if (isSyncing) return;
+                isSyncing = true;
+                // Use the existing uploadToCloud function
+                uploadToCloud(currentUsername, currentAccessCode, true) // silent mode = true
+                    .finally(() => {
+                        isSyncing = false;
+                        autoSyncTimer = null;
+                    });
+            }, 1500); // 1.5 second debounce
+        }
+
+        // Modify uploadToCloud to accept a 'silent' parameter to suppress notifications
+        const originalUploadToCloud = uploadToCloud;
+        uploadToCloud = async function(username, accessCode, silent = false) {
+            if (!isAdmin) { if (!silent) showNotification('Admin required to upload', 'error'); return; }
+            if (!supabaseClient) { if (!silent) showNotification('Supabase not available', 'error'); return; }
+            if (!username || !accessCode) { if (!silent) showNotification('Username and access code required', 'error'); return; }
+            if (leagues.length === 0) { if (!silent) showNotification('No leagues to upload', 'error'); return; }
+
+            try {
+                const { data: user, error: userError } = await supabaseClient
+                    .from('users')
+                    .select('username, access_code')
+                    .eq('username', username)
+                    .eq('access_code', accessCode)
+                    .maybeSingle();
+
+                if (userError || !user) {
+                    if (!silent) showNotification('❌ Invalid username or access code', 'error');
+                    return;
+                }
+
+                let successCount = 0;
+                let errorDetails = [];
+
+                for (const league of leagues) {
+                    const { error } = await supabaseClient
+                        .from('leagues')
+                        .upsert({
+                            id: league.id,
+                            username: username,
+                            data: league,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'id,username' });
+
+                    if (error) {
+                        errorDetails.push({ leagueId: league.id, leagueName: league.name, message: error.message });
+                    } else {
+                        successCount++;
+                    }
+                }
+
+                if (errorDetails.length === 0) {
+                    if (!silent) showNotification(`✅ Uploaded all ${leagues.length} leagues`);
+                } else {
+                    if (!silent) showNotification(
+                        `⚠️ Uploaded ${successCount}/${leagues.length} leagues. First error: ${errorDetails[0].message}`,
+                        'error');
+                }
+            } catch (err) {
+                if (!silent) showNotification('❌ Upload error: ' + err.message, 'error');
+            }
+        };
+        window.uploadToCloud = uploadToCloud;
 
         // ─── STORAGE HELPERS (user‑specific keys) ──────────────────────────
 
@@ -713,6 +793,8 @@ Wolverhampton Wanderers</textarea>
 
         function saveLeagues() {
             localStorage.setItem(getStorageKey(), JSON.stringify(leagues));
+            // After saving locally, trigger auto-sync
+            autoSyncToCloud();
         }
 
         // ─── AUTH ─────────────────────────────────────────────────────────────
@@ -725,6 +807,8 @@ Wolverhampton Wanderers</textarea>
                     if (data && data.isAdmin && data.username) {
                         isAdmin = true;
                         currentUsername = data.username;
+                        // We don't store password in localStorage, so we need to prompt on first sync, but we'll handle that by not auto-syncing until user does a manual upload or logs in with password.
+                        // We'll set currentAccessCode only on login.
                     }
                 }
             } catch { /* ignore */ }
@@ -836,6 +920,7 @@ Wolverhampton Wanderers</textarea>
                 }
                 isAdmin = true;
                 currentUsername = username;
+                currentAccessCode = password; // store for auto-sync
                 saveAdminState();
 
                 // Load THIS user's data from localStorage (user‑specific key)
@@ -853,7 +938,6 @@ Wolverhampton Wanderers</textarea>
                         generateWeekSelector(league);
                         populateFixtures(league.fixtures, currentWeek);
                     } else {
-                        // if league no longer exists, go back to leagues list
                         showSection('leagues');
                     }
                 }
@@ -870,10 +954,10 @@ Wolverhampton Wanderers</textarea>
             // Reset UI
             isAdmin = false;
             currentUsername = '';
+            currentAccessCode = '';
             localStorage.removeItem('leagueArenaAdmin');
             updateUIForAdminState();
             closeModal('changePasswordModal');
-            // Reset any displayed league details
             currentLeagueId = null;
             document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
             document.getElementById('home').style.display = 'block';
@@ -881,6 +965,8 @@ Wolverhampton Wanderers</textarea>
             renderLeagues();
             showNotification('Logged out');
             document.getElementById('userMenuDropdown').classList.remove('open');
+            // Cancel any pending auto-sync
+            if (autoSyncTimer) clearTimeout(autoSyncTimer);
         }
 
         async function changePassword(oldPw, newPw, confirmPw) {
@@ -923,6 +1009,8 @@ Wolverhampton Wanderers</textarea>
                     return false;
                 }
 
+                // Update stored access code
+                currentAccessCode = newPw;
                 showNotification('✅ Password changed successfully');
                 closeModal('changePasswordModal');
                 return true;
@@ -964,7 +1052,6 @@ Wolverhampton Wanderers</textarea>
                 if (loadBtn) loadBtn.style.display = 'inline-flex';
                 if (statsSection) statsSection.classList.add('hidden');
             }
-            // Re‑render leagues to reflect the current data (empty if logged out, or user data if logged in)
             if (document.getElementById('leagues').style.display !== 'none') {
                 renderLeagues();
             }
@@ -1126,7 +1213,7 @@ Wolverhampton Wanderers</textarea>
             newLeague.table = recalculateTable(newLeague);
 
             leagues.push(newLeague);
-            saveLeagues();
+            saveLeagues(); // this will trigger auto-sync
             showNotification('League created!');
             showSection('leagues');
         }
@@ -1228,7 +1315,7 @@ Wolverhampton Wanderers</textarea>
             else fixture.awayScore = score;
 
             league.table = recalculateTable(league);
-            saveLeagues();
+            saveLeagues(); // auto-sync triggered here
             populateLeagueTable(league);
         }
         window.updateScore = updateScore;
@@ -1360,7 +1447,7 @@ Wolverhampton Wanderers</textarea>
             }
             league.publicVisibleWeekStart = start;
             league.publicVisibleWeekEnd = end;
-            saveLeagues();
+            saveLeagues(); // auto-sync
             generateWeekSelector(league);
             showNotification(`Public visible weeks set to ${start} – ${end}`);
         }
@@ -1510,7 +1597,7 @@ Wolverhampton Wanderers</textarea>
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
             if (confirm('Delete this league permanently?')) {
                 leagues = leagues.filter(l => l.id !== leagueId);
-                saveLeagues();
+                saveLeagues(); // auto-sync
                 renderLeagues();
                 showNotification('League deleted');
             }
@@ -1521,7 +1608,7 @@ Wolverhampton Wanderers</textarea>
             if (!isAdmin) { showNotification('Admin required', 'error'); return; }
             if (currentLeagueId && confirm('Delete this league?')) {
                 leagues = leagues.filter(l => l.id !== currentLeagueId);
-                saveLeagues();
+                saveLeagues(); // auto-sync
                 showNotification('League deleted');
                 showSection('leagues');
             }
@@ -1554,7 +1641,7 @@ Wolverhampton Wanderers</textarea>
             league.fixtures.forEach(f => { f.home = map[f.home];
                 f.away = map[f.away]; });
             league.table = recalculateTable(league);
-            saveLeagues();
+            saveLeagues(); // auto-sync
             populateLeagueTable(league);
             populateFixtures(league.fixtures, currentWeek);
             closeModal('editTeamsModal');
@@ -1609,7 +1696,7 @@ Wolverhampton Wanderers</textarea>
                             l.publicVisibleWeekEnd = totalWeeks; }
                     });
                     leagues = parsed;
-                    saveLeagues();
+                    saveLeagues(); // auto-sync
                     renderLeagues();
                     showNotification('Restored successfully');
                     closeModal('backupModal');
@@ -1715,65 +1802,12 @@ Wolverhampton Wanderers</textarea>
             });
         }
 
-        async function uploadToCloud(username, accessCode) {
-            if (!isAdmin) { showNotification('Admin required to upload', 'error'); return; }
-            if (!supabaseClient) { showNotification('Supabase not available', 'error'); return; }
-            if (!username || !accessCode) { showNotification('Username and access code required', 'error'); return; }
-            if (leagues.length === 0) { showNotification('No leagues to upload', 'error'); return; }
-
-            try {
-                const { data: user, error: userError } = await supabaseClient
-                    .from('users')
-                    .select('username, access_code')
-                    .eq('username', username)
-                    .eq('access_code', accessCode)
-                    .maybeSingle();
-
-                if (userError || !user) {
-                    showNotification('❌ Invalid username or access code', 'error');
-                    return;
-                }
-
-                let successCount = 0;
-                let errorDetails = [];
-
-                for (const league of leagues) {
-                    const { error } = await supabaseClient
-                        .from('leagues')
-                        .upsert({
-                            id: league.id,
-                            username: username,
-                            data: league,
-                            updated_at: new Date().toISOString()
-                        }, { onConflict: 'id,username' });
-
-                    if (error) {
-                        errorDetails.push({ leagueId: league.id, leagueName: league.name, message: error.message });
-                    } else {
-                        successCount++;
-                    }
-                }
-
-                if (errorDetails.length === 0) {
-                    showNotification(`✅ Uploaded all ${leagues.length} leagues`);
-                } else {
-                    showNotification(
-                        `⚠️ Uploaded ${successCount}/${leagues.length} leagues. First error: ${errorDetails[0].message}`,
-                        'error');
-                }
-            } catch (err) {
-                showNotification('❌ Upload error: ' + err.message, 'error');
-            }
-        }
-        window.uploadToCloud = uploadToCloud;
-
-        // ─── LOAD FROM CLOUD (with strict user‑match check) ──────────────
+        // We already redefined uploadToCloud above.
 
         async function loadFromCloud(username) {
             if (!supabaseClient) { showNotification('Supabase not available', 'error'); return; }
             if (!username) { showNotification('Username required', 'error'); return; }
 
-            // 🔒 CRITICAL: If logged in, only allow loading your own username
             if (isAdmin && currentUsername) {
                 if (username.toLowerCase() !== currentUsername.toLowerCase()) {
                     showNotification(`You are logged in as "${currentUsername}". You can only load your own data.`, 'error');
@@ -1817,7 +1851,7 @@ Wolverhampton Wanderers</textarea>
                         l.publicVisibleWeekEnd = totalWeeks; }
                 });
                 leagues = loaded;
-                saveLeagues(); // saves to the current storage key (user or public)
+                saveLeagues(); // auto-sync will happen
                 renderLeagues();
                 showNotification(`✅ Loaded ${leagues.length} leagues from "${username}"`);
 
@@ -1853,7 +1887,7 @@ Wolverhampton Wanderers</textarea>
             const btn = document.querySelector('#uploadModal .btn-primary');
             btn.innerHTML = '<span class="spinner"></span> Uploading...';
             btn.disabled = true;
-            uploadToCloud(username, accessCode).finally(() => {
+            uploadToCloud(username, accessCode, false).finally(() => {
                 btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload';
                 btn.disabled = false;
                 closeModal('uploadModal');
@@ -1930,7 +1964,6 @@ Wolverhampton Wanderers</textarea>
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, initializing...');
             loadAdminState();
-            // Load leagues for the current state (public or user)
             loadLeagues();
             showSection('home');
 
