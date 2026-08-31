@@ -1767,14 +1767,18 @@ Wolverhampton Wanderers</textarea>
         }
         window.uploadToCloud = uploadToCloud;
 
+        // ─── LOAD FROM CLOUD (with strict user‑match check) ──────────────
+
         async function loadFromCloud(username) {
             if (!supabaseClient) { showNotification('Supabase not available', 'error'); return; }
             if (!username) { showNotification('Username required', 'error'); return; }
 
-            // 🔒 If logged in, they can ONLY load their own data
-            if (isAdmin && currentUsername && username !== currentUsername) {
-                showNotification(`You are logged in as "${currentUsername}". You can only load your own data.`, 'error');
-                return;
+            // 🔒 CRITICAL: If logged in, only allow loading your own username
+            if (isAdmin && currentUsername) {
+                if (username.toLowerCase() !== currentUsername.toLowerCase()) {
+                    showNotification(`You are logged in as "${currentUsername}". You can only load your own data.`, 'error');
+                    return;
+                }
             }
 
             try {
