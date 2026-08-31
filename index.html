@@ -867,7 +867,6 @@ Wolverhampton Wanderers</textarea>
         function logout() {
             // Clear in‑memory leagues
             leagues = [];
-            // Optionally save empty to public? We'll just leave storage untouched.
             // Reset UI
             isAdmin = false;
             currentUsername = '';
@@ -1772,6 +1771,12 @@ Wolverhampton Wanderers</textarea>
             if (!supabaseClient) { showNotification('Supabase not available', 'error'); return; }
             if (!username) { showNotification('Username required', 'error'); return; }
 
+            // 🔒 If logged in, they can ONLY load their own data
+            if (isAdmin && currentUsername && username !== currentUsername) {
+                showNotification(`You are logged in as "${currentUsername}". You can only load your own data.`, 'error');
+                return;
+            }
+
             try {
                 const { data: user, error: userError } = await supabaseClient
                     .from('users')
@@ -1923,8 +1928,6 @@ Wolverhampton Wanderers</textarea>
             loadAdminState();
             // Load leagues for the current state (public or user)
             loadLeagues();
-            // If user is logged in, we already loaded their data; if not, we loaded public data (maybe empty).
-            // But we want to show home by default.
             showSection('home');
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
