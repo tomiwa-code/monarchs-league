@@ -43,6 +43,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /* Disable double-tap zoom without blocking normal scrolling or pinch zoom. */
+  touch-action: manipulation;
 }
 
 body {
@@ -55,6 +57,7 @@ body {
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: contain;
+  touch-action: manipulation;
 }
 
 #root {
@@ -641,9 +644,9 @@ label .label-icon {
   color: var(--blue);
 }
 
-/* iOS Safari zooms the page when a focused control is smaller than 16px.
-   Keep every text control at that threshold instead of locking the viewport,
-   so users can still pinch-zoom the rest of the app. */
+/* iOS Safari can auto-zoom focused controls at 16px on some versions.
+   Keep every text control just above that threshold as a second line of
+   defence; the viewport meta pins the page scale itself. */
 input,
 select,
 textarea {
@@ -653,7 +656,7 @@ textarea {
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
-  font-size: 16px;
+  font-size: 17px;
   transition: border-color 0.2s, box-shadow 0.2s;
   appearance: none;
 }
@@ -819,7 +822,7 @@ select.select {
   min-width: 148px;
   padding: 7px 34px 7px 14px;
   border-radius: 30px;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 500;
 }
 
@@ -1067,7 +1070,7 @@ select.select {
   border-radius: 30px;
   border-color: var(--border-strong);
   background-color: var(--surface-2);
-  font-size: 16px;
+  font-size: 17px;
 }
 
 .tabs {
@@ -1364,6 +1367,7 @@ tr.relegation .pos-marker {
   border: 1px solid var(--border);
   background: var(--surface-2);
   transition: border-color 0.15s;
+  touch-action: manipulation;
 }
 
 .fixture-card:hover {
@@ -1405,6 +1409,7 @@ tr.relegation .pos-marker {
   align-items: center;
   gap: 10px;
   margin: 0 14px;
+  touch-action: manipulation;
 }
 
 .score-input,
@@ -1416,7 +1421,7 @@ tr.relegation .pos-marker {
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-bright);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -1595,13 +1600,13 @@ tr.relegation .pos-marker {
 .file-input {
   padding: 8px;
   background: var(--surface);
-  font-size: 16px;
+  font-size: 17px;
   margin-bottom: 8px;
 }
 
 .backup-area {
   min-height: 84px;
-  font-size: 16px;
+  font-size: 17px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 

@@ -103,6 +103,10 @@ so existing cloud backups keep working.
   instructions on iOS/iPadOS.
 - Theme colour `#0b1120`, standalone display, `any` + `maskable` icons in
   `public/icons` (regenerate with `node scripts/generate-icons.mjs`).
+- Mobile page scale is pinned at 100% so focusing score fields or opening the
+  keyboard cannot zoom the page; `interactive-widget=resizes-visual` keeps the
+  layout stable. Browsers that honour `user-scalable=no` also disable manual
+  pinch zoom.
 
 ## Cloud schema (unchanged)
 
