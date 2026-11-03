@@ -215,6 +215,45 @@ check('edits from another tab are adopted', admin.text().includes('Renamed Elsew
 check('manifest is emitted', existsSync(resolve(root, 'dist/manifest.webmanifest')));
 check('service worker is emitted', existsSync(resolve(root, 'dist/sw.js')));
 check('css bundle is emitted', !!css);
+
+// iOS Safari zooms focused controls below 16px. Check the built cascade for
+// every control variant, including the more specific compact form styles.
+const stylesheet = css ? readFileSync(resolve(root, 'dist', css.replace(/^\.\//, '')), 'utf8') : '';
+const controlDom = new JSDOM(
+  `<!doctype html><html><head><style>${stylesheet}</style></head><body>
+    <input id="text">
+    <input id="score" class="score-input">
+    <input id="file" type="file" class="file-input">
+    <textarea id="backup" class="backup-area"></textarea>
+    <div class="toolbar"><select id="toolbar" class="select"></select></div>
+    <div class="visible-week-setting"><select id="week" class="select"></select></div>
+    <button id="button"></button>
+  </body></html>`,
+  { pretendToBeVisual: true },
+);
+const controlStyles = [
+  'text',
+  'score',
+  'file',
+  'backup',
+  'toolbar',
+  'week',
+  'button',
+].map((id) => controlDom.window.getComputedStyle(controlDom.window.document.getElementById(id)));
+check(
+  'text controls are at least 16px to avoid iOS focus zoom',
+  controlStyles.slice(0, 6).every((style) => Number.parseFloat(style.fontSize) >= 16),
+);
+check(
+  'interactive controls suppress double-tap zoom',
+  controlStyles.every((style) => style.touchAction === 'manipulation'),
+);
+const viewport = html.match(/name="viewport" content="([^"]+)"/)?.[1] ?? '';
+check(
+  'viewport keeps accessibility pinch zoom available',
+  !/maximum-scale|user-scalable/i.test(viewport),
+);
+
 const manifest = JSON.parse(readFileSync(resolve(root, 'dist/manifest.webmanifest'), 'utf8'));
 check('manifest is standalone + themed', manifest.display === 'standalone' && manifest.theme_color === '#0b1120');
 check('manifest declares 192/512/maskable icons', manifest.icons.length >= 3 && manifest.icons.some((i) => i.purpose === 'maskable'));

@@ -68,6 +68,8 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+  /* Suppress double-tap zoom without disabling pinch-to-zoom. */
+  touch-action: manipulation;
 }
 
 a {
@@ -639,6 +641,9 @@ label .label-icon {
   color: var(--blue);
 }
 
+/* iOS Safari zooms the page when a focused control is smaller than 16px.
+   Keep every text control at that threshold instead of locking the viewport,
+   so users can still pinch-zoom the rest of the app. */
 input,
 select,
 textarea {
@@ -648,7 +653,7 @@ textarea {
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 16px;
   transition: border-color 0.2s, box-shadow 0.2s;
   appearance: none;
 }
@@ -814,7 +819,7 @@ select.select {
   min-width: 148px;
   padding: 7px 34px 7px 14px;
   border-radius: 30px;
-  font-size: 0.85rem;
+  font-size: 16px;
   font-weight: 500;
 }
 
@@ -1062,7 +1067,7 @@ select.select {
   border-radius: 30px;
   border-color: var(--border-strong);
   background-color: var(--surface-2);
-  font-size: 0.85rem;
+  font-size: 16px;
 }
 
 .tabs {
@@ -1590,13 +1595,13 @@ tr.relegation .pos-marker {
 .file-input {
   padding: 8px;
   background: var(--surface);
-  font-size: 0.82rem;
+  font-size: 16px;
   margin-bottom: 8px;
 }
 
 .backup-area {
   min-height: 84px;
-  font-size: 0.78rem;
+  font-size: 16px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
