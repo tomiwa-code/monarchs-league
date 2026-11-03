@@ -36,19 +36,34 @@ npm run preview  # serve the built PWA
 ## Testing
 
 ```bash
+npm run typecheck
+npm test             # 9 domain + router tests
 npm run build
-node --experimental-strip-types --test scripts/league.test.mjs   # domain logic
-node scripts/smoke.mjs                                           # full UI walk-through in jsdom
+npm run test:smoke   # full UI walk-through in jsdom (visitor, admin, share, backup, cross-tab)
 ```
 
 `league.test.mjs` verifies the round-robin generator (every team plays every
 other team exactly twice, once per week, never itself), scoring and tie-breaks,
-legacy-data repair and fixture-id uniqueness.
+legacy-data repair and fixture-id uniqueness. `router.test.mjs` covers deep-link
+parsing, malformed ids and hash round-tripping.
 
 `smoke.mjs` boots the production bundle and walks the real app as a signed-out
 visitor and as a signed-in admin — checking the sample season, standings,
 fixture rendering, access control, live score entry, persistence, and that the
 manifest/service worker are emitted.
+
+## Ideas beyond the original
+
+- **Share links** — `#/leagues?user=<name>` opens that owner's published
+  leagues read-only (and auto-loads them), so the standings link can go straight
+  into the WhatsApp group. The Share dialog uses the native share sheet when
+  available, clipboard otherwise.
+- **Season reset** — clears every score and regenerates the schedule while
+  keeping team names.
+- **Cross-tab safety** — edits are broadcast to other open tabs (storage event +
+  BroadcastChannel) so a second tab adopts them instead of overwriting.
+- **Storage health** — if the browser blocks local saves (private mode, full
+  disk), the app says so instead of silently losing work.
 
 ## Parity with the original
 

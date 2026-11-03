@@ -3,17 +3,20 @@ import { useEffect, useState } from 'react';
 export type Route =
   | { name: 'home' }
   | { name: 'create' }
-  | { name: 'leagues' }
+  | { name: 'leagues'; user?: string }
   | { name: 'league'; id: number };
 
 export function parseRoute(hash: string): Route {
-  const path = hash.replace(/^#\/?/, '').split('?')[0];
+  const [path, query = ''] = hash.replace(/^#\/?/, '').split('?');
   const [head, param] = path.split('/');
+  const params = new URLSearchParams(query);
   switch (head) {
     case 'create':
       return { name: 'create' };
-    case 'leagues':
-      return { name: 'leagues' };
+    case 'leagues': {
+      const user = params.get('user')?.trim();
+      return user ? { name: 'leagues', user } : { name: 'leagues' };
+    }
     case 'league': {
       const id = Number(param);
       return Number.isFinite(id) && id > 0 ? { name: 'league', id } : { name: 'leagues' };
@@ -23,12 +26,18 @@ export function parseRoute(hash: string): Route {
   }
 }
 
+/** Absolute, shareable link to a league owner's cloud leagues. */
+export function shareLinkFor(username?: string): string {
+  const base = `${window.location.origin}${window.location.pathname}`;
+  return username ? `${base}#/leagues?user=${encodeURIComponent(username)}` : base;
+}
+
 export const routeToHash = (route: Route): string => {
   switch (route.name) {
     case 'create':
       return '#/create';
     case 'leagues':
-      return '#/leagues';
+      return route.user ? `#/leagues?user=${encodeURIComponent(route.user)}` : '#/leagues';
     case 'league':
       return `#/league/${route.id}`;
     default:

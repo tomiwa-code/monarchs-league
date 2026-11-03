@@ -1,16 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowLeft,
   ArrowUpDown,
   CloudDownload,
   CloudUpload,
+  Copy,
   Eye,
   Info,
   List,
   Loader2,
   Pencil,
   PlusCircle,
+  Share2,
   Trash2,
   Trophy,
   Users,
@@ -20,16 +22,19 @@ import { useApp } from '../state/store';
 import { Modal, SubmitButton } from '../components/Modal';
 import { totalWeeks } from '../lib/league';
 import { getRememberedUser, setRememberedUser } from '../lib/storage';
+import { shareLinkFor } from '../lib/router';
 
 type SortKey = 'newest' | 'oldest' | 'name-asc' | 'name-desc';
 
 interface LeaguesPageProps {
+  /** Username from a shared link (#/leagues?user=…). */
+  sharedUser?: string;
   onBack: () => void;
   onCreate: () => void;
   onOpen: (id: number) => void;
 }
 
-export function LeaguesPage({ onBack, onCreate, onOpen }: LeaguesPageProps) {
+export function LeaguesPage({ sharedUser, onBack, onCreate, onOpen }: LeaguesPageProps) {
   const {
     leagues,
     isAdmin,
@@ -41,9 +46,20 @@ export function LeaguesPage({ onBack, onCreate, onOpen }: LeaguesPageProps) {
     loadFromCloud,
     session,
     notify,
+    storageAvailable,
   } = useApp();
   const [sort, setSort] = useState<SortKey>('newest');
-  const [dialog, setDialog] = useState<'upload' | 'load' | null>(null);
+  const [dialog, setDialog] = useState<'upload' | 'load' | 'share' | null>(null);
+  const [autoLoading, setAutoLoading] = useState(false);
+  const autoTried = useRef<string | null>(null);
+
+  /* A shared link (#/leagues?user=someone) pulls that owner's leagues once. */
+  useEffect(() => {
+    if (!sharedUser || autoTried.current === sharedUser) return;
+    autoTried.current = sharedUser;
+    setAutoLoading(true);
+    loadFromCloud(sharedUser).finally(() => setAutoLoading(false));
+  }, [sharedUser, loadFromCloud]);
 
   const all = useMemo(() => (showingDemo && demoLeague ? [demoLeague] : leagues), [leagues, showingDemo, demoLeague]);
 
@@ -87,7 +103,30 @@ export function LeaguesPage({ onBack, onCreate, onOpen }: LeaguesPageProps) {
         <button type="button" className="btn btn-secondary" onClick={() => setDialog('load')}>
           <CloudDownload size={17} /> Load from Cloud
         </button>
+        {isAdmin && (
+          <button type="button" className="btn btn-secondary" onClick={() => setDialog('share')}>
+            <Share2 size={17} /> Share
+          </button>
+        )}
       </div>
+
+      {autoLoading && (
+        <div className="demo-banner">
+          <span>
+            <Loader2 size={14} className="spin-icon" style={{ verticalAlign: -2, marginRight: 6 }} />
+            Loading leagues shared by “{sharedUser}”…
+          </span>
+        </div>
+      )}
+
+      {storageAvailable === false && (
+        <div className="demo-banner warn">
+          <span>
+            <Info size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
+            Local saving is blocked in this browser. Back up to the cloud before closing the tab.
+          </span>
+        </div>
+      )}
 
       {showingDemo && (
         <div className="demo-banner">
@@ -192,6 +231,9 @@ export function LeaguesPage({ onBack, onCreate, onOpen }: LeaguesPageProps) {
         })}
       </div>
 
+      {dialog === 'share' && (
+        <ShareDialog username={session.username} onClose={() => setDialog(null)} />
+      )}
       {dialog === 'upload' && <UploadDialog onClose={() => setDialog(null)} onSubmit={uploadToCloud} defaultUser={session.username} />}
       {dialog === 'load' && <LoadDialog onClose={() => setDialog(null)} onSubmit={loadFromCloud} defaultUser={session.username || getRememberedUser()} />}
     </section>
@@ -325,6 +367,57 @@ function LoadDialog({
       <p className="info-text" style={{ marginTop: 12 }}>
         <X size={12} style={{ verticalAlign: -1, marginRight: 4 }} />
         Loading replaces the leagues stored on this device.
+      </p>
+    </Modal>
+  );
+}
+
+function ShareDialog({ username, onClose }: { username: string; onClose: () => void }) {
+  const { notify } = useApp();
+  const link = shareLinkFor(username);
+  const message = `Follow ${username}'s league on League Arena: ${link}`;
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      notify('Share link copied');
+    } catch {
+      notify('Clipboard blocked — copy the link manually', 'error');
+    }
+  };
+
+  const share = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'League Arena', text: message, url: link });
+        return;
+      } catch {
+        /* user cancelled — fall through to clipboard */
+      }
+    }
+    await copy();
+  };
+
+  return (
+    <Modal title="Share league" icon={<Share2 size={18} />} onClose={onClose} narrow>
+      <p className="modal-note">
+        Anyone with this link opens your latest published leagues in a read-only view — ideal for dropping in the
+        WhatsApp group.
+      </p>
+      <div className="form-group">
+        <label htmlFor="share-link">Share link</label>
+        <input id="share-link" value={link} readOnly onFocus={(event) => event.target.select()} />
+      </div>
+      <div className="split-buttons">
+        <button type="button" className="btn btn-secondary" onClick={() => void copy()}>
+          <Copy size={15} /> Copy link
+        </button>
+        <button type="button" className="btn btn-primary" onClick={() => void share()}>
+          <Share2 size={15} /> Share
+        </button>
+      </div>
+      <p className="info-text" style={{ marginTop: 12 }}>
+        Viewers only see the weeks you marked public under “Public weeks”, and can&apos;t change scores.
       </p>
     </Modal>
   );

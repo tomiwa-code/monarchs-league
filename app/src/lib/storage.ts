@@ -25,8 +25,9 @@ export function loadLeagues(username?: string): League[] {
   }
 }
 
-export function saveLeagues(leagues: League[], username?: string): void {
-  safeSet(LEAGUE_KEY(username), JSON.stringify(leagues));
+/** Returns false when the browser refuses to persist (private mode, full disk). */
+export function saveLeagues(leagues: League[], username?: string): boolean {
+  return safeSet(LEAGUE_KEY(username), JSON.stringify(leagues));
 }
 
 export function loadSession(): AdminSession {
@@ -84,6 +85,48 @@ export function dismissDemo(): void {
   safeSet(DEMO_DISMISSED_KEY, '1');
 }
 
+/* Cross-tab notification so a second tab refreshes instead of silently
+ * overwriting the first tab's edits. */
+const SYNC_EVENT = 'leagueArenaSync';
+const CHANNEL = 'leagueArenaChannel';
+
+export function broadcastChange(username?: string): void {
+  try {
+    const message = { key: LEAGUE_KEY(username), at: Date.now() };
+    localStorage.setItem(SYNC_EVENT, JSON.stringify(message));
+    const channel = 'BroadcastChannel' in window ? new BroadcastChannel(CHANNEL) : null;
+    channel?.postMessage(message);
+    channel?.close();
+  } catch {
+    /* not supported — single-tab behaviour is still correct */
+  }
+}
+
+export function listenForChanges(handler: (key: string) => void): () => void {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === SYNC_EVENT && event.newValue) {
+      try {
+        handler(JSON.parse(event.newValue).key);
+      } catch {
+        /* ignore malformed payloads */
+      }
+    }
+  };
+  const channel = 'BroadcastChannel' in window ? new BroadcastChannel(CHANNEL) : null;
+  if (channel) {
+    channel.onmessage = (event: MessageEvent) => {
+      if (event.data?.key) handler(event.data.key);
+    };
+  }
+  window.addEventListener('storage', onStorage);
+  return () => {
+    window.removeEventListener('storage', onStorage);
+    channel?.close();
+  };
+}
+
+export const storageKeyFor = LEAGUE_KEY;
+
 function safeGet(key: string): string | null {
   try {
     return localStorage.getItem(key);
@@ -92,10 +135,11 @@ function safeGet(key: string): string | null {
   }
 }
 
-function safeSet(key: string, value: string): void {
+function safeSet(key: string, value: string): boolean {
   try {
     localStorage.setItem(key, value);
+    return true;
   } catch {
-    /* quota / private mode — ignore */
+    return false;
   }
 }

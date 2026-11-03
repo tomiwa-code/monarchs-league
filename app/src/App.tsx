@@ -80,6 +80,7 @@ function Shell() {
 
         {route.name === 'leagues' && (
           <LeaguesPage
+            sharedUser={route.user}
             onBack={() => navigate({ name: 'home' })}
             onCreate={() => navigate({ name: 'create' })}
             onOpen={(id) => navigate({ name: 'league', id })}

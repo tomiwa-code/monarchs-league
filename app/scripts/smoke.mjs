@@ -162,7 +162,52 @@ form.dispatchEvent(new admin.window.Event('submit', { bubbles: true, cancelable:
 await settle(admin.window, 250);
 check('creating a league opens its detail page', admin.text().includes('Fresh Season'));
 
-/* ── Scenario 3: PWA artefacts ──────────────────────────────────────────── */
+/* ── Scenario 3: shared links, backup and cross-tab behaviour ───────────── */
+await admin.go('#/leagues');
+const shareBtn = [...admin.document.querySelectorAll('.cloud-actions .btn')].find((b) =>
+  b.textContent.includes('Share'),
+);
+check('share action renders for admins', !!shareBtn);
+await admin.click(shareBtn);
+const shareLink = admin.document.getElementById('share-link');
+check(
+  'share dialog exposes a deep link',
+  !!shareLink && shareLink.value.includes('#/leagues?user=admin'),
+);
+await admin.click(admin.document.querySelector('.modal .close-modal'));
+
+// Backup round-trip through the export payload
+await admin.go('#/league/4242');
+await admin.click(
+  [...admin.document.querySelectorAll('.action-buttons .btn')].find((b) => b.textContent.includes('Backup')),
+);
+const backupArea = admin.document.querySelector('.backup-area');
+check('backup dialog shows export JSON', !!backupArea && backupArea.value.includes('Test League'));
+const exported = JSON.parse(backupArea.value);
+check(
+  'exported league round-trips through normalise',
+  exported.length === 1 && exported[0].fixtures.length === 12 && exported[0].teams.length === 4,
+);
+await admin.click(admin.document.querySelector('.modal .close-modal'));
+
+// Cross-tab: a change written by another tab is adopted
+const remote = JSON.parse(admin.window.localStorage.getItem('leagueArenaData_admin'));
+remote[0].name = 'Renamed Elsewhere';
+admin.window.localStorage.setItem('leagueArenaData_admin', JSON.stringify(remote));
+admin.window.localStorage.setItem(
+  'leagueArenaSync',
+  JSON.stringify({ key: 'leagueArenaData_admin', at: Date.now() }),
+);
+admin.window.dispatchEvent(
+  new admin.window.StorageEvent('storage', {
+    key: 'leagueArenaSync',
+    newValue: JSON.stringify({ key: 'leagueArenaData_admin', at: Date.now() }),
+  }),
+);
+await settle(admin.window, 250);
+check('edits from another tab are adopted', admin.text().includes('Renamed Elsewhere'));
+
+/* ── Scenario 4: PWA artefacts ──────────────────────────────────────────── */
 check('manifest is emitted', existsSync(resolve(root, 'dist/manifest.webmanifest')));
 check('service worker is emitted', existsSync(resolve(root, 'dist/sw.js')));
 check('css bundle is emitted', !!css);

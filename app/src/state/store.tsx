@@ -24,14 +24,17 @@ import {
 } from '../lib/league';
 import * as cloud from '../lib/cloud';
 import {
+  broadcastChange,
   clearSession,
   demoDismissed,
   dismissDemo,
+  listenForChanges,
   loadLeagues,
   loadSession,
   saveLeagues,
   saveSession,
   setRememberedUser,
+  storageKeyFor,
   type AdminSession,
 } from '../lib/storage';
 
@@ -65,6 +68,9 @@ interface AppValue {
   replaceLeagues: (leagues: League[]) => void;
   resetFixtures: (leagueId: number) => void;
 
+  /* storage health */
+  storageAvailable: boolean;
+
   /* cloud */
   syncState: SyncState;
   lastSyncedAt: number | null;
@@ -93,6 +99,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(null);
   const [demo, setDemo] = useState<League | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [storageAvailable, setStorageAvailable] = useState(true);
 
   // Refs mirror the latest values for async/debounced code paths.
   const leaguesRef = useRef(leagues);
@@ -121,7 +128,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const persist = useCallback((next: League[]) => {
     setLeagues(next);
-    saveLeagues(next, storageKey());
+    const key = storageKey();
+    const stored = saveLeagues(next, key);
+    setStorageAvailable(stored);
+    if (stored) broadcastChange(key);
+  }, []);
+
+  /* Warn once when the browser stops persisting (private mode / quota). */
+  const warnedStorage = useRef(false);
+  useEffect(() => {
+    if (storageAvailable || warnedStorage.current) return;
+    warnedStorage.current = true;
+    notify('This browser is blocking local saves — changes will be lost on reload', 'error');
+  }, [storageAvailable, notify]);
+
+  /* Another tab edited the same data: adopt it instead of clobbering it. */
+  useEffect(() => {
+    return listenForChanges((key) => {
+      if (key !== storageKeyFor(storageKey())) return;
+      const fresh = loadLeagues(storageKey());
+      leaguesRef.current = fresh;
+      setLeagues(fresh);
+    });
   }, []);
 
   /* ── Auto-sync: debounce cloud writes after edits ─────────────────────── */
@@ -461,6 +489,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setVisibleWeeks,
     replaceLeagues,
     resetFixtures,
+    storageAvailable,
     syncState,
     lastSyncedAt,
     uploadToCloud,
