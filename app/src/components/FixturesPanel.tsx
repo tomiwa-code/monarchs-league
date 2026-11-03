@@ -1,4 +1,4 @@
-import { CheckCircle2, CircleDashed } from 'lucide-react';
+import { CircleDashed } from 'lucide-react';
 import type { Fixture, League } from '../lib/league';
 
 interface FixturesPanelProps {
@@ -10,8 +10,6 @@ interface FixturesPanelProps {
 
 export function FixturesPanel({ league, week, editable, onScore }: FixturesPanelProps) {
   const weekFixtures = league.fixtures.filter((fixture) => fixture.week === week);
-  const playedCount = weekFixtures.filter(isPlayed).length;
-  const progress = weekFixtures.length === 0 ? 0 : Math.round((playedCount / weekFixtures.length) * 100);
 
   if (weekFixtures.length === 0) {
     return (
@@ -24,16 +22,6 @@ export function FixturesPanel({ league, week, editable, onScore }: FixturesPanel
 
   return (
     <>
-      <div className="fixture-progress">
-        <span>
-          {playedCount}/{weekFixtures.length} played
-        </span>
-        <div className="progress-track">
-          <div className="progress-fill" style={{ width: `${progress}%` }} />
-        </div>
-        <span>{progress}%</span>
-      </div>
-
       <div className="fixtures-list">
         {weekFixtures.map((fixture) => (
           <article className={`fixture-card${isPlayed(fixture) ? ' played' : ''}`} key={fixture.id}>
@@ -88,13 +76,6 @@ export function FixturesPanel({ league, week, editable, onScore }: FixturesPanel
                 <div className="role">{isPlayed(fixture) && resultOf(fixture) === 'away' ? 'Winner' : 'Away'}</div>
               </div>
             </div>
-            {isPlayed(fixture) && (
-              <CheckCircle2
-                size={16}
-                aria-label="Result recorded"
-                style={{ color: '#4ade80', flex: 'none' }}
-              />
-            )}
           </article>
         ))}
       </div>

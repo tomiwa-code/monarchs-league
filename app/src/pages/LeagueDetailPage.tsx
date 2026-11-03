@@ -176,11 +176,6 @@ export function LeagueDetailPage({ league, onBack }: LeagueDetailProps) {
 
       <div className="tab-panel" hidden={tab !== 'table'}>
         <StandingsTable league={league} previousRankings={previousRanks.current} />
-        <div style={{ textAlign: 'center', marginTop: 18 }}>
-          <button type="button" className="btn btn-secondary" onClick={() => setTab('fixtures')}>
-            <CalendarDays size={15} /> View fixtures
-          </button>
-        </div>
       </div>
 
       <div className="tab-panel" hidden={tab !== 'fixtures'}>

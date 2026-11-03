@@ -1166,6 +1166,29 @@ table.standings {
   min-width: 148px;
 }
 
+.legend {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
 .standings .points {
   font-weight: 700;
   color: var(--text-bright);
@@ -1255,37 +1278,6 @@ tr.relegation .pos-marker {
 
 .form-badge.empty {
   background: #1e293b;
-}
-
-.legend {
-  display: flex;
-  gap: 18px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 16px;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-
-.legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legend i {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  display: inline-block;
-}
-
-.legend .win-dot {
-  background: var(--green);
-}
-
-.legend .rel-dot {
-  background: var(--red);
 }
 
 /* ── Fixtures ───────────────────────────────────────────────────────────── */
@@ -1456,31 +1448,6 @@ tr.relegation .pos-marker {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--muted-dim);
-}
-
-.fixture-progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  max-width: 720px;
-  margin: 4px auto 18px;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.progress-track {
-  flex: 1;
-  height: 6px;
-  border-radius: 30px;
-  background: var(--surface-3);
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 30px;
-  background: var(--blue);
-  transition: width 0.3s ease;
 }
 
 /* ── Modals ─────────────────────────────────────────────────────────────── */
