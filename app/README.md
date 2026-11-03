@@ -63,6 +63,9 @@ manifest/service worker are emitted.
 | Supabase signup/login/upload/load + load events | Same schema, wrapped in typed `Result` helpers |
 | localStorage backup & restore | Same, plus per-league export and a season reset |
 | `sw.js` cache-first for everything | Workbox precache of the app shell + network-first Supabase cache |
+| Navbar hidden on inner screens | Navbar always available (app-like), with the same “Back” buttons |
+| Chart.js bar chart for cloud loads | CSS bar chart, no runtime dependency |
+| Scores committed after a 280 ms debounce | Scores are written immediately (table + local storage), cloud writes debounce at 1.5 s |
 
 ## Data model
 

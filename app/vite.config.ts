@@ -60,6 +60,13 @@ export default defineConfig({
     allowedHosts: true,
     hmr: { clientPort: 443 },
   },
+  preview: {
+    host: '0.0.0.0',
+    port: 4173,
+    strictPort: true,
+    // Serve the built PWA through the preview proxy too.
+    allowedHosts: true,
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,

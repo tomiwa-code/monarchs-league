@@ -75,15 +75,29 @@ function fillRoundRect(buf, size, x, y, w, h, r, color) {
   }
 }
 
-/** Shields drawn as two mirrored quadratic-ish halves. */
+/**
+ * Heraldic shield: square-ish shoulders, near-straight sides that ease inward
+ * and a soft point at the base.
+ */
 function fillShield(buf, size, cx, top, width, height, color) {
   const halfW = width / 2;
-  const shoulder = top + height * 0.52;
   for (let py = Math.round(top); py < Math.round(top + height); py++) {
-    const t = (py - top) / height;
-    // width tapers from full to a point over the lower half
-    const taper = t <= 0.52 ? 1 : 1 - Math.pow((t - 0.52) / 0.48, 1.7);
-    const w = Math.max(0, Math.round(halfW * taper));
+    const t = (py - top) / height; // 0 = top, 1 = point
+    let w = halfW;
+
+    if (t < 0.1) {
+      // slightly rounded top corners
+      const k = 1 - t / 0.1;
+      w = halfW * (1 - 0.12 * k * k);
+    } else if (t > 0.55) {
+      // taper into the point, starting from the side width so it stays smooth
+      const k = Math.min(1, (t - 0.55) / 0.45);
+      w = halfW * 0.94 * Math.pow(1 - Math.pow(k, 1.6), 0.62);
+    } else {
+      // straight sides with a very slight inward slope
+      w = halfW * (1 - 0.06 * ((t - 0.1) / 0.45));
+    }
+
     for (let px = Math.round(cx - w); px <= Math.round(cx + w); px++) {
       if (px < 0 || px >= size || py < 0 || py >= size) continue;
       const i = (py * size + px) * 4;
@@ -93,7 +107,6 @@ function fillShield(buf, size, cx, top, width, height, color) {
       buf[i + 3] = 255;
     }
   }
-  return shoulder;
 }
 
 /* ── icon composition ─────────────────────────────────────────────────── */
@@ -110,14 +123,14 @@ function buildIcon(size, { maskable = false } = {}) {
   fillRoundRect(buf, size, pad, pad, card, card, 108 * u, CARD);
 
   // shield mark
-  const shieldW = card * 0.5;
-  const shieldH = card * 0.58;
+  const shieldW = card * 0.48;
+  const shieldH = card * 0.56;
   const shieldX = size / 2;
-  const shieldY = pad + card * 0.16;
+  const shieldY = pad + card * 0.2;
   fillShield(buf, size, shieldX, shieldY, shieldW, shieldH, BLUE);
 
   // monogram inside the shield (inverse — dark letters on blue)
-  const glyphScale = Math.max(2, Math.round(shieldW / 14));
+  const glyphScale = Math.max(2, Math.round(shieldW / 19));
   const textW = 2 * 5 * glyphScale + glyphScale; // two glyphs + gap
   const textH = 7 * glyphScale;
   drawBitmap(
@@ -125,13 +138,13 @@ function buildIcon(size, { maskable = false } = {}) {
     size,
     'LA',
     Math.round(shieldX - textW / 2),
-    Math.round(shieldY + shieldH * 0.22 - textH / 2),
+    Math.round(shieldY + shieldH * 0.3 - textH / 2),
     glyphScale,
     BG,
   );
 
   // small underline chip beneath the shield
-  fillRoundRect(buf, size, size / 2 - card * 0.16, shieldY + shieldH + card * 0.08, card * 0.32, 14 * u, 7 * u, LIGHT);
+  fillRoundRect(buf, size, size / 2 - card * 0.09, shieldY + shieldH + card * 0.07, card * 0.18, 10 * u, 5 * u, LIGHT);
 
   return encodePng(buf, size);
 }
