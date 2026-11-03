@@ -216,42 +216,50 @@ check('manifest is emitted', existsSync(resolve(root, 'dist/manifest.webmanifest
 check('service worker is emitted', existsSync(resolve(root, 'dist/sw.js')));
 check('css bundle is emitted', !!css);
 
-// iOS Safari zooms focused controls below 16px. Check the built cascade for
-// every control variant, including the more specific compact form styles.
+// Focus zoom has two defences: controls stay above the 16px threshold and the
+// viewport itself is pinned. Check the built CSS cascade and document shell.
 const stylesheet = css ? readFileSync(resolve(root, 'dist', css.replace(/^\.\//, '')), 'utf8') : '';
 const controlDom = new JSDOM(
   `<!doctype html><html><head><style>${stylesheet}</style></head><body>
     <input id="text">
-    <input id="score" class="score-input">
     <input id="file" type="file" class="file-input">
     <textarea id="backup" class="backup-area"></textarea>
     <div class="toolbar"><select id="toolbar" class="select"></select></div>
     <div class="visible-week-setting"><select id="week" class="select"></select></div>
+    <article id="fixture-card" class="fixture-card">
+      <div id="score-box" class="score-box">
+        <input id="score" class="score-input">
+      </div>
+    </article>
     <button id="button"></button>
   </body></html>`,
   { pretendToBeVisual: true },
 );
-const controlStyles = [
-  'text',
-  'score',
-  'file',
-  'backup',
-  'toolbar',
-  'week',
-  'button',
-].map((id) => controlDom.window.getComputedStyle(controlDom.window.document.getElementById(id)));
+const styleFor = (id) => controlDom.window.getComputedStyle(controlDom.window.document.getElementById(id));
+const textControlIds = ['text', 'score', 'file', 'backup', 'toolbar', 'week'];
 check(
-  'text controls are at least 16px to avoid iOS focus zoom',
-  controlStyles.slice(0, 6).every((style) => Number.parseFloat(style.fontSize) >= 16),
+  'text controls stay above the iOS focus-zoom threshold',
+  textControlIds.every((id) => Number.parseFloat(styleFor(id).fontSize) > 16),
 );
+const gestureSafeStyles = [
+  controlDom.window.getComputedStyle(controlDom.window.document.documentElement),
+  controlDom.window.getComputedStyle(controlDom.window.document.body),
+  ...['text', 'score', 'file', 'backup', 'toolbar', 'week', 'score-box', 'fixture-card', 'button'].map(styleFor),
+];
 check(
-  'interactive controls suppress double-tap zoom',
-  controlStyles.every((style) => style.touchAction === 'manipulation'),
+  'page and score area suppress double-tap zoom',
+  gestureSafeStyles.every((style) => style.touchAction === 'manipulation'),
 );
-const viewport = html.match(/name="viewport" content="([^"]+)"/)?.[1] ?? '';
+const viewport = html.match(/name="viewport"\s+content="([^"]+)"/)?.[1] ?? '';
 check(
-  'viewport keeps accessibility pinch zoom available',
-  !/maximum-scale|user-scalable/i.test(viewport),
+  'viewport pins scale at 1 when score fields focus',
+  [
+    /initial-scale=1(?:\.0)?\b/,
+    /minimum-scale=1(?:\.0)?\b/,
+    /maximum-scale=1(?:\.0)?\b/,
+    /user-scalable=no\b/,
+    /interactive-widget=resizes-visual\b/,
+  ].every((pattern) => pattern.test(viewport)),
 );
 
 const manifest = JSON.parse(readFileSync(resolve(root, 'dist/manifest.webmanifest'), 'utf8'));
