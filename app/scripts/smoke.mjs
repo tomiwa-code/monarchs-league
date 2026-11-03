@@ -91,6 +91,8 @@ check('sample league card renders', document.querySelectorAll('.league-card').le
 await page.click([...document.querySelectorAll('.action-btn')].find((b) => b.textContent.includes('View')));
 check('league detail renders standings', !!document.querySelector('table.standings'));
 check('all teams appear in the table', document.querySelectorAll('table.standings tbody tr').length === 16);
+check('no legend under the table', !document.querySelector('.legend'));
+check('no "View fixtures" button under the table', !page.text().includes('View fixtures'));
 check(
   'winner/relegation zones are highlighted',
   document.querySelectorAll('tr.winner').length === 3 && document.querySelectorAll('tr.relegation').length === 3,
@@ -100,6 +102,8 @@ check('form badges render', document.querySelectorAll('.form-badge.win').length 
 await page.click([...document.querySelectorAll('.tab-btn')].find((b) => b.textContent.includes('Fixtures')));
 check('all 30 matchweeks render', document.querySelectorAll('.week-btn').length === 30);
 check('fixture cards render', document.querySelectorAll('.fixture-card').length === 8);
+check('no per-fixture played tick', document.querySelectorAll('.fixture-card svg').length === 0);
+check('no played/percentage progress bar', !document.querySelector('.fixture-progress'));
 check('scores are read-only for visitors', document.querySelectorAll('.score-input').length === 0);
 check('weeks beyond the published range are locked', document.querySelectorAll('.week-btn:disabled').length > 0);
 

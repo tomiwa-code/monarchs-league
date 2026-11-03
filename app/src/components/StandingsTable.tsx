@@ -71,19 +71,6 @@ export function StandingsTable({ league, previousRankings }: StandingsTableProps
         </table>
       </div>
 
-      <div className="legend">
-        {winnersCount > 0 && (
-          <span>
-            <i className="win-dot" /> Winners ({winnersCount})
-          </span>
-        )}
-        {relegationCount > 0 && (
-          <span>
-            <i className="rel-dot" /> Relegation ({relegationCount})
-          </span>
-        )}
-        <span>Win 3 · Draw 1 · Loss 0</span>
-      </div>
     </>
   );
 }
