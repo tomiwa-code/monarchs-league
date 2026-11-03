@@ -1,0 +1,47 @@
+name: Build & test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - run: npm ci
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Domain tests
+        run: npm test
+
+      - name: Build PWA
+        run: npm run build
+
+      - name: UI smoke test
+        run: npm run test:smoke
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: league-arena-pwa
+          path: app/dist
+          retention-days: 14
